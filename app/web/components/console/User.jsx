@@ -14,7 +14,7 @@ import hoc from 'components/HOC/pageHeader';
 @inject(stores => ({
   store: stores.userStore
 }))
-@hoc({ name: 'User Management', className: 'page_user' })
+@hoc({ name: '用户管理', className: 'page_user' })
 @observer
 class UserManagement extends Component {
   state = {

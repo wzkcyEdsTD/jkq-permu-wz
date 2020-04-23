@@ -16,7 +16,7 @@ import hoc from 'components/HOC/pageHeader';
 @inject(stores => ({
   store: stores.menuStore
 }))
-@hoc({ name: 'Menu Management', className: 'page_menu' })
+@hoc({ name: '菜单管理', className: 'page_menu' })
 @observer
 class MenuManagement extends Component {
   state = {

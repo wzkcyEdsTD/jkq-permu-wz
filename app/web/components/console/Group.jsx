@@ -13,7 +13,7 @@ import hoc from 'components/HOC/pageHeader';
 @inject(stores => ({
   store: stores.groupStore
 }))
-@hoc({ name: 'Group Management', className: 'page_group' })
+@hoc({ name: '角色管理', className: 'page_group' })
 @observer
 class GroupManagement extends Component {
   state = {

@@ -25,16 +25,16 @@ module.exports.MENUS = [
     link: "#em",
     children: [
       {
-        label: "",
-        link: "/",
+        label: "名单上传进度",
+        link: "/a",
       },
       {
-        label: "",
-        link: "/",
+        label: "数据导入进度",
+        link: "/b",
       },
       {
-        label: "",
-        link: "/",
+        label: "数据采集进度",
+        link: "/c",
       },
     ],
   },
