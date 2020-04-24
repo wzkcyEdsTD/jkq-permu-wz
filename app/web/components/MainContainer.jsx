@@ -28,7 +28,7 @@ const { Header, Content, Sider, Footer } = Layout;
 class MainContainer extends Component {
   static async fetch(stores) {
     const { userStore } = stores;
-    const response = await Promise.all([]);
+    const response = await Promise.all([userStore.fetchUserSession()]);
     return response;
   }
 
@@ -280,7 +280,7 @@ class MainContainer extends Component {
           <div className="logo">温州市经开区亩均论英雄</div>
           <div className="avater-user">
             <span style={{ color: "#fff" }}>
-              hi , {store.currentUser.username || "unknows"}
+              hi , {store.currentUser ? store.currentUser.username : "unknows"}
             </span>
             <Dropdown overlay={this.userMenu()}>
               <a>

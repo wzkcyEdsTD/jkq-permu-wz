@@ -1,6 +1,5 @@
-const BaseAntifraudAPI = require('./base_antifraud_api');
-
-class UserAPI extends BaseAntifraudAPI {
+import BaseFwAPI from './base_mj_api';
+export default class UserAPI extends BaseFwAPI {
   login(params) {
     return this.post('/user/login', params);
   }
@@ -53,5 +52,3 @@ class UserAPI extends BaseAntifraudAPI {
     return this.get('/user/department/option');
   }
 }
-
-export default UserAPI;

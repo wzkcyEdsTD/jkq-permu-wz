@@ -17,10 +17,10 @@ import MainContainer from "components/MainContainer";
 import UserStore from "stores/console/UserStore";
 
 //  控制台
-import User from "components/console/User";
-import Group from "components/console/Group";
+import User from "components/console/UserManagement";
+import Group from "components/console/GroupManagement";
 import GroupStore from "stores/console/GroupStore";
-import Menu from "components/console/Menu";
+import Menu from "components/console/MenuManagement";
 import MenuStore from "stores/console/MenuStore";
 
 const createStores = (ctx, state) => ({

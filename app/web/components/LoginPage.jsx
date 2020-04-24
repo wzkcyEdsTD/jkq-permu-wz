@@ -31,7 +31,7 @@ class NormalLoginForm extends Component {
     const { store, form } = this.props;
     form.validateFieldsAndScroll();
     const params = form.getFieldsValue();
-    if (!(params.userName && params.password)) {
+    if (!(params.username && params.password)) {
       return false;
     }
     this.setState({ loading: true });
@@ -39,7 +39,7 @@ class NormalLoginForm extends Component {
       const result = await store.login(params);
       if (result) {
         message.info("登录成功");
-        window.location.replace(getQueryString("from"));
+        // window.location.replace(getQueryString("from"));
       }
     } finally {
       this.setState({ loading: false });
@@ -54,7 +54,7 @@ class NormalLoginForm extends Component {
       <Form onSubmit={this.handleSubmit} className="login-form">
         <div className="title">温州市经开区亩均论英雄</div>
         <FormItem>
-          {getFieldDecorator("userName", {
+          {getFieldDecorator("username", {
             rules: [
               {
                 required: true,

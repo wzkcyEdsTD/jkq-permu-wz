@@ -1,19 +1,20 @@
-import React, { Component } from 'react';
-import autobind from 'autobind-decorator';
-import { Button, Table, Modal, Tag, message } from 'antd';
-import { observer, inject } from 'mobx-react';
-import { toJS } from 'mobx';
+import React, { Component } from "react";
+import autobind from "autobind-decorator";
+import { Button, Switch, Table, Modal, Tag, message } from "antd";
+import { observer, inject } from "mobx-react";
+import { toJS, decorate } from "mobx";
+import moment from "moment";
 
 import GroupForm, {
   GROUP_FORM_MODE_ADD,
-  GROUP_FORM_MODE_UPDATE
-} from './components/GroupForm';
-import hoc from 'components/HOC/pageHeader';
+  GROUP_FORM_MODE_UPDATE,
+} from "./components/GroupForm";
+import hoc from "components/HOC/pageHeader";
 
-@inject(stores => ({
-  store: stores.groupStore
+@hoc({ name: "用户组管理", className: "page_groupManagement" })
+@inject((stores) => ({
+  store: stores.groupStore,
 }))
-@hoc({ name: '角色管理', className: 'page_group' })
 @observer
 class GroupManagement extends Component {
   state = {
@@ -22,11 +23,11 @@ class GroupManagement extends Component {
     groupFormMode: GROUP_FORM_MODE_ADD,
     menus: null,
     savingLoad: false,
-    editedGroup: null
+    editedGroup: null,
   };
 
   componentDidMount() {
-    // this.fetchList();
+    this.refreshGroupTableData();
   }
 
   async getBasicOption() {
@@ -36,46 +37,48 @@ class GroupManagement extends Component {
     if (menus) {
       return;
     } else {
-      const data = await fetchBasicOption();
-      this.setState({ menus: data });
+      const { rmenu } = await fetchBasicOption();
+      this.setState({ menus: rmenu.menus });
       return;
     }
   }
 
   @autobind
   onGroupSave() {
-    const { groupFormMode } = this.state;
+    const { groupFormMode, editedGroup } = this.state;
     const { store } = this.props;
     const { form } = this.groupForm.props;
     form.validateFieldsAndScroll(async (err, values) => {
       if (err) {
         return;
       }
-      console.log(values);
       this.setState({ savingLoad: true });
       try {
+        values.menuIdList = values.menuIdList.split("@").map((v) => {
+          return +v;
+        });
         await store.saveGroup(values);
         this.hideGroupFormModal();
         message.success(
-          `${groupFormMode === GROUP_FORM_MODE_ADD ? '添加' : '更新'}用户组【${
-            values.groupName
+          `${groupFormMode === GROUP_FORM_MODE_ADD ? "添加" : "更新"}用户组【${
+            values.name
           }】成功`
         );
       } finally {
         this.setState({ savingLoad: false });
       }
-      this.fetchList();
+      this.refreshGroupTableData();
     });
   }
 
   @autobind
   async showGroupFormModal(group) {
     await this.getBasicOption();
-    if (group && group.groupId) {
+    if (group && group.id) {
       this.setState({
         groupFormModalVisiable: true,
         groupFormMode: GROUP_FORM_MODE_UPDATE,
-        editedGroup: group
+        editedGroup: group,
       });
     } else {
       this.setState({ groupFormModalVisiable: true });
@@ -87,59 +90,57 @@ class GroupManagement extends Component {
     this.setState({
       groupFormModalVisiable: false,
       groupFormMode: GROUP_FORM_MODE_ADD,
-      editedGroup: null
+      editedGroup: null,
     });
   }
 
   getColumnsGroup() {
     const cols = [
       {
-        title: '编号',
+        title: "编号",
         width: 60,
-        dataIndex: 'groupId'
+        dataIndex: "id",
       },
       {
-        title: '用户组',
+        title: "用户组",
         width: 120,
-        dataIndex: 'groupName'
+        dataIndex: "name",
       },
       {
-        title: '菜单权限',
-        dataIndex: 'email',
+        title: "菜单权限",
+        dataIndex: "phone",
         render: (t, r) => {
-          return r.menus
-            ? r.menus.map((v, index) => {
-                return (
-                  <Tag color={v.isAdminOnly == 1 ? 'red' : 'cyan'} key={index}>
-                    {v.label}
-                  </Tag>
-                );
-              })
-            : undefined;
-        }
+          return r.menus.map((v, index) => {
+            return (
+              <Tag color={v.isAdminOnly == 1 ? "red" : "cyan"} key={index}>
+                {v.label}
+              </Tag>
+            );
+          });
+        },
       },
       {
-        title: '操作',
+        title: "操作",
         render: (t, r) => {
           return (
             <div className="operator">
               <Button
                 type="primary"
-                size="small"
+                icon="edit"
                 onClick={() => this.showGroupFormModal(r)}
               >
                 编辑
               </Button>
             </div>
           );
-        }
-      }
+        },
+      },
     ];
     return cols;
   }
 
   @autobind
-  async fetchList() {
+  async refreshGroupTableData() {
     const { store } = this.props;
     this.setState({ loading: true });
     try {
@@ -156,10 +157,10 @@ class GroupManagement extends Component {
       editedGroup,
       savingLoad,
       loading,
-      menus
+      menus,
     } = this.state;
 
-    const { groupList, _pageQuery } = this.props.store;
+    const { groupList, pageRequest } = this.props.store;
 
     return (
       <div>
@@ -170,38 +171,36 @@ class GroupManagement extends Component {
               icon="plus"
               onClick={this.showGroupFormModal}
             >
-              add
+              新增用户组
             </Button>
           </span>
         </div>
         <Table
           dataSource={toJS(groupList)}
           columns={this.getColumnsGroup()}
-          rowKey={r => r.groupId}
+          rowKey={(r) => r.id}
           pagination={{
-            current: _pageQuery.draw,
-            total: _pageQuery.count,
-            pageSize: _pageQuery.length,
+            total: pageRequest.total,
+            pageSize: pageRequest.pageSize,
             showSizeChanger: true,
             onShowSizeChange: (current, pageSize) => {
-              _pageQuery.length = pageSize;
-              _pageQuery.draw = 1;
-              this.fetchList();
+              pageRequest.pageSize = pageSize;
+              this.refreshGroupTableData();
             },
-            onChange: current => {
-              _pageQuery.draw = current;
-              this.fetchList();
+            onChange: (current) => {
+              pageRequest.page = current;
+              this.refreshGroupTableData();
             },
             showTotal: () => {
-              return '共 ' + _pageQuery.count + ' 条数据';
-            }
+              return "共 " + pageRequest.total + " 条数据";
+            },
           }}
           loading={loading}
         />
         <Modal
           className="modal-group"
           title={`${
-            groupFormMode === GROUP_FORM_MODE_ADD ? '新增' : '编辑'
+            groupFormMode === GROUP_FORM_MODE_ADD ? "新增" : "编辑"
           }用户组`}
           width={700}
           destroyOnClose={true}
@@ -218,14 +217,14 @@ class GroupManagement extends Component {
               onClick={this.onGroupSave}
             >
               保存
-            </Button>
+            </Button>,
           ]}
         >
           <GroupForm
             group={editedGroup}
             mode={groupFormMode}
             menus={menus}
-            wrappedComponentRef={instance => {
+            wrappedComponentRef={(instance) => {
               this.groupForm = instance;
             }}
           />

@@ -1,18 +1,33 @@
-import { action, observable, computed } from 'mobx';
-import ForwardAPI from 'api/forward';
-import { pageQuery, query } from 'stores/common';
+import { action, observable, computed } from "mobx";
+
+import UserAPI from "api/user";
+import GroupAPI from "api/group";
+import MenuAPI from "api/menu";
+
+const initTable = {
+  searchParams: {
+    search_username: undefined,
+  },
+};
 
 const initPage = {
-  draw: 1,
-  length: 20,
-  count: undefined,
-  orderBy: {}
+  page: 1,
+  pageSize: 40,
+  total: undefined,
+  totalPage: undefined,
 };
 
 class UserStore {
   constructor(ctx, initialState) {
-    this.ForwardAPI = new ForwardAPI(ctx);
+    this.userAPI = new UserAPI(ctx);
+    this.MenuAPI = new MenuAPI(ctx);
+    this.GroupAPI = new GroupAPI(ctx);
+
     if (initialState && initialState[0]) {
+      const { user, menus, group } = initialState[0];
+      this.currentUser = user;
+      this.currentMenu = menus.menus;
+      this.currentGroup = group.group;
     }
   }
 
@@ -23,122 +38,111 @@ class UserStore {
     return this._userList;
   }
   @observable
-  currentUser = {};
+  currentUser = null;
   @observable
-  currentMenu = [];
+  currentMenu = null;
+  @observable
+  currentGroup = null;
 
   //  分页
   @observable
-  _pageQuery = initPage;
+  pageRequest = initPage;
+
+  //  table字段
+  @observable
+  tableParams = initTable;
 
   @action
   reset() {
-    this._pageQuery = initPage;
-    this._userList = [];
+    this.pageRequest = initPage;
+    this.tableParams = initTable;
   }
 
   @action
-  login = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/login/in',
-      params
-    });
-    return data;
+  login = async (params) => {
+    const result = await this.userAPI.login(params);
+    return result;
   };
 
-  logout = async () => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/login/out',
-      params: {}
-    });
-    return data;
-  };
+  logout() {
+    return this.userAPI.logout();
+  }
 
   @action
   fetchUserSession = async () => {
-    const user = await this.ForwardAPI.toJava({
-      url: '/user/current/user/info',
-      params: {}
-    });
+    const user = await this.userAPI.getUserSession();
     this.currentUser = user;
-    window.sysUserId = user.id;
-    return user;
+    const group = await this.GroupAPI.getGroup({ userid: user.id });
+    this.currentGroup = group;
+    const menus = await this.MenuAPI.getMenu({ group });
+    this.currentMenu = menus.menus;
+    return { user, group, menus };
   };
 
   @action
-  fetchMenus = async userId => {
-    const menus = await this.ForwardAPI.toJava({
-      url: '/user/menu/tree',
-      params: {
-        userId
-      }
+  fetchUserList = async (params) => {
+    const result = await this.userAPI.fetchUserList({
+      username: this.tableParams.searchParams.search_username,
+      ...this.pageRequest,
     });
-    this.currentMenu = menus;
-    return menus;
+    this._userList = result.list;
+    this.pageRequest = result.page;
+    return result.list;
   };
 
   @action
-  fetchUserList = async params => {
-    const { list, page } = await this.ForwardAPI.toJava({
-      url: '/user/page',
-      params: {
-        pageQuery: pageQuery(this._pageQuery)
-      }
+  register = async (params) => {
+    const result = await this.userAPI.register(params);
+    return result;
+  };
+
+  saveUser(_user) {
+    const user = {
+      ..._user,
+      // phone: parseInt(_user.phone),
+      department: _user.department || 0,
+    };
+    if (user.id) {
+      return this.userAPI.updateUser(user);
+    } else {
+      return this.userAPI.createUser(user);
+    }
+  }
+
+  @action
+  updatePassword = async (params) => {
+    const result = await this.userAPI.updatePassword({
+      ...params,
+      userId: this.currentUser.id,
     });
-    this._userList = list;
-    this._pageQuery = page;
-    return list;
+    return result;
   };
 
   @action
-  saveUser = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: `/user/${params.userId ? 'update' : 'create'}`,
-      params
-    });
-    return data;
+  adminUpdatePassword = async (params) => {
+    const result = await this.userAPI.adminUpdatePassword(params);
+    return result;
   };
 
   @action
-  updatePassword = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/user/password/modify',
-      params
-    });
-    return data;
-  };
-
-  @action
-  adminUpdatePassword = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/user/password/modify',
-      params: {
-        ...params
-      }
-    });
-    return data;
-  };
-
-  @action
-  updateToAdmin = async userId => {
+  updateToAdmin = async (userId) => {
     const result = await this.userAPI.updateToAdmin(userId);
     return result;
   };
 
   @action
-  fetchUserInfo = async userId => {
+  fetchUserInfo = async (userId) => {
     const result = await this.userAPI.fetchUserInfo(userId);
     return result;
   };
 
   //console
   @action
-  fetchBasicOption = async () => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/group/list',
-      params: {}
-    });
-    return data;
+  fetchBasicOption = async (params) => {
+    const rgroup = await this.GroupAPI.fetchGroupOption();
+    const rjob = await this.userAPI.fetchJobOption();
+    const rdepartment = await this.userAPI.fetchDepartmentOption();
+    return { rgroup, rjob, rdepartment };
   };
 }
 

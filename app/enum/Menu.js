@@ -22,19 +22,23 @@ module.exports.MENUS = [
   },
   {
     label: "亩均评价",
-    link: "#em",
+    link: "#mj",
     children: [
       {
-        label: "名单上传进度",
-        link: "/a",
+        label: "企业名单上传",
+        link: "/mj/companyUpload",
       },
       {
-        label: "数据导入进度",
-        link: "/b",
+        label: "企业数据上传",
+        link: "/mj/companyData",
       },
       {
-        label: "数据采集进度",
-        link: "/c",
+        label: "亩均评价结果",
+        link: "/mj/companyGrade",
+      },
+      {
+        label: "结果上报",
+        link: "/mj/companyGradeUpload",
       },
     ],
   },

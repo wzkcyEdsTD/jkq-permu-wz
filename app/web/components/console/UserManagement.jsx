@@ -1,20 +1,21 @@
-import React, { Component } from 'react';
-import autobind from 'autobind-decorator';
-import { Button, Table, Modal, Tag, message, Input } from 'antd';
-import { observer, inject } from 'mobx-react';
-import { toJS } from 'mobx';
+import React, { Component } from "react";
+import autobind from "autobind-decorator";
+import { Button, Switch, Table, Modal, Tag, message, Input } from "antd";
+import { observer, inject } from "mobx-react";
+import { toJS, decorate } from "mobx";
+import moment from "moment";
 
 import UserForm, {
   USER_FORM_MODE_ADD,
-  USER_FORM_MODE_UPDATE
-} from './components/UserForm';
-import PasswordForm from './components/PasswordForm';
-import hoc from 'components/HOC/pageHeader';
+  USER_FORM_MODE_UPDATE,
+} from "./components/UserForm";
+import PasswordForm from "./components/PasswordForm";
+import hoc from "components/HOC/pageHeader";
 
-@inject(stores => ({
-  store: stores.userStore
+@inject((stores) => ({
+  store: stores.userStore,
 }))
-@hoc({ name: '用户管理', className: 'page_user' })
+@hoc({ name: "用户管理", className: "page_userManagement" })
 @observer
 class UserManagement extends Component {
   state = {
@@ -23,41 +24,37 @@ class UserManagement extends Component {
     passwordFormModalVisiable: false,
     userFormMode: USER_FORM_MODE_ADD,
     groups: null,
+    jobs: null,
+    department: null,
     savingLoad: false,
-    editedUser: null
+    editedUser: null,
   };
 
   async componentDidMount() {
-    // await this.fetchList();
+    await this.refreshUserTableData();
   }
 
-  searchLeft() {
-    const { _query, _pageQuery } = this.props.store;
+  loadLeftSearch() {
+    const { tableParams } = this.props.store;
     return (
       <span className="action-left-search">
-        {/* <span className="action-left-search-single">
+        <span className="action-left-search-single">
           <label>用户名:</label>
           <Input
             placeholder="输入用户名"
-            style={{ width: '200px' }}
-            onChange={e => {
-              _query.search_username = e.target.value;
+            style={{ width: "200px" }}
+            onChange={(e) => {
+              tableParams.searchParams.search_username = e.target.value;
             }}
-            onPressEnter={this.fetchList}
+            onPressEnter={this.refreshUserTableData}
           />
         </span>
         <Button
           type="primary"
           icon="search"
-          onClick={() => {
-            _pageQuery.draw = 1;
-            this.fetchList();
-          }}
+          onClick={this.refreshUserTableData}
         >
           搜索
-        </Button> */}
-        <Button type="primary" icon="plus" onClick={this.showUserFormModal}>
-          add
         </Button>
       </span>
     );
@@ -65,14 +62,16 @@ class UserManagement extends Component {
 
   async getBasicOption() {
     //  是否有options数据
-    const { groups } = this.state;
+    const { groups, jobs, department } = this.state;
     const { fetchBasicOption } = this.props.store;
-    if (groups) {
+    if (groups && jobs && department) {
       return;
     } else {
-      const rgroup = await fetchBasicOption();
+      const { rgroup, rjob, rdepartment } = await fetchBasicOption();
       this.setState({
-        groups: rgroup
+        groups: rgroup,
+        jobs: rjob,
+        department: rdepartment,
       });
       return;
     }
@@ -89,17 +88,18 @@ class UserManagement extends Component {
       }
       this.setState({ savingLoad: true });
       try {
+        values.isActive = Boolean(values.isActive) ? 1 : 0;
         await store.saveUser(values);
         this.hideUserFormModal();
         message.success(
-          `${userFormMode === USER_FORM_MODE_ADD ? '添加' : '更新'}用户【${
+          `${userFormMode === USER_FORM_MODE_ADD ? "添加" : "更新"}用户【${
             values.username
           }】成功`
         );
       } finally {
         this.setState({ savingLoad: false });
       }
-      this.fetchList();
+      this.refreshUserTableData();
     });
   }
 
@@ -110,7 +110,7 @@ class UserManagement extends Component {
       this.setState({
         userFormModalVisiable: true,
         userFormMode: USER_FORM_MODE_UPDATE,
-        editedUser: user
+        editedUser: user,
       });
     } else {
       this.setState({ userFormModalVisiable: true });
@@ -122,7 +122,7 @@ class UserManagement extends Component {
     this.setState({
       userFormModalVisiable: false,
       userFormMode: USER_FORM_MODE_ADD,
-      editedUser: null
+      editedUser: null,
     });
   }
 
@@ -137,10 +137,15 @@ class UserManagement extends Component {
       }
       this.setState({ savingLoad: true });
       try {
+        console.log({
+          password: values.password,
+          userId: editedUser.id,
+        });
         await store.adminUpdatePassword({
           password: values.password,
-          userId: editedUser.id
+          userId: editedUser.id,
         });
+
         this.hidePasswordFormModal();
         message.success(`用户【${editedUser.username}】密码修改成功`);
       } finally {
@@ -162,81 +167,83 @@ class UserManagement extends Component {
   getColumnsUser() {
     const cols = [
       {
-        title: '编号',
+        title: "编号",
         width: 60,
-        dataIndex: 'id'
+        dataIndex: "id",
       },
       {
-        title: '激活',
-        dataIndex: 'active',
+        title: "激活",
+        dataIndex: "isActive",
         width: 60,
-        render: t => <i>{t == 1 ? '是' : '否'}</i>
+        render: (isActive) => <i>{isActive == 1 ? "是" : "否"}</i>,
       },
       {
-        title: '用户名',
+        title: "用户名",
         width: 100,
-        dataIndex: 'username'
+        dataIndex: "username",
       },
       {
-        title: '姓名',
-        dataIndex: 'name'
+        title: "手机号",
+        dataIndex: "phone",
+      },
+      // {
+      //   title: "部门",
+      //   dataIndex: "publish_department",
+      //   render: (t) => {
+      //     return t ? t.name : "";
+      //   },
+      // },
+      {
+        title: "用户组",
+        dataIndex: "groups",
+        render: (t) => {
+          return t.map((v, index) => {
+            return (
+              <Tag color={v.name == "超级管理员" ? "red" : "cyan"} key={index}>
+                {v.name}
+              </Tag>
+            );
+          });
+        },
       },
       {
-        title: '座机号',
-        dataIndex: 'tel'
+        title: "工作岗位",
+        // dataIndex: "jobs",
+        render: (t) => {
+          return "";
+        },
       },
       {
-        title: '复审员ID',
-        dataIndex: 'reviewId'
-      },
-      {
-        title: '所在用户组',
-        dataIndex: 'groups',
-        render: t => {
-          return t
-            ? t.map((v, index) => {
-                return (
-                  <Tag
-                    color={v.name == '超级管理员' ? 'red' : 'cyan'}
-                    key={index}
-                  >
-                    {v.name}
-                  </Tag>
-                );
-              })
-            : [];
-        }
-      },
-      {
-        title: '操作',
+        title: "操作",
         render: (t, r) => {
           return (
             <div className="operator">
               <Button
                 type="primary"
-                size="small"
+                icon="edit"
                 onClick={() => this.showUserFormModal(r)}
-                style={{ marginBottom: '8px' }}
+                style={{ marginBottom: "8px" }}
               >
                 编辑
               </Button>
               <Button
                 type="primary"
-                size="small"
+                icon="tool"
                 onClick={() => this.showPasswordFormModal(r)}
               >
                 修改密码
               </Button>
             </div>
           );
-        }
-      }
+        },
+      },
     ];
+
     return cols;
   }
 
   @autobind
-  async fetchList() {
+  async refreshUserTableData() {
     const { store } = this.props;
     this.setState({ loading: true });
     try {
@@ -254,40 +261,47 @@ class UserManagement extends Component {
       editedUser,
       savingLoad,
       loading,
-      groups
+      groups,
+      jobs,
+      department,
     } = this.state;
-    const { userList, _pageQuery } = this.props.store;
+    const { userList, pageRequest } = this.props.store;
 
     return (
       <div>
-        <div className="action-container">{this.searchLeft()}</div>
+        <div className="action-container">
+          {this.loadLeftSearch()}
+          <span className="action-right-button">
+            <Button type="primary" icon="plus" onClick={this.showUserFormModal}>
+              新增用户
+            </Button>
+          </span>
+        </div>
         <Table
           dataSource={toJS(userList)}
           columns={this.getColumnsUser()}
-          rowKey={r => r.id}
+          rowKey={(r) => r.id}
           pagination={{
-            current: _pageQuery.draw,
-            total: _pageQuery.count,
-            pageSize: _pageQuery.length,
+            total: pageRequest.total,
+            pageSize: pageRequest.pageSize,
             showSizeChanger: true,
             onShowSizeChange: (current, pageSize) => {
-              _pageQuery.length = pageSize;
-              _pageQuery.draw = 1;
-              this.fetchList();
+              pageRequest.pageSize = pageSize;
+              this.refreshUserTableData();
             },
-            onChange: current => {
-              _pageQuery.draw = current;
-              this.fetchList();
+            onChange: (current) => {
+              pageRequest.page = current;
+              this.refreshUserTableData();
             },
             showTotal: () => {
-              return '共 ' + _pageQuery.count + ' 条数据';
-            }
+              return "共 " + pageRequest.total + " 条数据";
+            },
           }}
           loading={loading}
         />
         <Modal
           className="modal-user"
-          title={`${userFormMode === USER_FORM_MODE_ADD ? '新增' : '更新'}用户`}
+          title={`${userFormMode === USER_FORM_MODE_ADD ? "新增" : "更新"}用户`}
           width={700}
           destroyOnClose={true}
           visible={userFormModalVisiable}
@@ -303,21 +317,23 @@ class UserManagement extends Component {
               onClick={this.onUserSave}
             >
               保存
-            </Button>
+            </Button>,
           ]}
         >
           <UserForm
             user={editedUser}
             mode={userFormMode}
             groups={groups}
-            wrappedComponentRef={instance => {
+            jobs={jobs}
+            department={department}
+            wrappedComponentRef={(instance) => {
               this.userForm = instance;
             }}
           />
         </Modal>
         <Modal
           className="modal-passwprd"
-          title={'修改密码'}
+          title={"修改密码"}
           width={500}
           destroyOnClose={true}
           visible={passwordFormModalVisiable}
@@ -333,12 +349,12 @@ class UserManagement extends Component {
               onClick={this.onPasswordSave}
             >
               保存
-            </Button>
+            </Button>,
           ]}
         >
           <PasswordForm
             user={editedUser}
-            wrappedComponentRef={instance => {
+            wrappedComponentRef={(instance) => {
               this.passwordForm = instance;
             }}
           />
