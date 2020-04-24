@@ -49,7 +49,7 @@ module.exports = (appInfo) => {
   config.externalAPI = {
     fwGateway: {
       //  接口入口地址
-      baseURL: "http://localhost:7001/api",
+      baseURL: "http://127.0.0.1:7001/api",
     },
     javaGateway: {
       //  后端java接口地址

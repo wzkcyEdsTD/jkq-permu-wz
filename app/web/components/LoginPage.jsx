@@ -39,7 +39,7 @@ class NormalLoginForm extends Component {
       const result = await store.login(params);
       if (result) {
         message.info("登录成功");
-        // window.location.replace(getQueryString("from"));
+        window.location.replace(getQueryString("from"));
       }
     } finally {
       this.setState({ loading: false });
