@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "jkq-permu-wz",
   "version": "1.0.0",
   "description": "",
   "private": true,
@@ -13,6 +13,7 @@
     "egg": "^2.15.1",
     "egg-cors": "^2.2.0",
     "egg-scripts": "^2.11.0",
+    "egg-sequelize": "^5.2.1",
     "egg-view-react-ssr": "^2.4.1",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
@@ -43,7 +44,6 @@
     "egg-webpack-react": "^2.0.2",
     "eslint": "^5.13.0",
     "eslint-config-egg": "^7.1.0",
-    "imagemin-webpack-plugin": "^2.4.2",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "moment": "^2.24.0",

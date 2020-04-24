@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 /* eslint-disable consistent-return */
-import React, { Component } from 'react';
-import autobind from 'autobind-decorator';
+import React, { Component } from "react";
+import autobind from "autobind-decorator";
 import {
   Layout,
   Menu,
@@ -12,16 +12,16 @@ import {
   Breadcrumb,
   Button,
   message,
-} from 'antd';
-import { renderRoutes } from 'react-router-config';
-import { observer, inject } from 'mobx-react';
-import { MENUS } from 'enums/Menu';
-import UpdatePasswordForm from 'components/common/UpdatePasswordForm';
+} from "antd";
+import { renderRoutes } from "react-router-config";
+import { observer, inject } from "mobx-react";
+import { MENUS } from "enums/Menu";
+import UpdatePasswordForm from "components/common/UpdatePasswordForm";
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider, Footer } = Layout;
 
-@inject(stores => ({
+@inject((stores) => ({
   store: stores.userStore,
 }))
 @observer
@@ -53,12 +53,12 @@ class MainContainer extends Component {
     //const { currentMenu: MENUS } = this.props.store;
     const BREADCRUMB = {};
     //  面包屑映射
-    MENUS.map(item => {
+    MENUS.map((item) => {
       if (item.link && item.label) {
         BREADCRUMB[item.link] = item.label;
       }
       if (item.children && item.children.length) {
-        item.children.map(_item => {
+        item.children.map((_item) => {
           BREADCRUMB[_item.link] = _item.label;
         });
       }
@@ -66,9 +66,9 @@ class MainContainer extends Component {
     //  菜单节点显示
     const { pathname } = this.props.location;
     const defaultSelectedKeys =
-      pathname == '/home' || pathname == '/'
-        ? ''
-        : pathname.replace('/home', '');
+      pathname == "/home" || pathname == "/"
+        ? ""
+        : pathname.replace("/home", "");
     const defaultOpenKeys = this.getFatherPoint(defaultSelectedKeys);
     this.setState({
       defaultOpenKeys: [defaultOpenKeys],
@@ -82,11 +82,10 @@ class MainContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { pathname } = nextProps.location;
-    console.log(pathname);
     const defaultSelectedKeys =
-      pathname == '/home' || pathname == '/'
-        ? ''
-        : pathname.replace('/home', '');
+      pathname == "/home" || pathname == "/"
+        ? ""
+        : pathname.replace("/home", "");
     const defaultOpenKeys = this.getFatherPoint(defaultSelectedKeys);
     this.setState({
       defaultOpenKeys: [defaultOpenKeys],
@@ -105,17 +104,17 @@ class MainContainer extends Component {
       if (MENUS[i].children && MENUS[i].children.length) {
         const menuList = [],
           children = MENUS[i].children;
-        children.map(v => {
+        children.map((v) => {
           menuList.push(
-            <Menu.Item key={v.link == '#' ? v.id : v.link}>{v.label}</Menu.Item>
+            <Menu.Item key={v.link == "#" ? v.id : v.link}>{v.label}</Menu.Item>
           );
         });
         subMenuList.push(
           <SubMenu
-            key={MENUS[i].link == '#' ? MENUS[i].id : MENUS[i].link}
+            key={MENUS[i].link == "#" ? MENUS[i].id : MENUS[i].link}
             title={
               <span>
-                <Icon type={MENUS[i].anticon || 'setting'} />
+                <Icon type={MENUS[i].anticon || "setting"} />
                 <span>{MENUS[i].label}</span>
               </span>
             }
@@ -126,10 +125,10 @@ class MainContainer extends Component {
       } else {
         subMenuList.push(
           <SubMenu
-            key={MENUS[i].link == '#' ? MENUS[i].id : MENUS[i].link}
+            key={MENUS[i].link == "#" ? MENUS[i].id : MENUS[i].link}
             title={
               <span>
-                <Icon type={MENUS[i].anticon || 'setting'} />
+                <Icon type={MENUS[i].anticon || "setting"} />
                 <span>{MENUS[i].label}</span>
               </span>
             }
@@ -168,12 +167,12 @@ class MainContainer extends Component {
    * 根据子节点key寻找父节点key
    * @param key <String> 菜单key
    */
-  getFatherPoint = key => {
+  getFatherPoint = (key) => {
     // const { currentMenu: MENUS } = this.props.store;
     let target = null;
-    [...MENUS].map(item => {
+    [...MENUS].map((item) => {
       item.children &&
-        item.children.map(_item => {
+        item.children.map((_item) => {
           if (_item.link == key) {
             target = item.link;
           }
@@ -188,7 +187,7 @@ class MainContainer extends Component {
   returnBreadcrumb = () => {
     const { defaultSelectedKeys, BREADCRUMB } = this.state;
     //  _m表示首页
-    const arr = [''];
+    const arr = [""];
     //  加入父节点
     arr.push(this.getFatherPoint(defaultSelectedKeys[0]));
     //  加入子节点
@@ -199,15 +198,13 @@ class MainContainer extends Component {
           if (v) {
             return BREADCRUMB[v] ? (
               <Breadcrumb.Item key={`breadcrumb-${index}`}>
-                {BREADCRUMB[v] || '未知页面'}
+                {BREADCRUMB[v] || "未知页面"}
               </Breadcrumb.Item>
-            ) : (
-              undefined
-            );
-          } else if (v == '' && index == 0) {
+            ) : undefined;
+          } else if (v == "" && index == 0) {
             return (
               <Breadcrumb.Item key={`breadcrumb-${index}`}>
-                Home
+                首页
               </Breadcrumb.Item>
             );
           }
@@ -221,13 +218,13 @@ class MainContainer extends Component {
   @autobind
   logout() {
     Modal.confirm({
-      title: '确定将登出吗?',
+      title: "确定将登出吗?",
       onOk: async () => {
         await this.props.store.logout();
         window.location.replace(`/login`);
       },
-      okText: '确认',
-      cancelText: '取消',
+      okText: "确认",
+      cancelText: "取消",
     });
   }
 
@@ -237,7 +234,7 @@ class MainContainer extends Component {
     this.updatePasswordForm.props.form.validateFieldsAndScroll(
       async (error, values) => {
         if (error) {
-          message.error('条件错误');
+          message.error("输入错误");
         } else {
           const { passwordOld, passwordNew } = values;
           await this.props.store.updatePassword({
@@ -278,12 +275,12 @@ class MainContainer extends Component {
     const { route, location, store } = this.props;
 
     return (
-      <Layout className="page-main" style={{ display: 'flex' }}>
+      <Layout className="page-main" style={{ display: "flex" }}>
         <Header style={{ padding: 0 }}>
           <div className="logo">温州市经开区亩均论英雄</div>
           <div className="avater-user">
-            <span style={{ color: '#fff' }}>
-              hi , {store.currentUser.username || 'unknows'}
+            <span style={{ color: "#fff" }}>
+              hi , {store.currentUser.username || "unknows"}
             </span>
             <Dropdown overlay={this.userMenu()}>
               <a>
@@ -292,19 +289,17 @@ class MainContainer extends Component {
             </Dropdown>
           </div>
         </Header>
-        <Layout style={{ flexDirection: 'row' }}>
-          <Sider width={200} style={{ background: '#fff' }}>
+        <Layout style={{ flexDirection: "row" }}>
+          <Sider width={200} style={{ background: "#fff" }}>
             {menuSwitch ? this.exportMenuTree() : undefined}
           </Sider>
-          <Content style={{ overflowY: 'auto' }}>
+          <Content style={{ overflowY: "auto" }}>
             {routerSwitch ? this.returnBreadcrumb() : undefined}
             {routerSwitch ? (
               <div id="main-content">{renderRoutes(route.routes)}</div>
-            ) : (
-              undefined
-            )}
+            ) : undefined}
             <Footer
-              style={{ textAlign: 'center', padding: '12px 12px 2px 12px' }}
+              style={{ textAlign: "center", padding: "12px 12px 2px 12px" }}
             >
               ©2019 Created by GaobangShao
             </Footer>
@@ -326,7 +321,7 @@ class MainContainer extends Component {
           ]}
         >
           <UpdatePasswordForm
-            wrappedComponentRef={instance => {
+            wrappedComponentRef={(instance) => {
               this.updatePasswordForm = instance;
             }}
             updateUser={store.currentUser}

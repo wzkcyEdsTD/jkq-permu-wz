@@ -9,7 +9,6 @@ class ConfigManager {
 
   async fetch() {
     const data = await axios.get(this.url);
-    console.log(data);
   }
 
   normalizeConfigKey(key, module) {
