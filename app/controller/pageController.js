@@ -16,7 +16,7 @@ class PageController extends Controller {
   }
   async index() {
     const { ctx } = this;
-    console.log(ctx.url)
+    console.log(ctx.url);
     if (!ctx.session.currentUser) {
       return ctx.redirect(`/login`);
     } else {
@@ -27,9 +27,10 @@ class PageController extends Controller {
         const pmenus = menus.map((v) => v.p_link);
         if (!~pmenus.indexOf(ctx.url)) {
           return (ctx.body = this.ServerResponse.createByErrorMsg(
-            ctx.response.BusinessCode.NO_PRIVILEGES,
             "无权限操作"
           ));
+        } else {
+          await ctx.render("app.js");
         }
       }
     }
