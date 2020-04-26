@@ -9,7 +9,7 @@ export const MENU_FORM_MODE_UPDATE = 'update';
 import icons from 'enums/Icon';
 
 const formItemLayout = {
-  labelCol: { span: 4 },
+  labelCol: { span: 6 },
   wrapperCol: { span: 14 }
 };
 
@@ -64,8 +64,8 @@ class UserForm extends Component {
           )}
         </FormItem>
         <FormItem {...defaultItemProps} label="链接">
-          {getFieldDecorator('link', {
-            initialValue: menu ? menu.link : '',
+          {getFieldDecorator('p_link', {
+            initialValue: menu ? menu.p_link : '',
             rules: [
               {
                 required: true,
@@ -99,7 +99,7 @@ class UserForm extends Component {
         </FormItem>
 
         <FormItem {...defaultItemProps} label="用户组">
-          {getFieldDecorator('groupIds', {
+          {getFieldDecorator('group', {
             initialValue:
               menu && menu.groups
                 ? menu.groups.map(v => {
@@ -113,7 +113,15 @@ class UserForm extends Component {
               }
             ]
           })(
-            <Select mode="multiple" placeholder="选择用户组">
+            <Select
+              mode="multiple"
+              placeholder="选择用户组"
+              filterOption={(input, option) =>
+                option.props.children
+                  .toLowerCase()
+                  .indexOf(input.toLowerCase()) >= 0
+              }
+            >
               {groups
                 ? groups.map((v, index) => {
                     return (

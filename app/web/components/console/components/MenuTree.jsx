@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import autobind from 'autobind-decorator';
-import { inject, observer } from 'mobx-react';
-import { Button, Icon, Layout, Divider, Tree, message, Modal } from 'antd';
+import React, { Component } from "react";
+import autobind from "autobind-decorator";
+import { inject, observer } from "mobx-react";
+import { Button, Icon, Layout, Divider, Tree, message, Modal } from "antd";
 const { Sider, Content } = Layout;
 const { confirm } = Modal;
 const { TreeNode } = Tree;
-import './MenuTree.less';
+import "./MenuTree.less";
 
-@inject(stores => ({
-  menuStore: stores.menuStore
+@inject((stores) => ({
+  menuStore: stores.menuStore,
 }))
 @observer
 class MenuTree extends Component {
   state = {
     _menuList: [],
     unHandleMenuList: [],
-    handleMenuTree: []
+    handleMenuTree: [],
   };
   componentDidMount() {
     this.doFilteMenuTree();
@@ -25,28 +25,28 @@ class MenuTree extends Component {
   async doFilteMenuTree() {
     const { fetchMenuAll, fetchMenuOption } = this.props.menuStore;
     const __menuList_unhandle = await fetchMenuAll();
-    const _menuList = __menuList_unhandle.map(v => {
+    const _menuList = __menuList_unhandle.map((v) => {
       return {
         id: v.id,
-        title: v.label || 'unknown',
-        anticon: v.anticon || '',
-        key: v.link || ''
+        title: v.label || "unknown",
+        anticon: v.anticon || "",
+        key: v.link || "",
       };
     });
 
     //  获取菜单树
     const handleMenuTree = await fetchMenuOption();
     //  菜单id数组
-    let mList = [..._menuList].map(v => {
+    let mList = [..._menuList].map((v) => {
       return v.id;
     });
     //  如果id在树里找到,则再数组剔除
-    const __HandleMenuTree = handleMenuTree.map(v => {
+    const __HandleMenuTree = handleMenuTree.map((v) => {
       let _root = {};
       const index = mList.indexOf(v.id);
       if (index > -1) {
         mList.splice(index, 1);
-        _menuList.map(item => {
+        _menuList.map((item) => {
           if (v.id == item.id) {
             _root = { ...item };
           }
@@ -54,11 +54,11 @@ class MenuTree extends Component {
       }
       _root.children = [];
       if (v.children && v.children.length) {
-        v.children.map(cv => {
+        v.children.map((cv) => {
           const index = mList.indexOf(cv.id);
           if (index > -1) {
             mList.splice(index, 1);
-            _menuList.map(_item => {
+            _menuList.map((_item) => {
               if (cv.id == _item.id) {
                 _root.children.push({ ..._item });
               }
@@ -69,9 +69,9 @@ class MenuTree extends Component {
       return _root;
     });
     //  生成未加入树的菜单数组
-    const unHandleMenuList = mList.map(v => {
+    const unHandleMenuList = mList.map((v) => {
       let tMenu;
-      _menuList.map(d => {
+      _menuList.map((d) => {
         if (d.id == v) tMenu = d;
       });
       return tMenu;
@@ -79,7 +79,7 @@ class MenuTree extends Component {
     this.setState({
       _menuList,
       unHandleMenuList,
-      handleMenuTree: __HandleMenuTree
+      handleMenuTree: __HandleMenuTree,
     });
   }
 
@@ -101,7 +101,7 @@ class MenuTree extends Component {
     handleMenuTree.push(targetMenu);
     this.setState({
       unHandleMenuList: [...unHandleMenuList],
-      handleMenuTree: [...handleMenuTree]
+      handleMenuTree: [...handleMenuTree],
     });
   }
 
@@ -141,7 +141,7 @@ class MenuTree extends Component {
     }
     this.setState({
       unHandleMenuList: [...unHandleMenuList, ...targetMenus],
-      handleMenuTree: [...handleMenuTree]
+      handleMenuTree: [...handleMenuTree],
     });
   }
 
@@ -151,7 +151,7 @@ class MenuTree extends Component {
   @autobind
   unHandleMenuListDom() {
     const { unHandleMenuList } = this.state;
-    return unHandleMenuList.map(v => {
+    return unHandleMenuList.map((v) => {
       const leftIcon = v.anticon ? (
         <span className="uhm-left">
           <Icon type={v.anticon} />
@@ -176,10 +176,10 @@ class MenuTree extends Component {
     });
   }
 
-  onDragEnter = info => {
+  onDragEnter = (info) => {
     // expandedKeys 需要受控时设置
     this.setState({
-      expandedKeys: info.expandedKeys
+      expandedKeys: info.expandedKeys,
     });
   };
 
@@ -189,7 +189,7 @@ class MenuTree extends Component {
   @autobind
   handleMenuTreeDom() {
     const { handleMenuTree } = this.state;
-    const arr = handleMenuTree.map(v => {
+    const arr = handleMenuTree.map((v) => {
       return v.id.toString();
     });
     return (
@@ -211,7 +211,7 @@ class MenuTree extends Component {
    */
   @autobind
   loop(data) {
-    return data.map(item => {
+    return data.map((item) => {
       if (item.children && item.children.length) {
         return (
           <TreeNode
@@ -280,7 +280,7 @@ class MenuTree extends Component {
     const { goMenuLoop } = this;
     const dropKey = info.node.props.eventKey;
     const dragKey = info.dragNode.props.eventKey;
-    const dropPos = info.node.props.pos.split('-');
+    const dropPos = info.node.props.pos.split("-");
     const dropPosition =
       info.dropPosition - Number(dropPos[dropPos.length - 1]);
     const data = [...this.state.handleMenuTree];
@@ -295,7 +295,7 @@ class MenuTree extends Component {
     //找到目标菜单
     goMenuLoop(data, dropKey, (item, index, arr) => {
       dropObj = item;
-      data.map(v => {
+      data.map((v) => {
         if (v.id == dropObj.id) {
           isFirstLevel = true;
         }
@@ -306,7 +306,7 @@ class MenuTree extends Component {
       (!info.dropToGap && dragObj.children)
     ) {
       return this.setState({
-        handleMenuTree: initData
+        handleMenuTree: initData,
       });
     }
     // 开始修改数据
@@ -331,7 +331,7 @@ class MenuTree extends Component {
       });
       //只作用在第一层
       if (isFirstLevel) {
-        goMenuLoop(data, dropKey, item => {
+        goMenuLoop(data, dropKey, (item) => {
           item.children = item.children || [];
           item.children.push(dragObj);
         });
@@ -345,8 +345,9 @@ class MenuTree extends Component {
         ar.splice(i + 1, 0, dragObj);
       }
     }
+    console.log(data);
     this.setState({
-      handleMenuTree: data
+      handleMenuTree: data,
     });
   }
 
@@ -354,10 +355,10 @@ class MenuTree extends Component {
   async saveMenuStore() {
     const { handleMenuTree } = this.state;
     const { saveMenuStore } = this.props.menuStore;
-    let menuStore = handleMenuTree.map(v => {
+    let menuStore = handleMenuTree.map((v) => {
       let menu = { id: +v.id };
       if (v.children && v.children.length) {
-        let children = v.children.map(r => {
+        let children = v.children.map((r) => {
           return { id: +r.id };
         });
         menu.children = children;
@@ -365,14 +366,13 @@ class MenuTree extends Component {
       return menu;
     });
     confirm({
-      title: '确认保存该菜单关系?',
-      okText: '确定',
-      cancelText: '取消',
+      title: "确认保存该菜单关系?",
+      okText: "确定",
+      cancelText: "取消",
       async onOk() {
-        console.log(menuStore);
         await saveMenuStore(JSON.stringify(menuStore));
         message.success(`保存菜单成功`);
-      }
+      },
     });
   }
 
@@ -390,14 +390,14 @@ class MenuTree extends Component {
           </span>
         </div>
         <Layout>
-          <Sider width="40%" style={{ background: '#fff' }}>
+          <Sider width="40%" style={{ background: "#fff" }}>
             <span>未排序</span>
-            <Divider dashed style={{ margin: '10px 0' }} />
+            <Divider dashed style={{ margin: "10px 0" }} />
             {this.unHandleMenuListDom()}
           </Sider>
-          <Layout style={{ paddingLeft: '30px', background: '#fff' }}>
+          <Layout style={{ paddingLeft: "30px", background: "#fff" }}>
             <span>已排序</span>
-            <Divider dashed style={{ margin: '10px 0' }} />
+            <Divider dashed style={{ margin: "10px 0" }} />
             <div className="menuDragTree">{this.handleMenuTreeDom()}</div>
           </Layout>
         </Layout>

@@ -41,7 +41,7 @@ class OtherSide extends Component {
       },
       {
         title: '姓名',
-        dataIndex: 'userName'
+        dataIndex: 'username'
       },
       {
         title: '导入时间',

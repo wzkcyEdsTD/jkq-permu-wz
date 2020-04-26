@@ -1,11 +1,25 @@
 const ip = require("ip");
 const EasyWebpack = require("easywebpack-react");
+const Op = require("sequelize").Op;
 
 module.exports = () => {
   const exports = {};
 
   exports.static = {
     maxAge: 0, // maxAge 缓存，默认 1 年
+  };
+
+  //  sequelize
+  exports.sequelize = {
+    dialect: "mssql",
+    database: "permu",
+    host: "127.0.0.1",
+    port: "1433",
+    username: "sa",
+    password: "wzkcy@123",
+    operatorsAliases: {
+      $like: Op.like,
+    },
   };
 
   exports.development = {

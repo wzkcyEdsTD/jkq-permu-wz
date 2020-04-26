@@ -1,17 +1,19 @@
 import { action, observable, computed } from 'mobx';
-import ForwardAPI from 'api/forward';
-import { pageQuery, query } from 'stores/common';
+
+import GroupAPI from 'api/group';
+import MenuAPI from 'api/menu';
 
 const initPage = {
-  draw: 1,
-  length: 20,
-  count: undefined,
-  orderBy: {}
+  page: 1,
+  pageSize: 10,
+  total: undefined,
+  totalPage: undefined
 };
 
 class GroupStore {
   constructor(ctx, initialState) {
-    this.ForwardAPI = new ForwardAPI(ctx);
+    this.GroupAPI = new GroupAPI(ctx);
+    this.MenuAPI = new MenuAPI(ctx);
   }
 
   @observable
@@ -22,43 +24,37 @@ class GroupStore {
   }
 
   @observable
-  _pageQuery = initPage;
+  pageRequest = initPage;
 
   @action
   reset() {
-    this._pageQuery = initPage;
-    this._groupList = [];
+    this.pageRequest = initPage;
   }
 
   @action
   fetchGroupList = async params => {
-    const { list, page } = await this.ForwardAPI.toJava({
-      url: '/group/page',
-      params: {
-        pageQuery: pageQuery(this._pageQuery)
-      }
+    const { list, page } = await this.GroupAPI.fetchGroupList({
+      ...params,
+      ...this.pageRequest
     });
     this._groupList = list;
-    this._pageQuery = page;
+    this.pageRequest = page;
     return list;
   };
 
   @action
-  fetchBasicOption = async () => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/menu/tree/query',
-      params: {}
-    });
-    return data;
+  fetchBasicOption = async params => {
+    const rmenu = await this.MenuAPI.fetchMenuOption();
+    return { rmenu };
   };
 
   @action
-  saveGroup = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: `/group/${params.groupId ? 'update' : 'create'}`,
-      params
-    });
-    return data;
+  saveGroup = async group => {
+    if (group.id) {
+      const result = await this.GroupAPI.updateGroup(group);
+    } else {
+      const result = await this.GroupAPI.createGroup(group);
+    }
   };
 }
 

@@ -17,14 +17,14 @@ import MainContainer from "components/MainContainer";
 import UserStore from "stores/console/UserStore";
 
 //  控制台
-import User from "components/console/User";
-import Group from "components/console/Group";
+import User from "components/console/UserManagement";
+import Group from "components/console/GroupManagement";
 import GroupStore from "stores/console/GroupStore";
-import Menu from "components/console/Menu";
+import Menu from "components/console/MenuManagement";
 import MenuStore from "stores/console/MenuStore";
 
-const createStores = (ctx, state) => ({
-  userStore: new UserStore(ctx, state),
+const createStores = (ctx, state, userinfoState) => ({
+  userStore: new UserStore(ctx, state, userinfoState),
   groupStore: new GroupStore(ctx, state),
   menuStore: new MenuStore(ctx, state),
 });
@@ -51,7 +51,11 @@ const routes = [
 ];
 
 const clientRender = () => {
-  const stores = createStores(null, window.__INITIAL_STATE__);
+  const stores = createStores(
+    null,
+    window.__INITIAL_STATE__,
+    window.__USER_INFO__
+  );
   const Entry = () => (
     <Provider {...stores}>
       <BrowserRouter>{renderRoutes(routes)}</BrowserRouter>
@@ -88,16 +92,14 @@ const serverRender = async (locals) => {
     const { fetch } = route.component;
     return fetch instanceof Function ? fetch(stores) : Promise.resolve(null);
   });
-
   const results = await Promise.all(promises);
   const initialState = await results.reduce((state, result) => {
     Object.assign(state, result);
     return state;
   }, {});
-  locals.state = initialState;
   return () => (
     <ConfigProvider locale={zh_CN}>
-      <Layout apiConfig={apiConfig}>
+      <Layout apiConfig={apiConfig} initialState={initialState}>
         <Provider {...stores}>
           <StaticRouter location={url} context={{}}>
             {renderRoutes(routes)}

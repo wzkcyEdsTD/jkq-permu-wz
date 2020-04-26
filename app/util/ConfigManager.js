@@ -1,5 +1,6 @@
-// const axios = require('axios');
-
+/**
+ * fetch config from CMC
+ */
 class ConfigManager {
   constructor(options) {
     const { url } = options;

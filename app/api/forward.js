@@ -1,5 +1,5 @@
-import BaseAntifraudAPI from './base_antifraud_api';
-export default class ForwardJavaAPI extends BaseAntifraudAPI {
+import BaseFwAPI from './base_mj_api';
+export default class ForwardJavaAPI extends BaseFwAPI {
   toJava(params) {
     // 全局带上userId
     if (window.sysUserId && params.params) {

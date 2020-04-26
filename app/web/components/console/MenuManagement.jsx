@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import autobind from 'autobind-decorator';
-import { Button, Table, Modal, Tag, message, Icon, Tabs } from 'antd';
-const { TabPane } = Tabs;
+import { Button, Switch, Table, Modal, Tag, message, Icon, Tabs } from 'antd';
+const TabPane = Tabs.TabPane;
 import { observer, inject } from 'mobx-react';
-import { toJS } from 'mobx';
+import { toJS, decorate } from 'mobx';
+import moment from 'moment';
 import MenuTree from './components/MenuTree';
-import './Menu.less';
+import './MenuManagement.less';
 
 import MenuForm, {
   MENU_FORM_MODE_ADD,
@@ -16,7 +17,7 @@ import hoc from 'components/HOC/pageHeader';
 @inject(stores => ({
   store: stores.menuStore
 }))
-@hoc({ name: '菜单管理', className: 'page_menu' })
+@hoc({ name: '菜单管理', className: 'page_menuManagement' })
 @observer
 class MenuManagement extends Component {
   state = {
@@ -26,48 +27,34 @@ class MenuManagement extends Component {
     groups: null,
     savingLoad: false,
     editedMenu: null,
-    treeTabAvailable: false,
-    menuAll: []
+    treeTabAvailable: false
   };
 
   componentDidMount() {
-    // this.fetchList();
+    this.refreshMenuTableData();
   }
 
   async getBasicOption() {
     //  是否有options数据
     const { groups } = this.state;
-    const { fetchBasicOption, fetchMenuAll } = this.props.store;
+    const { fetchBasicOption } = this.props.store;
     if (groups) {
       return;
     } else {
-      const data = await fetchBasicOption();
-      const menuAll = await fetchMenuAll();
-      this.setState({ groups: data, menuAll });
+      const { rgroup } = await fetchBasicOption();
+      this.setState({ groups: rgroup });
       return;
     }
   }
 
   @autobind
   onMenuSave() {
-    const { menuFormMode, menuAll } = this.state;
+    const { menuFormMode, editedMenu } = this.state;
     const { store } = this.props;
     const { form } = this.menuForm.props;
     form.validateFieldsAndScroll(async (err, values) => {
       if (err) {
         return;
-      }
-      //    前端判断link重复
-      let pass = false;
-      if (!values.id) {
-        menuAll.map(v => {
-          if (v.link == values.link) {
-            pass = true;
-          }
-        });
-      }
-      if (pass) {
-        return message.error('菜单链接已存在');
       }
       this.setState({ savingLoad: true });
       try {
@@ -81,7 +68,7 @@ class MenuManagement extends Component {
       } finally {
         this.setState({ savingLoad: false });
       }
-      this.fetchList();
+      this.refreshMenuTableData();
       //  更新后 也更新MenuTree的状态
       if (this.myRef) {
         this.myRef.wrappedInstance.doFilteMenuTree();
@@ -113,43 +100,42 @@ class MenuManagement extends Component {
   }
 
   getColumnsMenu() {
+    const { sortedInfo } = this.props.store.tableParams;
     const cols = [
       {
         title: '编号',
         dataIndex: 'id',
+        sortOrder: sortedInfo.columnKey === 'id' && sortedInfo.order,
         sorter: (a, b) => {}
       },
       {
         title: '菜单名称',
         dataIndex: 'label',
+        sortOrder: sortedInfo.columnKey === 'label' && sortedInfo.order,
         sorter: (a, b) => {}
       },
       {
         title: '已授权用户组',
         dataIndex: 'groups',
         render: t => {
-          return t
-            ? t.map((v, index) => {
-                return (
-                  <Tag
-                    color={v.name == '超级管理员' ? 'red' : 'cyan'}
-                    key={index}
-                  >
-                    {v.name}
-                  </Tag>
-                );
-              })
-            : [];
+          return t.map((v, index) => {
+            return (
+              <Tag color={v.name == '超级管理员' ? 'red' : 'cyan'} key={index}>
+                {v.name}
+              </Tag>
+            );
+          });
         }
       },
       {
         title: '链接地址',
-        dataIndex: 'link',
+        dataIndex: 'p_link',
+        sortOrder: sortedInfo.columnKey === 'p_link' && sortedInfo.order,
         sorter: (a, b) => {}
       },
       {
         title: '图标',
-        dataIndex: 'iconNew',
+        dataIndex: 'anticon',
         render: t => {
           return <Icon type={t} />;
         }
@@ -161,7 +147,7 @@ class MenuManagement extends Component {
             <div className="operator">
               <Button
                 type="primary"
-                size="small"
+                icon="edit"
                 onClick={() => this.showMenuFormModal(r)}
               >
                 编辑
@@ -175,7 +161,7 @@ class MenuManagement extends Component {
   }
 
   @autobind
-  async fetchList() {
+  async refreshMenuTableData() {
     const { store } = this.props;
     this.setState({ loading: true });
     try {
@@ -186,28 +172,6 @@ class MenuManagement extends Component {
         treeTabAvailable: true
       });
     }
-  }
-
-  @autobind
-  async delete(r) {
-    const { deleteMenu } = this.props.store;
-    Modal.confirm({
-      title: `确定要删除[${r.label}]菜单吗?`,
-      okText: '确定',
-      cancelText: '取消',
-      onOk: async () => {
-        try {
-          await deleteMenu(r.id);
-          message.info(`删除[${r.label}]菜单成功`);
-        } finally {
-          this.fetchList();
-          //  更新后 也更新MenuTree的状态
-          if (this.myRef) {
-            this.myRef.wrappedInstance.doFilteMenuTree();
-          }
-        }
-      }
-    });
   }
 
   render() {
@@ -221,7 +185,7 @@ class MenuManagement extends Component {
       treeTabAvailable
     } = this.state;
 
-    const { menuList, _pageQuery, _query } = this.props.store;
+    const { menuList, pageRequest, tableParams } = this.props.store;
 
     return (
       <div>
@@ -234,7 +198,7 @@ class MenuManagement extends Component {
                   icon="plus"
                   onClick={this.showMenuFormModal}
                 >
-                  add
+                  新增菜单
                 </Button>
               </span>
             </div>
@@ -243,22 +207,24 @@ class MenuManagement extends Component {
               columns={this.getColumnsMenu()}
               rowKey={r => r.id}
               pagination={{
-                current: _pageQuery.draw,
-                total: _pageQuery.count,
-                pageSize: _pageQuery.length,
+                total: pageRequest.total,
+                pageSize: pageRequest.pageSize,
                 showSizeChanger: true,
                 onShowSizeChange: (current, pageSize) => {
-                  _pageQuery.length = pageSize;
-                  _pageQuery.draw = 1;
-                  this.fetchList();
+                  pageRequest.pageSize = pageSize;
+                  this.refreshMenuTableData();
                 },
                 onChange: current => {
-                  _pageQuery.draw = current;
-                  this.fetchList();
+                  pageRequest.page = current;
+                  this.refreshMenuTableData();
                 },
                 showTotal: () => {
-                  return '共 ' + _pageQuery.count + ' 条数据';
+                  return '共 ' + pageRequest.total + ' 条数据';
                 }
+              }}
+              onChange={(pagination, filters, sorter) => {
+                tableParams.sortedInfo = sorter;
+                this.refreshMenuTableData();
               }}
               loading={loading}
             />

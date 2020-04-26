@@ -1,17 +1,23 @@
 import { action, observable, computed } from 'mobx';
-import ForwardAPI from 'api/forward';
-import { pageQuery, query } from 'stores/common';
+
+import MenuAPI from 'api/menu';
+import GroupAPI from 'api/group';
+
+const initTable = {
+  sortedInfo: {} //  排序状态
+};
 
 const initPage = {
-  draw: 1,
-  length: 20,
-  count: undefined,
-  orderBy: {}
+  page: 1,
+  pageSize: 20,
+  total: undefined,
+  totalPage: undefined
 };
 
 class MenuStore {
   constructor(ctx, initialState) {
-    this.ForwardAPI = new ForwardAPI(ctx);
+    this.MenuAPI = new MenuAPI(ctx);
+    this.GroupAPI = new GroupAPI(ctx);
   }
 
   //  菜单列表
@@ -23,78 +29,63 @@ class MenuStore {
   }
 
   @observable
-  _pageQuery = initPage;
+  pageRequest = initPage;
+
+  @observable
+  tableParams = initTable;
 
   @action
   reset() {
-    this._pageQuery = initPage;
-    this._menuList = [];
+    this.pageRequest = initPage;
+    this.tableParams = initTable;
   }
 
   @action
   fetchMenuList = async params => {
-    const { list, page } = await this.ForwardAPI.toJava({
-      url: '/menu/page',
-      params: {
-        pageQuery: pageQuery(this._pageQuery)
-      }
+    const sort = JSON.parse(JSON.stringify(this.tableParams.sortedInfo));
+    if (sort.columnKey) {
+      sort.order =
+        sort.order == 'ascend' ? 'ASC' : sort.order == 'descend' ? 'DESC' : '';
+    }
+    const { list, page } = await this.MenuAPI.fetchMenuList({
+      ...{ sort },
+      ...this.pageRequest
     });
     this._menuList = list;
-    this._pageQuery = page;
+    this.pageRequest = page;
     return list;
   };
 
   @action
   fetchMenuOption = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/menu/tree/query',
-      params: {}
-    });
-    return data;
+    const rmenu = await this.MenuAPI.fetchMenuOption();
+    return rmenu.menus;
   };
 
   @action
   fetchMenuAll = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/menu/list',
-      params: {}
-    });
-    return data;
+    const menu = await this.MenuAPI.fetchMenuAll();
+    return menu;
   };
 
   @action
-  fetchBasicOption = async () => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/group/list',
-      params: {}
-    });
-    return data;
+  fetchBasicOption = async params => {
+    const rgroup = await this.GroupAPI.fetchGroupOption();
+    return { rgroup };
   };
 
   @action
-  saveMenu = async params => {
-    const data = await this.ForwardAPI.toJava({
-      url: `/menu/${params.id ? 'update' : 'create'}`,
-      params
-    });
-    return data;
+  saveMenu = async menu => {
+    if (menu.id) {
+      const result = await this.MenuAPI.updateMenu(menu);
+    } else {
+      const result = await this.MenuAPI.createMenu(menu);
+    }
   };
 
   @action
-  deleteMenu = async id => {
-    console.log(id);
-    return id;
-  };
-
-  @action
-  saveMenuStore = async menus => {
-    const data = await this.ForwardAPI.toJava({
-      url: '/menu/tree/update',
-      params: {
-        menus
-      }
-    });
-    return data;
+  saveMenuStore = async menuStore => {
+    const result = await this.MenuAPI.saveMenuStore(menuStore);
   };
 }
 

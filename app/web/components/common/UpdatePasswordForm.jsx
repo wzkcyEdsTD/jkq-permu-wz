@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import { Form, Input } from 'antd';
+import React, { Component } from "react";
+import { Form, Input } from "antd";
 
 const { Item: FormItem } = Form;
 const formItemLayout = {
   labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
+  wrapperCol: { span: 16 },
 };
 
 class UpdatePasswordForm extends Component {
   state = {
-    confirmDirty: false
+    confirmDirty: false,
   };
 
   compareToFirstPassword = (rule, value, callback) => {
     const { form } = this.props;
-    if (value && value !== form.getFieldValue('passwordNew')) {
-      callback('Two passwords that you enter is inconsistent!');
+    if (value && value !== form.getFieldValue("passwordNew")) {
+      callback("Two passwords that you enter is inconsistent!");
     } else {
       callback();
     }
@@ -32,16 +32,38 @@ class UpdatePasswordForm extends Component {
           key="username1"
           label="用户名"
         >
-          {getFieldDecorator('username', {
+          {getFieldDecorator("username", {
             initialValue: updateUser.username,
             rules: [
               {
                 required: true,
-                message: 'The input is not valid username!'
-              }
-            ]
+                message: "The input is not valid username!",
+              },
+            ],
           })(
             <Input disabled placeholder="请输入用户名" style={{ width: 200 }} />
+          )}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+          help={null}
+          hasFeedback
+          key="passwordOld"
+          label="旧密码"
+        >
+          {getFieldDecorator("passwordOld", {
+            rules: [
+              {
+                required: true,
+                message: "Please input your passwordOld!",
+              },
+            ],
+          })(
+            <Input
+              placeholder="请输入当前密码"
+              style={{ width: 200 }}
+              type="password"
+            />
           )}
         </FormItem>
         <FormItem
@@ -51,16 +73,16 @@ class UpdatePasswordForm extends Component {
           key="passwordNew"
           label="新密码"
         >
-          {getFieldDecorator('passwordNew', {
+          {getFieldDecorator("passwordNew", {
             rules: [
               {
                 required: true,
-                message: 'Please input your passwordNew!'
+                message: "Please input your passwordNew!",
               },
               {
-                validator: this.validateToNextPassword
-              }
-            ]
+                validator: this.validateToNextPassword,
+              },
+            ],
           })(
             <Input
               placeholder="请输入密码"
@@ -76,16 +98,16 @@ class UpdatePasswordForm extends Component {
           key="confirm"
           label="确认密码"
         >
-          {getFieldDecorator('confirm', {
+          {getFieldDecorator("confirm", {
             rules: [
               {
                 required: true,
-                message: 'Please confirm your password!'
+                message: "Please confirm your password!",
               },
               {
-                validator: this.compareToFirstPassword
-              }
-            ]
+                validator: this.compareToFirstPassword,
+              },
+            ],
           })(
             <Input
               placeholder="请输入密码"

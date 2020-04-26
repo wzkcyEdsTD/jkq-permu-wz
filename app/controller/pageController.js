@@ -1,24 +1,19 @@
-'use strict';
+"use strict";
 
-const Controller = require('egg').Controller;
+const Controller = require("egg").Controller;
 
 class PageController extends Controller {
-  async index() {
-    const { ctx } = this;
-    //const { response } = await isLogin(ctx);
-    const response = {
-      status : true
-    };
-    if (!response || !response.status || (response && response.status && response.status.code == 10003)) {
-      return ctx.redirect(`/login`);
-    } else {
-      await ctx.render('app.js');
-    }
-  }
-
   async login() {
     const { ctx } = this;
-    await ctx.render('login.js');
+    await ctx.render("login.js");
+  }
+  async index() {
+    const { ctx } = this;
+    if (!ctx.session.currentUser) {
+      return ctx.redirect(`/login`);
+    } else {
+      await ctx.render("app.js");
+    }
   }
 }
 

@@ -1,14 +1,15 @@
-const axios = require('axios');
-const { message } = require('antd');
-const BusinessError = require('./error/business_error');
-const HTTPError = require('./error/http_error');
+import axios from "axios";
+axios.defaults.withCredentials = true;
+import { message } from "antd";
+import HTTPError from "./error/http_error";
+import BusinessError from "./error/business_error";
 
 export default class BaseAPI {
   constructor(config) {
     const { baseURL, defaultOptions } = config;
     const httpclient = axios.create({
       baseURL,
-      ...defaultOptions
+      ...defaultOptions,
       /*transformResponse: [
         function(data) {
           // 对 data 进行Long类型处理
@@ -41,7 +42,7 @@ export default class BaseAPI {
     const { defaultOptions } = this.config;
     const finalOptions = Object.assign(
       {
-        url: path
+        url: path,
       },
       defaultOptions,
       options
@@ -55,19 +56,19 @@ export default class BaseAPI {
       return responseData;
     } catch (err) {
       if (err instanceof BusinessError) {
-        message.error(err.message || '系统繁忙，请稍后重试', 2);
+        message.error(err.data.msg || "系统繁忙，请稍后重试", 2);
       }
       if (err instanceof HTTPError) {
         if (err.status === 401) {
-          if (typeof window !== 'undefined') {
+          if (typeof window !== "undefined") {
             const { pathname, search } = window.location;
             window.location.href = `/login?from=${encodeURIComponent(
               pathname + search
             )}`;
           }
         } else {
-          if (typeof window !== 'undefined') {
-            message.error(err.message || '系统繁忙，请稍后重试', 2);
+          if (typeof window !== "undefined") {
+            message.error(err.message || "系统繁忙，请稍后重试", 2);
           }
         }
       }
@@ -79,34 +80,34 @@ export default class BaseAPI {
   post(path, data, options = {}) {
     return this.getCurl(path, {
       ...options,
-      method: 'POST',
-      data
+      method: "POST",
+      data,
     });
   }
 
   get(path, data, options = {}) {
     return this.getCurl(path, {
       ...options,
-      method: 'GET',
-      params: data
+      method: "GET",
+      params: data,
     });
   }
 
   put(path, data, options = {}) {
     return this.getCurl(path, {
       ...options,
-      method: 'PUT',
-      data
+      method: "PUT",
+      data,
     });
   }
 
   delete(path, data, options = {}) {
     return this.getCurl(path, {
       ...options,
-      method: 'DELETE',
-      data
+      method: "DELETE",
+      data,
     });
   }
 }
 
-BaseAPI.IS_NODE = typeof window === 'undefined';
+BaseAPI.IS_NODE = typeof window === "undefined";
