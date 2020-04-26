@@ -6,7 +6,7 @@ module.exports = (app) => {
   const checkPrivileges = middleware.checkPrivileges();
   const prefix = "/api/menu";
 
-  router.get(`${prefix}/session`, menuController.getMenuSession);
+  router.post(`${prefix}/session`, menuController.getMenuSession);
 
   router.get(`${prefix}/list`, checkPrivileges, menuController.index);
 

@@ -1,7 +1,7 @@
 import BaseFwAPI from "./base_mj_api";
 export default class MenuAPI extends BaseFwAPI {
   getMenu(params) {
-    return this.get("/menu/session", params);
+    return this.post("/menu/session", params);
   }
 
   fetchMenuList(params) {
