@@ -79,7 +79,7 @@ class UserController extends Controller {
       password
     );
     //  清除登录信息
-    await this.app.sessionStore.cancel(userId);
+    // await this.app.sessionStore.cancel(userId);
     this.ctx.body = response;
   }
 

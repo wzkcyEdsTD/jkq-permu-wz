@@ -1,5 +1,5 @@
-const Service = require('egg').Service;
-const _ = require('lodash');
+const Service = require("egg").Service;
+const _ = require("lodash");
 
 class GroupService extends Service {
   constructor(ctx) {
@@ -16,20 +16,20 @@ class GroupService extends Service {
           {
             model: this.app.model.UserModel,
             through: {
-              attributes: ['group_users', 'user_groups']
+              attributes: ["group_users", "user_groups"],
             },
             where: {
-              id
-            }
-          }
-        ]
+              id,
+            },
+          },
+        ],
       });
 
       return this.ServerResponse.createBySuccessData({
-        group
+        group,
       });
     } catch (error) {
-      return this.ServerResponse.createByErrorMsg('获取用户列表失败');
+      return this.ServerResponse.createByErrorMsg("获取用户列表失败");
     }
   }
 
@@ -40,31 +40,31 @@ class GroupService extends Service {
           {
             model: this.app.model.MenuModel,
             through: {
-              attributes: ['group_menus', 'menu_groups']
-            }
-          }
+              attributes: ["group_menus", "menu_groups"],
+            },
+          },
         ],
         distinct: true,
-        order: [['id', 'ASC']],
+        order: [["id", "ASC"]],
         limit: Number(pageSize || 0),
-        offset: Number(page - 1 || 0) * Number(pageSize || 0)
+        offset: Number(page - 1 || 0) * Number(pageSize || 0),
       });
 
       if (rows.length < 1) {
-        this.ServerResponse.createBySuccessMsg('无数据');
+        this.ServerResponse.createBySuccessMsg("无数据");
       }
-      rows.forEach(row => row && row.toJSON());
+      rows.forEach((row) => row && row.toJSON());
 
       return this.ServerResponse.createBySuccessData({
         page: {
           page: +page,
           pageSize: +pageSize,
-          total: count
+          total: count,
         },
-        list: rows
+        list: rows,
       });
     } catch (error) {
-      return this.ServerResponse.createByErrorMsg('获取用户组列表失败');
+      return this.ServerResponse.createByErrorMsg("获取用户组列表失败");
     }
   }
 
@@ -73,25 +73,25 @@ class GroupService extends Service {
       const groups = await this.GroupModel.findAll();
       return this.ServerResponse.createBySuccessData(groups);
     } catch (error) {
-      return this.ServerResponse.createByErrorMsg('获取用户组列表失败');
+      return this.ServerResponse.createByErrorMsg("获取用户组列表失败");
     }
   }
 
   async updateGroup(group) {
-    const errorMsg = '保存用户组失败';
+    const errorMsg = "保存用户组失败";
     const { name, id } = group;
     const [rowCount] = await this.GroupModel.update(
       { name },
       {
-        where: { id }
+        where: { id },
       }
     );
     try {
       await this.GroupMenuRelation.destroy({
-        where: { group_menus: id }
+        where: { group_menus: id },
       });
       await this.GroupMenuRelation.bulkCreate(
-        group.menuIdList.map(v => {
+        group.menuIdList.map((v) => {
           return { group_menus: id, menu_groups: v };
         })
       );
@@ -103,23 +103,26 @@ class GroupService extends Service {
   }
 
   async createGroup(group) {
-    const errorMsg = '创建用户组失败';
+    const errorMsg = "创建用户组失败";
     const { name, menuIdList } = group;
 
     try {
       group = await this.GroupModel.create({
         name,
-        isActive: 1
+        isActive: 1,
       });
       if (group) {
         group = group.toJSON();
-        await this.GroupMenuRelation.bulkCreate(
-          menuIdList.map(v => {
-            return { group_menus: group.id, menu_groups: v };
-          })
-        );
+        console.log(menuIdList.length);
+        menuIdList &&
+          menuIdList.length &&
+          (await this.GroupMenuRelation.bulkCreate(
+            menuIdList.map((v) => {
+              return { group_menus: group.id, menu_groups: v };
+            })
+          ));
         return this.ServerResponse.createBySuccessMsgAndData(
-          '创建用户组成功',
+          "创建用户组成功",
           group
         );
       }

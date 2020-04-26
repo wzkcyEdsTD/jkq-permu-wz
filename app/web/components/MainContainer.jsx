@@ -232,8 +232,8 @@ class MainContainer extends Component {
         } else {
           const { passwordOld, passwordNew } = values;
           await this.props.store.updatePassword({
-            userId: currentUser.id,
-            password: passwordNew,
+            passwordOld,
+            passwordNew,
           });
           message.info(`密码修改成功`);
           setTimeout(() => {

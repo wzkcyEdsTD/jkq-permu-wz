@@ -54,9 +54,12 @@ class GroupManagement extends Component {
       }
       this.setState({ savingLoad: true });
       try {
-        values.menuIdList = values.menuIdList.split("@").map((v) => {
-          return +v;
-        });
+        values.menuIdList = values.menuIdList
+          ? values.menuIdList.split("@").map((v) => {
+              return +v;
+            })
+          : [];
+        console.log(values.menuIdList);
         await store.saveGroup(values);
         this.hideGroupFormModal();
         message.success(
