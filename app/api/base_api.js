@@ -33,18 +33,6 @@ export default class BaseAPI {
         }
       ]*/
     });
-    httpclient.interceptors.request.use((config) => {
-      if (typeof window === "undefined") {
-      } else {
-        if (config.method === "post" && config.data) {
-          config.data.path = location.pathname;
-        }
-        if (config.method === "get" && config.params) {
-          config.params.path = location.pathname;
-        }
-      }
-      return config;
-    });
     this.httpclient = httpclient;
     this.config = config;
   }
