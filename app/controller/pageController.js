@@ -9,7 +9,11 @@ class PageController extends Controller {
   }
   async index() {
     const { ctx } = this;
-    await ctx.render("app.js");
+    if (!ctx.session.currentUser) {
+      return ctx.redirect(`/login`);
+    } else {
+      await ctx.render("app.js");
+    }
   }
 }
 

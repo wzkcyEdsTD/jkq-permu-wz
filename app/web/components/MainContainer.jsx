@@ -15,7 +15,7 @@ import {
 } from "antd";
 import { renderRoutes } from "react-router-config";
 import { observer, inject } from "mobx-react";
-import { MENUS } from "enums/Menu";
+// import { MENUS } from "enums/Menu";
 import UpdatePasswordForm from "components/common/UpdatePasswordForm";
 
 const { SubMenu } = Menu;
@@ -29,6 +29,7 @@ class MainContainer extends Component {
   static async fetch(stores) {
     const { userStore } = stores;
     const response = await Promise.all([userStore.fetchUserSession()]);
+    // const response = await Promise.all([]);
     return response;
   }
 
@@ -47,28 +48,25 @@ class MainContainer extends Component {
   };
 
   async componentDidMount() {
-    const { fetchUserSession, fetchMenus } = this.props.store;
-    //const user = await fetchUserSession();
-    //await fetchMenus(user.id);
-    //const { currentMenu: MENUS } = this.props.store;
+    // const { fetchUserSession, fetchMenus } = this.props.store;
+    // const user = await fetchUserSession();
+    // await fetchMenus(user.id);
+    const { currentMenu: MENUS } = this.props.store;
     const BREADCRUMB = {};
     //  面包屑映射
     MENUS.map((item) => {
-      if (item.link && item.label) {
-        BREADCRUMB[item.link] = item.label;
+      if (item.key && item.title) {
+        BREADCRUMB[item.key] = item.title;
       }
       if (item.children && item.children.length) {
         item.children.map((_item) => {
-          BREADCRUMB[_item.link] = _item.label;
+          BREADCRUMB[_item.key] = _item.title;
         });
       }
     });
     //  菜单节点显示
     const { pathname } = this.props.location;
-    const defaultSelectedKeys =
-      pathname == "/home" || pathname == "/"
-        ? ""
-        : pathname.replace("/home", "");
+    const defaultSelectedKeys = pathname;
     const defaultOpenKeys = this.getFatherPoint(defaultSelectedKeys);
     this.setState({
       defaultOpenKeys: [defaultOpenKeys],
@@ -82,10 +80,7 @@ class MainContainer extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { pathname } = nextProps.location;
-    const defaultSelectedKeys =
-      pathname == "/home" || pathname == "/"
-        ? ""
-        : pathname.replace("/home", "");
+    const defaultSelectedKeys = pathname;
     const defaultOpenKeys = this.getFatherPoint(defaultSelectedKeys);
     this.setState({
       defaultOpenKeys: [defaultOpenKeys],
@@ -97,25 +92,24 @@ class MainContainer extends Component {
    * 菜单树dom
    */
   exportMenuTree = () => {
-    // const { currentMenu: MENUS } = this.props.store;
+    const { currentMenu: MENUS } = this.props.store;
     const subMenuList = [],
       { defaultOpenKeys, defaultSelectedKeys } = this.state;
+    console.log(MENUS);
     for (let i = 0; i < MENUS.length; i++) {
       if (MENUS[i].children && MENUS[i].children.length) {
         const menuList = [],
           children = MENUS[i].children;
         children.map((v) => {
-          menuList.push(
-            <Menu.Item key={v.link == "#" ? v.id : v.link}>{v.label}</Menu.Item>
-          );
+          menuList.push(<Menu.Item key={v.key}>{v.title}</Menu.Item>);
         });
         subMenuList.push(
           <SubMenu
-            key={MENUS[i].link == "#" ? MENUS[i].id : MENUS[i].link}
+            key={MENUS[i].key}
             title={
               <span>
                 <Icon type={MENUS[i].anticon || "setting"} />
-                <span>{MENUS[i].label}</span>
+                <span>{MENUS[i].title}</span>
               </span>
             }
           >
@@ -125,11 +119,11 @@ class MainContainer extends Component {
       } else {
         subMenuList.push(
           <SubMenu
-            key={MENUS[i].link == "#" ? MENUS[i].id : MENUS[i].link}
+            key={MENUS[i].key}
             title={
               <span>
                 <Icon type={MENUS[i].anticon || "setting"} />
-                <span>{MENUS[i].label}</span>
+                <span>{MENUS[i].title}</span>
               </span>
             }
           >
@@ -160,7 +154,7 @@ class MainContainer extends Component {
     this.setState({
       defaultSelectedKeys: [key],
     });
-    history.push(`/home${key}`);
+    history.push(key);
   };
 
   /**
@@ -168,13 +162,13 @@ class MainContainer extends Component {
    * @param key <String> 菜单key
    */
   getFatherPoint = (key) => {
-    // const { currentMenu: MENUS } = this.props.store;
+    const { currentMenu: MENUS } = this.props.store;
     let target = null;
     [...MENUS].map((item) => {
       item.children &&
         item.children.map((_item) => {
-          if (_item.link == key) {
-            target = item.link;
+          if (_item.key == key) {
+            target = item.key;
           }
         });
     });
@@ -272,15 +266,14 @@ class MainContainer extends Component {
 
   render() {
     const { updatePasswordModalVisi, routerSwitch, menuSwitch } = this.state;
-    const { route, location, store } = this.props;
-
+    const { route, store } = this.props;
     return (
       <Layout className="page-main" style={{ display: "flex" }}>
         <Header style={{ padding: 0 }}>
           <div className="logo">温州市经开区亩均论英雄</div>
           <div className="avater-user">
             <span style={{ color: "#fff" }}>
-              hi , {store.currentUser ? store.currentUser.username : "unknows"}
+              hi , {store.currentUser ? store.currentUser.username : ""}
             </span>
             <Dropdown overlay={this.userMenu()}>
               <a>

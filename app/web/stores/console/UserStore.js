@@ -18,13 +18,13 @@ const initPage = {
 };
 
 class UserStore {
-  constructor(ctx, initialState) {
+  constructor(ctx, initialState, userinfoState) {
     this.userAPI = new UserAPI(ctx);
     this.MenuAPI = new MenuAPI(ctx);
     this.GroupAPI = new GroupAPI(ctx);
 
-    if (initialState && initialState[0]) {
-      const { user, menus, group } = initialState[0];
+    if (userinfoState && userinfoState[0]) {
+      const { user, menus, group } = userinfoState[0];
       this.currentUser = user;
       this.currentMenu = menus.menus;
       this.currentGroup = group.group;
@@ -76,6 +76,7 @@ class UserStore {
     this.currentGroup = group;
     const menus = await this.MenuAPI.getMenu({ group });
     this.currentMenu = menus.menus;
+    // console.log(user, group, menus)
     return { user, group, menus };
   };
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-axios.defaults.withCredentials=true;
+axios.defaults.withCredentials = true;
 import { message } from "antd";
 import HTTPError from "./error/http_error";
 import BusinessError from "./error/business_error";
@@ -55,9 +55,8 @@ export default class BaseAPI {
       const responseData = await this.curl(path, options);
       return responseData;
     } catch (err) {
-      console.log(err);
       if (err instanceof BusinessError) {
-        message.error(err.message || "系统繁忙，请稍后重试", 2);
+        message.error(err.data.msg || "系统繁忙，请稍后重试", 2);
       }
       if (err instanceof HTTPError) {
         if (err.status === 401) {

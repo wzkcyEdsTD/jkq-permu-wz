@@ -24,6 +24,7 @@ class UserService extends Service {
    * @return {Promise.<boolean>}
    */
   async _checkExistColByField(field, value) {
+    console.log(field, value);
     const data = await this.UserModel.findOne({
       attributes: [field],
       where: { [field]: value },
@@ -46,8 +47,8 @@ class UserService extends Service {
       }
       if (PHONE === type) {
         return (await this._checkExistColByField(PHONE, value))
-          ? this.ServerResponse.createBySuccessMsg("邮箱已存在")
-          : this.ServerResponse.createByErrorMsg("邮箱不存在");
+          ? this.ServerResponse.createBySuccessMsg("手机已存在")
+          : this.ServerResponse.createByErrorMsg("手机不存在");
       }
     }
     return this.ServerResponse.createByErrorMsg("参数错误");
@@ -62,8 +63,8 @@ class UserService extends Service {
       }
       if (PHONE === type) {
         return (await this._checkExistColByField(PHONE, value))
-          ? this.ServerResponse.createByErrorMsg("邮箱已存在")
-          : this.ServerResponse.createBySuccessMsg("邮箱不存在");
+          ? this.ServerResponse.createByErrorMsg("手机已存在")
+          : this.ServerResponse.createBySuccessMsg("手机不存在");
       }
     }
     return this.ServerResponse.createByErrorMsg("参数错误");
@@ -101,7 +102,7 @@ class UserService extends Service {
     return this.ServerResponse.createBySuccessMsgAndData("登录成功", userInfo);
   }
 
-  async createUser(user) {
+  async createUser(ctx, user) {
     const errorMsg = "新建用户失败";
 
     const validUsernameResponse = await this.checkRegValid(
@@ -330,7 +331,6 @@ class UserService extends Service {
         list: rows,
       });
     } catch (error) {
-      console.log(error);
       return this.ServerResponse.createByErrorMsg("获取用户列表失败");
     }
   }

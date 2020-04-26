@@ -19,7 +19,6 @@ class UserController extends Controller {
     const response = await this.UserService.login(username, password);
     if (response.isSuccess() && response.data) {
       this.ctx.session.currentUser = response.getData();
-      console.log(this.ctx.session)
     }
     this.ctx.body = response;
   }
@@ -34,7 +33,6 @@ class UserController extends Controller {
   async getUserSession() {
     const { ctx, session, ServerResponse } = this;
     const user = this.ctx.session.currentUser;
-    console.log("xxxx", this.ctx.session);
     let response;
     if (user) {
       response = ServerResponse.createBySuccessData(user);
@@ -125,8 +123,7 @@ class UserController extends Controller {
       user.password = DEFAULT_PASSWORD;
     }
 
-    const response = await UserService.createUser(user);
-
+    const response = await UserService.createUser(ctx, user);
     ctx.body = response;
   }
 

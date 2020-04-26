@@ -2,8 +2,6 @@ import React, { Component } from "react";
 
 export default class Layout extends Component {
   render() {
-    console.log(this.props.title);
-
     return (
       <html>
         <head>
@@ -28,6 +26,13 @@ export default class Layout extends Component {
             dangerouslySetInnerHTML={{
               __html: `window.__API_CONFIG__ = ${JSON.stringify(
                 this.props.apiConfig
+              )}`,
+            }}
+          />
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.__USER_INFO__ = ${JSON.stringify(
+                this.props.initialState
               )}`,
             }}
           />

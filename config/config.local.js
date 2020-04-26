@@ -13,7 +13,7 @@ module.exports = () => {
   exports.sequelize = {
     dialect: "mssql",
     database: "permu",
-    host: "192.168.2.212",
+    host: "127.0.0.1",
     port: "1433",
     username: "sa",
     password: "wzkcy@123",

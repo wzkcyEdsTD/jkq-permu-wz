@@ -41,7 +41,7 @@ class UserForm extends Component {
             <Input
               placeholder="输入用户名"
               autoComplete="off"
-              readOnly={isUpdate}
+              disabled={isUpdate}
             />
           )}
         </FormItem>
@@ -55,7 +55,7 @@ class UserForm extends Component {
               },
             ],
           })(
-            <Input placeholder="输入手机号" readOnly={isUpdate} />
+            <Input placeholder="输入手机号" disabled={isUpdate} />
           )}
         </FormItem>
         <FormItem {...defaultItemProps} label="用户组">
