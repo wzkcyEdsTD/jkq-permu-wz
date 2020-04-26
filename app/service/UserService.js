@@ -112,9 +112,12 @@ class UserService extends Service {
     if (!validUsernameResponse.isSuccess()) {
       return validUsernameResponse;
     }
-    // 邮箱存在报错
-    const validEmailResponse = await this.checkRegValid(PHONE, user.phone);
-    if (!validEmailResponse.isSuccess()) return validEmailResponse;
+    // 手机号存在报错
+    if (user.phone) {
+      const validEmailResponse = await this.checkRegValid(PHONE, user.phone);
+      if (!validEmailResponse.isSuccess()) return validEmailResponse;
+    }
+
     user.password = md5(user.password + this.salt);
 
     const {

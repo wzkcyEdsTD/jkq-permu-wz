@@ -30,7 +30,7 @@ class MenuTree extends Component {
         id: v.id,
         title: v.label || "unknown",
         anticon: v.anticon || "",
-        key: v.link || "",
+        key: v.p_link || "",
       };
     });
 
@@ -151,6 +151,7 @@ class MenuTree extends Component {
   @autobind
   unHandleMenuListDom() {
     const { unHandleMenuList } = this.state;
+    console.log(unHandleMenuList);
     return unHandleMenuList.map((v) => {
       const leftIcon = v.anticon ? (
         <span className="uhm-left">

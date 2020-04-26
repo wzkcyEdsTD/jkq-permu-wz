@@ -50,7 +50,7 @@ class UserForm extends Component {
             initialValue: user ? user.phone : "",
             rules: [
               {
-                required: true,
+                required: false,
                 message: "请输入手机号",
               },
             ],
