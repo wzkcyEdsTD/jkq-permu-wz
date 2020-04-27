@@ -76,8 +76,12 @@ class UserStore {
     this.currentGroup = group;
     const menus = await this.MenuAPI.getMenu({ group });
     this.currentMenu = menus.menus;
-    // console.log(user, group, menus)
     return { user, group, menus };
+  };
+
+  @action
+  setMenuSession = async () => {
+    await this.MenuAPI.getMenu({ group: { group: this.currentGroup } });
   };
 
   @action

@@ -61,14 +61,12 @@ class MenuController extends Controller {
   }
 
   async getMenuSession() {
-    const params = this.ctx.query;
-    const menu = await this.MenuService.fetchMenuByGroup(
-      JSON.parse(params.group)
-    );
+    const params = this.ctx.request.body;
+    const menu = await this.MenuService.fetchMenuByGroup(params.group);
     const menuStore = await this.MenuService.fetchMenuStore();
     const _menu = menu.getData().menu;
     const menus = getMenuTree(menuStore, _menu);
-    this.ctx.session.menus = menus;
+    this.ctx.session.menus = _menu;
     this.ctx.body = this.ServerResponse.createBySuccessData({ menus });
   }
 

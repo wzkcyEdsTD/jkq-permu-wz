@@ -33,7 +33,6 @@ export default class BaseAPI {
         }
       ]*/
     });
-
     this.httpclient = httpclient;
     this.config = config;
   }

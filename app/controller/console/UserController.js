@@ -104,7 +104,7 @@ class UserController extends Controller {
       // job: "array",
       isActive: "int",
       username: "string",
-      phone: "string",
+      // phone: "string",
     };
     const user = {
       ..._.pick(ctx.request.body, [

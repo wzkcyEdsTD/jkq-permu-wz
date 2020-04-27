@@ -174,8 +174,22 @@ class UserManagement extends Component {
       {
         title: "激活",
         dataIndex: "isActive",
-        width: 60,
-        render: (isActive) => <i>{isActive == 1 ? "是" : "否"}</i>,
+        width: 80,
+        render: (r) => (
+          <span>
+            <i
+              style={{
+                color: r == 1 ? "#4aa45d" : "#de4f3f",
+                marginRight: "2px",
+                fontSize: "24px",
+                verticalAlign: "middle",
+              }}
+            >
+              •
+            </i>
+            {r == 1 ? "是" : "否"}
+          </span>
+        ),
       },
       {
         title: "用户名",
@@ -184,6 +198,7 @@ class UserManagement extends Component {
       },
       {
         title: "手机号",
+        width: 160,
         dataIndex: "phone",
       },
       // {

@@ -48,9 +48,8 @@ class MainContainer extends Component {
   };
 
   async componentDidMount() {
-    // const { fetchUserSession, fetchMenus } = this.props.store;
-    // const user = await fetchUserSession();
-    // await fetchMenus(user.id);
+    const { setMenuSession } = this.props.store;
+    await setMenuSession();
     const { currentMenu: MENUS } = this.props.store;
     const BREADCRUMB = {};
     //  面包屑映射

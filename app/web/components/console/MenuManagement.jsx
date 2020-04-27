@@ -61,7 +61,7 @@ class MenuManagement extends Component {
         await store.saveMenu(values);
         this.hideMenuFormModal();
         message.success(
-          `${menuFormMode === MENU_FORM_MODE_ADD ? '添加' : '更新'}用户组【${
+          `${menuFormMode === MENU_FORM_MODE_ADD ? '添加' : '更新'}菜单【${
             values.label
           }】成功`
         );
