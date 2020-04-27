@@ -22,11 +22,18 @@ import Group from "components/console/GroupManagement";
 import GroupStore from "stores/console/GroupStore";
 import Menu from "components/console/MenuManagement";
 import MenuStore from "stores/console/MenuStore";
+//  亩均评价
+import CompanyData from "components/mj/CompanyData";
+import CompanyDataStore from "stores/mj/CompanyDataStore";
+import CompanyUpload from "components/mj/CompanyUpload";
+import CompanyUploadStore from "stores/mj/CompanyUploadStore";
 
 const createStores = (ctx, state, userinfoState) => ({
   userStore: new UserStore(ctx, state, userinfoState),
   groupStore: new GroupStore(ctx, state),
   menuStore: new MenuStore(ctx, state),
+  companyDataStore: new CompanyDataStore(ctx, state),
+  companyUploadStore: new CompanyUploadStore(ctx, state),
 });
 
 const routes = [
@@ -34,6 +41,7 @@ const routes = [
     path: "/",
     component: MainContainer,
     routes: [
+      //  console
       {
         path: "/home/user",
         component: User,
@@ -45,6 +53,15 @@ const routes = [
       {
         path: "/home/menu",
         component: Menu,
+      },
+      //  company
+      {
+        path: "/mj/companyData",
+        component: CompanyData,
+      },
+      {
+        path: "/mj/companyUpload",
+        component: CompanyUpload,
       },
     ],
   },

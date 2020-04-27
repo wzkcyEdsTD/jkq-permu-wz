@@ -1,24 +1,24 @@
-import React, { Component } from 'react';
-import moment from 'moment';
-import autobind from 'autobind-decorator';
-import { Button, Table, Modal, DatePicker, Input, Select, message } from 'antd';
+import React, { Component } from "react";
+import moment from "moment";
+import autobind from "autobind-decorator";
+import { Button, Table, Modal, DatePicker, Input, Select, message } from "antd";
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-import { observer, inject } from 'mobx-react';
-import { toJS } from 'mobx';
+import { observer, inject } from "mobx-react";
+import { toJS } from "mobx";
 import HandledForm, {
   HANDLED_FORM_MODE_ADD,
-  HANDLED_FORM_MODE_UPDATE
-} from './components/HandledForm';
-import hoc from 'components/HOC/pageHeader';
-const dateFormat = 'YYYY-MM-DD';
+  HANDLED_FORM_MODE_UPDATE,
+} from "./components/HandledForm";
+import hoc from "components/HOC/pageHeader";
+const dateFormat = "YYYY-MM-DD";
 
-@inject(stores => ({
-  store: stores.accumulationFundHandledStore
+@inject((stores) => ({
+  store: stores.companyDataStore,
 }))
-@hoc({ name: '已入库数据-公积金', className: 'page_accumulationFundHandled' })
+@hoc({ name: "企业数据审核 - 街道", className: "page_companyupload" })
 @observer
-class AccumulationFundHandled extends Component {
+export default class CompanyUpload extends Component {
   state = {
     loading: false,
     savingLoad: false,
@@ -27,19 +27,19 @@ class AccumulationFundHandled extends Component {
     edit: null,
     refresh: false,
     statusOption: [
-      { key: '-1', title: '全选' },
-      { key: '0', title: '失效' },
-      { key: '1', title: '生效' }
-    ]
+      { key: "-1", title: "全选" },
+      { key: "0", title: "失效" },
+      { key: "1", title: "生效" },
+    ],
   };
 
   componentWillMount() {
     //  默认状态
     this.props.store._query.updateEnd = `${moment()
-      .subtract(0, 'days')
+      .subtract(0, "days")
       .format(dateFormat)}`;
     this.props.store._query.updateStart = `${moment()
-      .subtract(7, 'days')
+      .subtract(7, "days")
       .format(dateFormat)}`;
   }
 
@@ -64,8 +64,8 @@ class AccumulationFundHandled extends Component {
           <label>公司名:</label>
           <Input
             placeholder="输入公司名"
-            style={{ width: '120px' }}
-            onChange={e => {
+            style={{ width: "120px" }}
+            onChange={(e) => {
               _query.corporationName = e.target.value;
             }}
           />
@@ -74,12 +74,12 @@ class AccumulationFundHandled extends Component {
           <label>处理状态:</label>
           <Select
             defaultValue={_query.status}
-            style={{ width: '100px' }}
-            onChange={val => {
+            style={{ width: "100px" }}
+            onChange={(val) => {
               _query.status = val;
             }}
           >
-            {statusOption.map(item => {
+            {statusOption.map((item) => {
               return (
                 <Option value={item.key} key={item.key}>
                   {item.title}
@@ -91,13 +91,13 @@ class AccumulationFundHandled extends Component {
         <span className="action-left-search-single">
           <label>日期:</label>
           <RangePicker
-            style={{ width: '240px' }}
+            style={{ width: "240px" }}
             defaultValue={[
-              moment(moment().subtract(7, 'days'), dateFormat),
-              moment(moment().subtract(0, 'days'), dateFormat)
+              moment(moment().subtract(7, "days"), dateFormat),
+              moment(moment().subtract(0, "days"), dateFormat),
             ]}
             onChange={(value, dateString) => {
-              console.log('Formatted Selected Time: ', dateString);
+              console.log("Formatted Selected Time: ", dateString);
               _query.updateStart = dateString[0];
               _query.updateEnd = dateString[1];
             }}
@@ -119,7 +119,7 @@ class AccumulationFundHandled extends Component {
           disabled={refresh}
           onClick={this.redo}
         >
-          {refresh ? '重跑中..' : '一键重跑'}
+          {refresh ? "重跑中.." : "一键重跑"}
         </Button>
         <Button type="primary" icon="plus" onClick={this.showFormModal}>
           创建
@@ -132,41 +132,41 @@ class AccumulationFundHandled extends Component {
     const { statusOption } = this.state;
     return [
       {
-        title: '序号',
+        title: "序号",
         width: 80,
-        dataIndex: 'id',
+        dataIndex: "id",
         render: (t, r, index) => {
           return ++index;
-        }
+        },
       },
       {
-        title: '公司名',
-        dataIndex: 'corporation_name',
+        title: "公司名",
+        dataIndex: "corporation_name",
         render: (t, r) => {
           return (
             <a href="javascript:" onClick={() => this.showFormModal(r)}>
               {t}
             </a>
           );
-        }
+        },
       },
       {
-        title: '状态',
-        dataIndex: 'status',
-        render: t => {
-          let status = '';
-          statusOption.map(item => {
+        title: "状态",
+        dataIndex: "status",
+        render: (t) => {
+          let status = "";
+          statusOption.map((item) => {
             if (item.key == t) {
               status = item.title;
             }
           });
           return status;
-        }
+        },
       },
       {
-        title: '更新时间',
-        dataIndex: 'last_update_time'
-      }
+        title: "更新时间",
+        dataIndex: "last_update_time",
+      },
     ];
   }
 
@@ -174,23 +174,23 @@ class AccumulationFundHandled extends Component {
   async redo() {
     const { redo } = this.props.store;
     Modal.confirm({
-      title: '确定要一键重跑吗?',
-      okText: '确定',
-      cancelText: '取消',
+      title: "确定要一键重跑吗?",
+      okText: "确定",
+      cancelText: "取消",
       onOk: async () => {
         this.setState({
-          refresh: true
+          refresh: true,
         });
         try {
           await redo();
-          message.info('重跑操作成功');
+          message.info("重跑操作成功");
         } finally {
           this.setState({
-            refresh: false
+            refresh: false,
           });
         }
         this.fetchList();
-      }
+      },
     });
   }
 
@@ -208,7 +208,7 @@ class AccumulationFundHandled extends Component {
         await saveHandled(values);
         this.hideFormModal();
         message.success(
-          `${formMode == HANDLED_FORM_MODE_ADD ? '添加' : '更新'}公司成功`
+          `${formMode == HANDLED_FORM_MODE_ADD ? "添加" : "更新"}公司成功`
         );
       } finally {
         this.setState({ savingLoad: false });
@@ -223,7 +223,7 @@ class AccumulationFundHandled extends Component {
       this.setState({
         formModalVisiable: true,
         formMode: HANDLED_FORM_MODE_UPDATE,
-        edit: handled
+        edit: handled,
       });
     } else {
       this.setState({ formModalVisiable: true });
@@ -235,7 +235,7 @@ class AccumulationFundHandled extends Component {
     this.setState({
       formModalVisiable: false,
       formMode: HANDLED_FORM_MODE_ADD,
-      edit: null
+      edit: null,
     });
   }
 
@@ -245,7 +245,7 @@ class AccumulationFundHandled extends Component {
       savingLoad,
       edit,
       formMode,
-      formModalVisiable
+      formModalVisiable,
     } = this.state;
     const { list, _pageQuery } = this.props.store;
     return (
@@ -254,7 +254,7 @@ class AccumulationFundHandled extends Component {
         <Table
           dataSource={toJS(list)}
           columns={this.columns()}
-          rowKey={r => r.id}
+          rowKey={(r) => r.id}
           pagination={{
             current: _pageQuery.draw,
             total: _pageQuery.count,
@@ -265,19 +265,19 @@ class AccumulationFundHandled extends Component {
               _pageQuery.draw = 1;
               this.fetchList();
             },
-            onChange: current => {
+            onChange: (current) => {
               _pageQuery.draw = current;
               this.fetchList();
             },
             showTotal: () => {
-              return '共 ' + _pageQuery.count + ' 条数据';
-            }
+              return "共 " + _pageQuery.count + " 条数据";
+            },
           }}
           loading={loading}
         />
         <Modal
           className="modal-handled"
-          title={'更新数据项'}
+          title={"更新数据项"}
           width={700}
           destroyOnClose={true}
           visible={formModalVisiable}
@@ -293,13 +293,13 @@ class AccumulationFundHandled extends Component {
               onClick={this.onSave}
             >
               保存
-            </Button>
+            </Button>,
           ]}
         >
           <HandledForm
             handled={edit}
             mode={formMode}
-            wrappedComponentRef={instance => {
+            wrappedComponentRef={(instance) => {
               this.handledForm = instance;
             }}
           />
@@ -308,5 +308,3 @@ class AccumulationFundHandled extends Component {
     );
   }
 }
-
-export default AccumulationFundHandled;

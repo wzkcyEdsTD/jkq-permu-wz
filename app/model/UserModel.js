@@ -19,6 +19,10 @@ module.exports = (app) => {
         allowNull: false,
         unique: true,
       },
+      alias: {
+        type: STRING(50),
+        allowNull: true,
+      },
       phone: {
         type: STRING(20),
         allowNull: true,
