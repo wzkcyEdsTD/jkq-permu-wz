@@ -56,11 +56,11 @@ const routes = [
       },
       //  company
       {
-        path: "/mj/companyData",
+        path: "/home/companyData",
         component: CompanyData,
       },
       {
-        path: "/mj/companyUpload",
+        path: "/home/companyUpload",
         component: CompanyUpload,
       },
     ],
