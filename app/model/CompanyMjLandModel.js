@@ -41,18 +41,20 @@ module.exports = (app) => {
       } /** 出租关联对象([1]统一社会信用代码[0]街道@村) */,
       prove: {
         type: STRING,
-        allowNull: false,
+        allowNull: true,
       } /** 证明文件地址 */,
     },
     {
       freezeTableName: false,
-      timestamps: false,
+      timestamps: true,
       tableName: "companymjland",
     }
   );
 
   CompanyMjLandModel.associate = function () {
-    // app.model.CompanyMjLandModel.belongsTo(app.model.CompanyPchModel);
+    app.model.CompanyMjLandModel.belongsTo(app.model.CompanyPchModel, {
+      foreignKey: "uuid",
+    });
   };
 
   return CompanyMjLandModel;

@@ -38,13 +38,15 @@ module.exports = (app) => {
     },
     {
       freezeTableName: false,
-      timestamps: false,
+      timestamps: true,
       tableName: "companymjelec",
     }
   );
 
   CompanyMjElecModel.associate = function () {
-    // app.model.CompanyMjElecModel.belongsTo(app.model.CompanyPchModel);
+    app.model.CompanyMjElecModel.belongsTo(app.model.CompanyPchModel, {
+      foreignKey: "uuid",
+    });
   };
 
   return CompanyMjElecModel;

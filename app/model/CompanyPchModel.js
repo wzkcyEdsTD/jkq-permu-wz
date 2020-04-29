@@ -3,7 +3,7 @@
  * @param {*} app
  */
 module.exports = (app) => {
-  const { INTEGER, STRING } = app.Sequelize;
+  const { INTEGER, STRING, BOOLEAN } = app.Sequelize;
   const CompanyPchModel = app.model.define(
     "company_pch",
     {
@@ -30,6 +30,10 @@ module.exports = (app) => {
         type: STRING(10),
         allowNull: false,
       } /** 所属街道 */,
+      address: {
+        type: STRING,
+        allowNull: true,
+      } /** 详细地址 */,
       legal: {
         type: STRING(10),
         allowNull: true,
@@ -56,32 +60,35 @@ module.exports = (app) => {
         allowNull: false,
         defaultValue: 0,
       } /** 企业状态([0]正常[1]非本街道[2]注销[3]迁出[4]迁入保护) */,
+      isconfirm: {
+        type: INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      } /** 街道是否已经确认([1]已经确认[0]未确认) */,
     },
     {
       freezeTableName: false,
-      timestamps: false,
+      timestamps: true,
       tableName: "companypch",
     }
   );
 
   CompanyPchModel.associate = function () {
-    app.model.CompanyPchModel.hasOne(app.model.CompanyMjDataModel, {
+    app.model.CompanyPchModel.belongsTo(app.model.CompanyMjDataModel, {
       foreignKey: "uuid",
+      targetKey: "uuid",
     });
-    app.model.CompanyPchModel.hasOne(app.model.CompanyMjDataModel, {
-      foreignKey: "pch",
-    });
-    app.model.CompanyPchModel.hasOne(app.model.CompanyMjElecModel, {
+    app.model.CompanyPchModel.belongsTo(app.model.CompanyMjDataStateModel, {
       foreignKey: "uuid",
+      targetKey: "uuid",
     });
-    app.model.CompanyPchModel.hasOne(app.model.CompanyMjElecModel, {
-      foreignKey: "pch",
+    app.model.CompanyPchModel.belongsTo(app.model.CompanyMjElecModel, {
+      foreignKey: "uuid",
+      targetKey: "uuid",
     });
     app.model.CompanyPchModel.hasMany(app.model.CompanyMjLandModel, {
       foreignKey: "uuid",
-    });
-    app.model.CompanyPchModel.hasMany(app.model.CompanyMjLandModel, {
-      foreignKey: "pch",
+      targetKey: "uuid",
     });
   };
 

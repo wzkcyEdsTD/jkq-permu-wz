@@ -60,13 +60,15 @@ module.exports = (app) => {
     },
     {
       freezeTableName: false,
-      timestamps: false,
+      timestamps: true,
       tableName: "companymjdatastate",
     }
   );
 
   CompanyMjDataStateModel.associate = function () {
-    // app.model.CompanyMjDataStateModel.belongsTo(app.model.CompanyMjDataModel);
+    app.model.CompanyMjDataStateModel.belongsTo(app.model.CompanyPchModel, {
+      foreignKey: "uuid",
+    });
   };
 
   return CompanyMjDataStateModel;

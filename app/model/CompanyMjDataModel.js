@@ -59,7 +59,7 @@ module.exports = (app) => {
     },
     {
       freezeTableName: false,
-      timestamps: false,
+      timestamps: true,
       tableName: "companymjdata",
     }
   );
@@ -67,9 +67,6 @@ module.exports = (app) => {
   CompanyMjDataModel.associate = function () {
     app.model.CompanyMjDataModel.belongsTo(app.model.CompanyPchModel, {
       foreignKey: "uuid",
-    });
-    app.model.CompanyMjDataModel.belongsTo(app.model.CompanyPchModel, {
-      foreignKey: "pch",
     });
   };
 

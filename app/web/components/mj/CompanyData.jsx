@@ -1,17 +1,11 @@
 import React, { Component } from "react";
 import moment from "moment";
 import autobind from "autobind-decorator";
-import { Button, Table, Modal, DatePicker, Input, Select, message } from "antd";
-const { RangePicker } = DatePicker;
+import { Button, Table, Modal, Input, Select, message, Tag } from "antd";
 const { Option } = Select;
 import { observer, inject } from "mobx-react";
 import { toJS } from "mobx";
-import HandledForm, {
-  HANDLED_FORM_MODE_ADD,
-  HANDLED_FORM_MODE_UPDATE,
-} from "./components/HandledForm";
 import hoc from "components/HOC/pageHeader";
-const dateFormat = "YYYY-MM-DD";
 
 @inject((stores) => ({
   store: stores.companyDataStore,
@@ -22,26 +16,29 @@ export default class CompanyUpload extends Component {
   state = {
     loading: false,
     savingLoad: false,
-    formModalVisiable: false,
-    formMode: HANDLED_FORM_MODE_ADD,
     edit: null,
-    refresh: false,
     statusOption: [
-      { key: "-1", title: "全选" },
-      { key: "0", title: "失效" },
-      { key: "1", title: "生效" },
+      { key: 0, title: "正常" },
+      { key: 1, title: "非本街道" },
+      { key: 2, title: "注销" },
+      { key: 3, title: "迁出" },
+      { key: 4, title: "迁入保护" },
+    ],
+    confirmOption: [
+      { key: 2, title: "全部" },
+      { key: 1, title: "已确认" },
+      { key: 0, title: "未确认" },
+    ],
+    scaleOption: [
+      { key: 2, title: "全部" },
+      { key: 1, title: "规上" },
+      { key: 0, title: "规下" },
+    ],
+    pchOption: [
+      { key: 2019, title: "2019年度" },
+      { key: 2018, title: "2018年度" },
     ],
   };
-
-  componentWillMount() {
-    //  默认状态
-    this.props.store._query.updateEnd = `${moment()
-      .subtract(0, "days")
-      .format(dateFormat)}`;
-    this.props.store._query.updateStart = `${moment()
-      .subtract(7, "days")
-      .format(dateFormat)}`;
-  }
 
   async componentDidMount() {
     await this.fetchList();
@@ -49,80 +46,94 @@ export default class CompanyUpload extends Component {
 
   @autobind
   async fetchList() {
-    const { fetchDataList } = this.props.store;
+    const { getCompanyListByPch } = this.props.store;
     this.setState({ loading: true });
-    await fetchDataList();
+    await getCompanyListByPch();
     this.setState({ loading: false });
   }
 
   searchLeft() {
     const { _query, _pageQuery } = this.props.store;
-    const { statusOption, refresh } = this.state;
+    const { confirmOption, scaleOption, pchOption } = this.state;
     return (
       <span className="action-left-search">
         <span className="action-left-search-single">
-          <label>公司名:</label>
-          <Input
-            placeholder="输入公司名"
-            style={{ width: "120px" }}
-            onChange={(e) => {
-              _query.corporationName = e.target.value;
-            }}
-          />
-        </span>
-        <span className="action-left-search-single">
-          <label>处理状态:</label>
+          <label>年度:</label>
           <Select
-            defaultValue={_query.status}
+            defaultValue={_query.pch}
             style={{ width: "100px" }}
             onChange={(val) => {
-              _query.status = val;
+              _query.pch = val;
             }}
           >
-            {statusOption.map((item) => {
-              return (
-                <Option value={item.key} key={item.key}>
-                  {item.title}
-                </Option>
-              );
-            })}
+            {pchOption.map((item) => (
+              <Option value={item.key} key={item.key}>
+                {item.title}
+              </Option>
+            ))}
           </Select>
         </span>
         <span className="action-left-search-single">
-          <label>日期:</label>
-          <RangePicker
-            style={{ width: "240px" }}
-            defaultValue={[
-              moment(moment().subtract(7, "days"), dateFormat),
-              moment(moment().subtract(0, "days"), dateFormat),
-            ]}
-            onChange={(value, dateString) => {
-              console.log("Formatted Selected Time: ", dateString);
-              _query.updateStart = dateString[0];
-              _query.updateEnd = dateString[1];
+          <label>企业名称:</label>
+          <Input
+            placeholder="输入企业名称"
+            style={{ width: "180px" }}
+            onChange={(e) => {
+              _query.name = e.target.value;
             }}
           />
+        </span>
+        <span className="action-left-search-single">
+          <label>统一社会信用代码:</label>
+          <Input
+            placeholder="输入统一社会信用代码"
+            style={{ width: "180px" }}
+            onChange={(e) => {
+              _query.uuid = e.target.value;
+            }}
+          />
+        </span>
+        <span className="action-left-search-single">
+          <label>确认状态:</label>
+          <Select
+            defaultValue={_query.isconfirm}
+            style={{ width: "100px" }}
+            onChange={(val) => {
+              _query.isconfirm = val == 2 ? undefined : val;
+            }}
+          >
+            {confirmOption.map((item) => (
+              <Option value={item.key} key={item.key}>
+                {item.title}
+              </Option>
+            ))}
+          </Select>
+        </span>
+        <span className="action-left-search-single">
+          <label>企业规模:</label>
+          <Select
+            defaultValue={_query.scale}
+            style={{ width: "100px" }}
+            onChange={(val) => {
+              _query.scale = val == 2 ? undefined : val;
+            }}
+          >
+            {scaleOption.map((item) => (
+              <Option value={item.key} key={item.key}>
+                {item.title}
+              </Option>
+            ))}
+          </Select>
         </span>
         <Button
           type="primary"
           icon="search"
           onClick={() => {
-            _pageQuery.draw = 1;
+            _pageQuery.page = 1;
             this.fetchList();
           }}
         >
           搜索
-        </Button>
-        <Button
-          type="primary"
-          icon="sync"
-          disabled={refresh}
-          onClick={this.redo}
-        >
-          {refresh ? "重跑中.." : "一键重跑"}
-        </Button>
-        <Button type="primary" icon="plus" onClick={this.showFormModal}>
-          创建
         </Button>
       </span>
     );
@@ -133,120 +144,65 @@ export default class CompanyUpload extends Component {
     return [
       {
         title: "序号",
-        width: 80,
+        width: 60,
         dataIndex: "id",
         render: (t, r, index) => {
           return ++index;
         },
       },
       {
-        title: "公司名",
-        dataIndex: "corporation_name",
+        title: "企业名称",
+        dataIndex: "name",
+      },
+      {
+        title: "统一社会信用代码",
+        dataIndex: "uuid",
+      },
+      {
+        title: "所在街道",
+        dataIndex: "street",
+      },
+      {
+        title: "规模",
+        dataIndex: "scale",
+        render: (t) => (t ? "规上" : "规下"),
+      },
+      {
+        title: "地址",
+        dataIndex: "address",
+      },
+      {
+        title: "企业状态",
+        dataIndex: "state",
+        render: (t) => (
+          <Tag color={t == 0 ? "cyan" : "red"}>
+            {statusOption.filter((item) => item.key == t)[0].title}
+          </Tag>
+        ),
+      },
+      {
+        title: "操作",
         render: (t, r) => {
           return (
-            <a href="javascript:" onClick={() => this.showFormModal(r)}>
-              {t}
-            </a>
+            <div className="operator">
+              <Button type="primary" icon="edit" onClick={() => {}}>
+                编辑
+              </Button>
+              <Button type="primary" icon="check-circle" onClick={() => {}}>
+                确认
+              </Button>
+              <Button type="primary" icon="tool" onClick={() => {}}>
+                密码修改
+              </Button>
+            </div>
           );
         },
-      },
-      {
-        title: "状态",
-        dataIndex: "status",
-        render: (t) => {
-          let status = "";
-          statusOption.map((item) => {
-            if (item.key == t) {
-              status = item.title;
-            }
-          });
-          return status;
-        },
-      },
-      {
-        title: "更新时间",
-        dataIndex: "last_update_time",
       },
     ];
   }
 
-  @autobind
-  async redo() {
-    const { redo } = this.props.store;
-    Modal.confirm({
-      title: "确定要一键重跑吗?",
-      okText: "确定",
-      cancelText: "取消",
-      onOk: async () => {
-        this.setState({
-          refresh: true,
-        });
-        try {
-          await redo();
-          message.info("重跑操作成功");
-        } finally {
-          this.setState({
-            refresh: false,
-          });
-        }
-        this.fetchList();
-      },
-    });
-  }
-
-  @autobind
-  async onSave() {
-    const { formMode } = this.state;
-    const { saveHandled } = this.props.store;
-    const { form } = this.handledForm.props;
-    form.validateFieldsAndScroll(async (err, values) => {
-      if (err) {
-        return;
-      }
-      this.setState({ savingLoad: true });
-      try {
-        await saveHandled(values);
-        this.hideFormModal();
-        message.success(
-          `${formMode == HANDLED_FORM_MODE_ADD ? "添加" : "更新"}公司成功`
-        );
-      } finally {
-        this.setState({ savingLoad: false });
-      }
-      this.fetchList();
-    });
-  }
-
-  @autobind
-  showFormModal(handled) {
-    if (handled && handled.id) {
-      this.setState({
-        formModalVisiable: true,
-        formMode: HANDLED_FORM_MODE_UPDATE,
-        edit: handled,
-      });
-    } else {
-      this.setState({ formModalVisiable: true });
-    }
-  }
-
-  @autobind
-  hideFormModal() {
-    this.setState({
-      formModalVisiable: false,
-      formMode: HANDLED_FORM_MODE_ADD,
-      edit: null,
-    });
-  }
-
   render() {
-    const {
-      loading,
-      savingLoad,
-      edit,
-      formMode,
-      formModalVisiable,
-    } = this.state;
+    const { loading } = this.state;
     const { list, _pageQuery } = this.props.store;
     return (
       <div>
@@ -256,17 +212,17 @@ export default class CompanyUpload extends Component {
           columns={this.columns()}
           rowKey={(r) => r.id}
           pagination={{
-            current: _pageQuery.draw,
+            current: _pageQuery.page,
             total: _pageQuery.count,
-            pageSize: _pageQuery.length,
+            pageSize: _pageQuery.pageSize,
             showSizeChanger: true,
             onShowSizeChange: (current, pageSize) => {
-              _pageQuery.length = pageSize;
-              _pageQuery.draw = 1;
+              _pageQuery.pageSize = pageSize;
+              _pageQuery.page = 1;
               this.fetchList();
             },
             onChange: (current) => {
-              _pageQuery.draw = current;
+              _pageQuery.page = current;
               this.fetchList();
             },
             showTotal: () => {
@@ -275,35 +231,6 @@ export default class CompanyUpload extends Component {
           }}
           loading={loading}
         />
-        <Modal
-          className="modal-handled"
-          title={"更新数据项"}
-          width={700}
-          destroyOnClose={true}
-          visible={formModalVisiable}
-          onCancel={this.hideFormModal}
-          footer={[
-            <Button key="back" onClick={this.hideFormModal}>
-              取消
-            </Button>,
-            <Button
-              key="submit"
-              type="primary"
-              loading={savingLoad}
-              onClick={this.onSave}
-            >
-              保存
-            </Button>,
-          ]}
-        >
-          <HandledForm
-            handled={edit}
-            mode={formMode}
-            wrappedComponentRef={(instance) => {
-              this.handledForm = instance;
-            }}
-          />
-        </Modal>
       </div>
     );
   }

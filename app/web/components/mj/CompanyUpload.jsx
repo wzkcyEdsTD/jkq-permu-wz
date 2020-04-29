@@ -32,11 +32,19 @@ export default class CompanyData extends Component {
   @autobind
   async fetchCompanyOption() {}
 
+  /**
+   * 企业数据核对上报
+   * @param {*} listIndex 
+   */
   @autobind
   async companyUploadIndicatorSubmit(listIndex) {
     console.log(listIndex);
   }
 
+  /**
+   * 企业信息确认提交
+   * @memberof CompanyData
+   */
   @autobind
   async companyUploadBasicSubmit() {
     const { form } = this.companyUploadBasicForm.props;

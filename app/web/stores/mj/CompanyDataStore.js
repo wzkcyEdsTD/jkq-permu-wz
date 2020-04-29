@@ -1,27 +1,43 @@
 import { action, observable, computed } from "mobx";
-import ForwardAPI from "api/forward";
-import { pageQuery, query } from "stores/common";
+import CompanyAPI from "api/company";
 
 const initTable = {
-  //  公司名
-  corporationName: undefined,
-  //  处理状态
-  status: "-1",
-  updateEnd: undefined,
-  updateStart: undefined,
+  name: "",
+  uuid: "",
+  pch: 2019,
+  isconfirm: 2,
+  scale: 2,
 };
 
 const initPage = {
-  draw: 1,
-  length: 10,
+  page: 1,
+  pageSize: 10,
   count: undefined,
   orderBy: {},
 };
 
-class AccumulationFundHandledStore {
+/**
+ * query
+ * @param {*} query
+ */
+const _fix_query = ({ name, uuid, pch, isconfirm, scale }) => {
+  const obj = { name, uuid, pch };
+  if (isconfirm != 2) obj.isconfirm = isconfirm;
+  if (scale != 2) obj.scale = scale;
+  return obj;
+};
+
+class CompanyDataStore {
   constructor(ctx, initialState) {
-    this.ForwardAPI = new ForwardAPI(ctx);
+    this.companyAPI = new CompanyAPI(ctx);
   }
+
+  /**
+   * 默认年份
+   * @memberof CompanyDataStore
+   */
+  @observable
+  PCH = 2019;
 
   @observable
   _list = [];
@@ -43,44 +59,20 @@ class AccumulationFundHandledStore {
     this._list = [];
   }
 
+  /**
+   * 获取企业列表
+   * @memberof CompanyDataStore
+   */
   @action
-  fetchDataList = async () => {
+  getCompanyListByPch = async () => {
     const params = {
-      pageQuery: pageQuery(this._pageQuery),
-      query: query(this._query),
+      ...this._pageQuery,
+      ..._fix_query(this._query),
     };
-    const { list, page } = await this.ForwardAPI.toJava({
-      url: "/housefund/warehousing/page",
-      params,
-    });
+    const { list, page } = await this.companyAPI.getCompanyListByPch(params);
     this._list = list;
     this._pageQuery = page;
   };
-
-  /**
-   * 保存、更新公积金公司
-   * @param params {Object}
-   */
-  @action
-  saveHandled = async (params) => {
-    const data = await this.ForwardAPI.toJava({
-      url: `/housefund/warehousing/${params.id ? "updateStatus" : "create"}`,
-      params,
-    });
-    return data;
-  };
-
-  /**
-   * 一键重跑
-   */
-  @action
-  redo = async () => {
-    const data = await this.ForwardAPI.toJava({
-      url: "/housefund/pending/refresh",
-      params: {},
-    });
-    return data;
-  };
 }
 
-export default AccumulationFundHandledStore;
+export default CompanyDataStore;
