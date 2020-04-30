@@ -51,6 +51,7 @@ class CompanyService extends Service {
             where: {
               pch: pch || PCH,
             },
+            required: false,
           },
           {
             //  企业指标数据
@@ -66,6 +67,20 @@ class CompanyService extends Service {
             where: {
               pch: pch || PCH,
             },
+            required: false,
+          },
+          {
+            //  企业用地指标
+            model: this.app.model.CompanyMjLandModel,
+            attributes: ["type", "area", "linktype", "to_object"],
+            order: [["type", "DESC"]],
+            // required: false,
+          },
+          {
+            //  企业用电指标
+            model: this.app.model.CompanyMjElecModel,
+            attributes: ["elecmeter", "elec"],
+            // required: false,
           },
         ],
         order: [["scale", "DESC"]],

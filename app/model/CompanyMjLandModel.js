@@ -38,6 +38,7 @@ module.exports = (app) => {
       to_object: {
         type: STRING,
         allowNull: false,
+        primaryKey: true,
       } /** 出租关联对象([1]统一社会信用代码[0]街道@村) */,
       prove: {
         type: STRING,
@@ -54,6 +55,7 @@ module.exports = (app) => {
   CompanyMjLandModel.associate = function () {
     app.model.CompanyMjLandModel.belongsTo(app.model.CompanyPchModel, {
       foreignKey: "uuid",
+      targetKey: "uuid",
     });
   };
 

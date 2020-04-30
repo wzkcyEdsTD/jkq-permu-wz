@@ -1,21 +1,26 @@
 import React, { Component } from "react";
-import moment from "moment";
 import autobind from "autobind-decorator";
 import { Button, Table, Modal, Input, Select, message, Tag } from "antd";
 const { Option } = Select;
 import { observer, inject } from "mobx-react";
 import { toJS } from "mobx";
+import CompanyDataForm, {
+  COMPANY_DATA_FORM_HASH,
+} from "./components/CompanyDataForm";
 import hoc from "components/HOC/pageHeader";
+import "./CompanyData.less";
 
 @inject((stores) => ({
   store: stores.companyDataStore,
 }))
-@hoc({ name: "企业数据审核 - 街道", className: "page_companyupload" })
+@hoc({ name: "企业数据审核 - 街道", className: "page_companydata" })
 @observer
-export default class CompanyUpload extends Component {
+export default class CompanyData extends Component {
   state = {
     loading: false,
     savingLoad: false,
+    formModalVisiable: false,
+    passportModalVisiable: false,
     edit: null,
     statusOption: [
       { key: 0, title: "正常" },
@@ -42,6 +47,36 @@ export default class CompanyUpload extends Component {
 
   async componentDidMount() {
     await this.fetchList();
+  }
+
+  /**
+   * 对应hash关闭&开启modal
+   * @param {*} hash
+   */
+  @autobind
+  hideModal(hash) {
+    switch (hash) {
+      case COMPANY_DATA_FORM_HASH: {
+        this.setState({
+          formModalVisiable: false,
+          edit: null,
+        });
+        break;
+      }
+    }
+  }
+  @autobind
+  openModal(hash, obj = null) {
+    console.log("[open]", hash);
+    switch (hash) {
+      case COMPANY_DATA_FORM_HASH: {
+        this.setState({
+          formModalVisiable: true,
+          edit: obj,
+        });
+        break;
+      }
+    }
   }
 
   @autobind
@@ -144,35 +179,51 @@ export default class CompanyUpload extends Component {
     return [
       {
         title: "序号",
-        width: 60,
         dataIndex: "id",
+        width: 60,
+        fixed: "left",
         render: (t, r, index) => {
           return ++index;
         },
       },
       {
         title: "企业名称",
+        width: 240,
         dataIndex: "name",
+        fixed: "left",
       },
       {
         title: "统一社会信用代码",
+        width: 180,
         dataIndex: "uuid",
+        fixed: "left",
       },
       {
         title: "所在街道",
+        width: 100,
         dataIndex: "street",
+        fixed: "left",
       },
       {
         title: "规模",
         dataIndex: "scale",
+        fixed: "left",
+        width: 60,
         render: (t) => (t ? "规上" : "规下"),
       },
       {
         title: "地址",
+        width: 160,
         dataIndex: "address",
       },
       {
+        title: "联系电话",
+        width: 120,
+        dataIndex: "legalphone",
+      },
+      {
         title: "企业状态",
+        width: 100,
         dataIndex: "state",
         render: (t) => (
           <Tag color={t == 0 ? "cyan" : "red"}>
@@ -181,14 +232,79 @@ export default class CompanyUpload extends Component {
         ),
       },
       {
+        title: "用地数据(平方米)",
+        dataIndex: "land",
+        width: 80,
+      },
+      {
+        title: "用电数据(千瓦时)",
+        dataIndex: "elec",
+        width: 80,
+      },
+      {
+        title: "实缴税金(万)",
+        dataIndex: "tax",
+        width: 120,
+        render: (r, t) => <span className={t.tax_state ? "d" : "nd"}>{r}</span>,
+      },
+      {
+        title: "主营业收入(万)",
+        dataIndex: "revenue",
+        width: 120,
+        render: (r, t) => (
+          <span className={t.revenue_state ? "d" : "nd"}>{r}</span>
+        ),
+      },
+      {
+        title: "工业增加值(万)",
+        dataIndex: "industrial",
+        width: 120,
+        render: (r, t) => (
+          <span className={t.industrial_state ? "d" : "nd"}>{r}</span>
+        ),
+      },
+      {
+        title: "综合能耗(吨标煤)",
+        dataIndex: "energy",
+        width: 80,
+        render: (r, t) => (
+          <span className={t.energy_state ? "d" : "nd"}>{r}</span>
+        ),
+      },
+      {
+        title: "研发经费(万)",
+        dataIndex: "rde",
+        width: 120,
+        render: (r, t) => <span className={t.rde_state ? "d" : "nd"}>{r}</span>,
+      },
+      {
+        title: "年平均员工(人)",
+        dataIndex: "staff",
+        width: 120,
+        render: (r, t) => (
+          <span className={t.staff_state ? "d" : "nd"}>{r}</span>
+        ),
+      },
+      {
         title: "操作",
-        render: (t, r) => {
+        width: 240,
+        fixed: "right",
+        render: (r, t) => {
           return (
             <div className="operator">
-              <Button type="primary" icon="edit" onClick={() => {}}>
+              <Button
+                type="primary"
+                icon="edit"
+                onClick={() => this.openModal(COMPANY_DATA_FORM_HASH, t)}
+              >
                 编辑
               </Button>
-              <Button type="primary" icon="check-circle" onClick={() => {}}>
+              <Button
+                type="primary"
+                icon="check-circle"
+                disabled={t.disableConfirm}
+                onClick={() => {}}
+              >
                 确认
               </Button>
               <Button type="primary" icon="tool" onClick={() => {}}>
@@ -198,11 +314,19 @@ export default class CompanyUpload extends Component {
           );
         },
       },
-    ];
+    ].map((v) => {
+      return { ...v, key: v.dataIndex };
+    });
   }
 
   render() {
-    const { loading } = this.state;
+    const {
+      loading,
+      savingLoad,
+      formModalVisiable,
+      passportModalVisiable,
+      edit,
+    } = this.state;
     const { list, _pageQuery } = this.props.store;
     return (
       <div>
@@ -210,7 +334,8 @@ export default class CompanyUpload extends Component {
         <Table
           dataSource={toJS(list)}
           columns={this.columns()}
-          rowKey={(r) => r.id}
+          rowKey={(r) => r.uuid}
+          scroll={{ x: 1500 }}
           pagination={{
             current: _pageQuery.page,
             total: _pageQuery.count,
@@ -231,6 +356,37 @@ export default class CompanyUpload extends Component {
           }}
           loading={loading}
         />
+        <Modal
+          className="modal-handled"
+          title={"企业数据审核"}
+          width={1000}
+          destroyOnClose={true}
+          visible={formModalVisiable}
+          onCancel={() => this.hideModal(COMPANY_DATA_FORM_HASH)}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => this.hideModal(COMPANY_DATA_FORM_HASH)}
+            >
+              取消
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              loading={savingLoad}
+              onClick={this.onSave}
+            >
+              保存
+            </Button>,
+          ]}
+        >
+          <CompanyDataForm
+            company={edit || {}}
+            wrappedComponentRef={(instance) => {
+              this.companyDataForm = instance;
+            }}
+          />
+        </Modal>
       </div>
     );
   }

@@ -11,9 +11,9 @@ import CompanyUploadBasic from "./components/CompanyUploadBasic";
 @inject((stores) => ({
   store: stores.companyUploadStore,
 }))
-@hoc({ name: "企业数据上报核对 - 企业", className: "page_companydata" })
+@hoc({ name: "企业数据上报核对 - 企业", className: "page_companyupload" })
 @observer
-export default class CompanyData extends Component {
+export default class CompanyUpload extends Component {
   state = {
     loading: false,
     savingLoad: false,

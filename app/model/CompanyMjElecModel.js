@@ -25,6 +25,7 @@ module.exports = (app) => {
       elecmeter: {
         type: STRING,
         allowNull: true,
+        primaryKey: true,
       } /** 企业电表号 */,
       elec: {
         type: FLOAT,
@@ -46,6 +47,7 @@ module.exports = (app) => {
   CompanyMjElecModel.associate = function () {
     app.model.CompanyMjElecModel.belongsTo(app.model.CompanyPchModel, {
       foreignKey: "uuid",
+      targetKey: "uuid",
     });
   };
 

@@ -82,13 +82,13 @@ module.exports = (app) => {
       foreignKey: "uuid",
       targetKey: "uuid",
     });
-    app.model.CompanyPchModel.belongsTo(app.model.CompanyMjElecModel, {
+    app.model.CompanyPchModel.hasMany(app.model.CompanyMjElecModel, {
       foreignKey: "uuid",
-      targetKey: "uuid",
+      sourceKey: "uuid",
     });
     app.model.CompanyPchModel.hasMany(app.model.CompanyMjLandModel, {
       foreignKey: "uuid",
-      targetKey: "uuid",
+      sourceKey: "uuid",
     });
   };
 
