@@ -39,7 +39,7 @@ export default class CompanyUploadIndicator extends Component {
   }
 
   render() {
-    const { companyindicator, upload, savingLoad } = this.props;
+    const { company, upload, savingLoad } = this.props;
     const { listIndex, scale } = this.state;
     return (
       <div>
@@ -47,7 +47,7 @@ export default class CompanyUploadIndicator extends Component {
           header={
             <div>
               <span style={{fontWeight:'bold'}}>[2019年度]</span>
-              {` ${companyindicator.name || " 公司名"} - ${scale}`}
+              {` ${company.name || " 公司名"} - ${scale}`}
             </div>
           }
           footer={

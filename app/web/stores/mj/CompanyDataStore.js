@@ -17,8 +17,8 @@ const initPage = {
 };
 
 /**
- * query
- * @param {*} query
+ * 检索元素
+ * @param {*} param0
  */
 const _fix_query = ({ name, uuid, pch, isconfirm, scale }) => {
   const obj = { name, uuid, pch };
@@ -72,6 +72,10 @@ class CompanyDataStore {
     const { list, page } = await this.companyAPI.getCompanyListByPch(params);
     this._list = list.map((v) => {
       let canConfirm = true;
+      const elecd = eval(v.company_mj_elecs.map((d) => d.elec).join("+"));
+      const landd = eval(v.company_mj_lands.map((d) => d.area).join("+")) || 0;
+      const landr =
+        eval(v.company_mj_land_rent.map((d) => d.area).join("+")) || 0;
       const obj = { ...v, ...v.company_mj_datum };
       //  经济指标状态
       Object.keys(v.company_mj_data_state).map((d) => {
@@ -80,9 +84,24 @@ class CompanyDataStore {
       });
       //  确认按钮
       obj.disableConfirm = !canConfirm;
+      obj.elecd = elecd;
+      obj.landd = [landd - landr > 0, landd - landr];
       return obj;
     });
     this._pageQuery = page;
+  };
+
+  /**
+   * 更新企业信息
+   * @memberof CompanyDataStore
+   */
+  @action
+  updateCompanyInfoByPch = async (basic, elec, land) => {
+    await this.companyAPI.updateCompanyInfoByPch({
+      basic: { ...basic, pch: this.PCH },
+      elec,
+      land,
+    });
   };
 }
 

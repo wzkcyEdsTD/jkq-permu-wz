@@ -54,7 +54,7 @@ module.exports = (app) => {
 
   CompanyMjLandModel.associate = function () {
     app.model.CompanyMjLandModel.belongsTo(app.model.CompanyPchModel, {
-      foreignKey: "uuid",
+      foreignKey: "to_object",
       targetKey: "uuid",
     });
   };

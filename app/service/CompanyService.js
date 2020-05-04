@@ -25,7 +25,16 @@ class CompanyService extends Service {
     scale && (extra.scale = scale);
     try {
       const { count, rows } = await this.CompanyPchModel.findAndCountAll({
-        attributes: ["name", "uuid", "street", "scale", "state"],
+        attributes: [
+          // "id", //  update for /home/companyData [CompanyDataForm]
+          "name",
+          "uuid",
+          "street",
+          "scale",
+          "state",
+          "address",
+          "legalphone",
+        ],
         where: {
           name: {
             $like: `%${name || ""}%`,
@@ -72,14 +81,14 @@ class CompanyService extends Service {
           {
             //  企业用地指标
             model: this.app.model.CompanyMjLandModel,
-            attributes: ["type", "area", "linktype", "to_object"],
+            attributes: ["id", "type", "area", "linktype", "uuid"],
             order: [["type", "DESC"]],
             // required: false,
           },
           {
             //  企业用电指标
             model: this.app.model.CompanyMjElecModel,
-            attributes: ["elecmeter", "elec"],
+            attributes: ["id", "elecmeter", "elec"],
             // required: false,
           },
         ],
@@ -91,6 +100,22 @@ class CompanyService extends Service {
         this.ServerResponse.createBySuccessMsg("无数据");
       }
       rows.forEach((row) => row && row.toJSON());
+      //  租赁信息
+      const rent = await this.app.model.CompanyMjLandModel.findAll({
+        where: {
+          to_object: {
+            $in: rows.map((v) => v.dataValues.uuid),
+          },
+          pch: pch || PCH,
+          type: 0,
+        },
+      });
+      rows.forEach(
+        (row) =>
+          (row.dataValues.company_mj_land_rent = rent.filter(
+            (d) => d.uuid == row.dataValues.uuid
+          ))
+      );
       return this.ServerResponse.createBySuccessData({
         page: {
           page: +page,
@@ -112,12 +137,62 @@ class CompanyService extends Service {
    * @memberof CompanyService
    */
   async getCompanyInfoByPch(params) {
-    const { uuid } = params;
+    const { uuid, pch } = params;
     const company = await this.CompanyPchModel.findOne({
-      where: { uuid },
+      where: {
+        uuid,
+        pch: pch || PCH,
+      },
+      include: [
+        {
+          //  企业指标数据
+          model: this.app.model.CompanyMjDataModel,
+          attributes: [
+            "tax",
+            "revenue",
+            "industrial",
+            "energy",
+            "rde",
+            "staff",
+          ],
+          where: {
+            pch: pch || PCH,
+          },
+          required: false,
+        },
+        {
+          //  企业指标数据
+          model: this.app.model.CompanyMjDataStateModel,
+          attributes: [
+            "tax",
+            "revenue",
+            "industrial",
+            "energy",
+            "rde",
+            "staff",
+          ],
+          where: {
+            pch: pch || PCH,
+          },
+          required: false,
+        },
+        {
+          //  企业用地指标
+          model: this.app.model.CompanyMjLandModel,
+          attributes: ["type", "area", "linktype", "to_object"],
+          order: [["type", "DESC"]],
+          // required: false,
+        },
+        {
+          //  企业用电指标
+          model: this.app.model.CompanyMjElecModel,
+          attributes: ["elecmeter", "elec"],
+          // required: false,
+        },
+      ],
     });
     if (!company) {
-      return this.ServerResponse.createByErrorMsg("用户不存在");
+      return this.ServerResponse.createByErrorMsg("企业不存在");
     }
     return this.ServerResponse.createBySuccessData(company.toJSON());
   }

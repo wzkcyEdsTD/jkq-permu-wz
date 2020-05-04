@@ -16,8 +16,8 @@ class CompanyController extends Controller {
    */
   async getCompanyListByPch() {
     const { query } = this.ctx;
-    const res = await this.CompanyService.getCompanyListByPch(query);
-    this.ctx.body = res;
+    const resList = await this.CompanyService.getCompanyListByPch(query);
+    this.ctx.body = resList;
   }
 
   /**

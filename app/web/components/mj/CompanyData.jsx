@@ -35,7 +35,6 @@ export default class CompanyData extends Component {
       { key: 0, title: "未确认" },
     ],
     scaleOption: [
-      { key: 2, title: "全部" },
       { key: 1, title: "规上" },
       { key: 0, title: "规下" },
     ],
@@ -79,12 +78,37 @@ export default class CompanyData extends Component {
     }
   }
 
+  /**
+   * 获取企业信息列表
+   * @memberof CompanyData
+   */
   @autobind
   async fetchList() {
     const { getCompanyListByPch } = this.props.store;
     this.setState({ loading: true });
     await getCompanyListByPch();
     this.setState({ loading: false });
+  }
+
+  /**
+   * 编辑企业信息
+   * @memberof CompanyData
+   */
+  @autobind
+  saveCompanyData() {
+    const { form } = this.companyDataForm.props;
+    const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
+    const { updateCompanyInfoByPch } = this.props.store;
+    form.validateFieldsAndScroll(async (err, values) => {
+      if (err) return;
+      this.setState({ savingLoad: true });
+      try {
+        updateCompanyInfoByPch(values, company_mj_elecs, company_mj_lands);
+        this.hideModal(COMPANY_DATA_FORM_HASH);
+      } finally {
+        this.setState({ savingLoad: false });
+      }
+    });
   }
 
   searchLeft() {
@@ -153,7 +177,7 @@ export default class CompanyData extends Component {
               _query.scale = val == 2 ? undefined : val;
             }}
           >
-            {scaleOption.map((item) => (
+            {[{ key: 2, title: "全部" }, ...scaleOption].map((item) => (
               <Option value={item.key} key={item.key}>
                 {item.title}
               </Option>
@@ -233,12 +257,14 @@ export default class CompanyData extends Component {
       },
       {
         title: "用地数据(平方米)",
-        dataIndex: "land",
+        dataIndex: "landd",
         width: 80,
+        render: ([normal, val]) =>
+          normal ? val : <Tag color="red">{val}</Tag>,
       },
       {
         title: "用电数据(千瓦时)",
-        dataIndex: "elec",
+        dataIndex: "elecd",
         width: 80,
       },
       {
@@ -326,6 +352,7 @@ export default class CompanyData extends Component {
       formModalVisiable,
       passportModalVisiable,
       edit,
+      statusOption,
     } = this.state;
     const { list, _pageQuery } = this.props.store;
     return (
@@ -374,7 +401,7 @@ export default class CompanyData extends Component {
               key="submit"
               type="primary"
               loading={savingLoad}
-              onClick={this.onSave}
+              onClick={this.saveCompanyData}
             >
               保存
             </Button>,
@@ -382,6 +409,7 @@ export default class CompanyData extends Component {
         >
           <CompanyDataForm
             company={edit || {}}
+            status={statusOption}
             wrappedComponentRef={(instance) => {
               this.companyDataForm = instance;
             }}

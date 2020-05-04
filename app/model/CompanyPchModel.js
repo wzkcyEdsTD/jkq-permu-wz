@@ -87,7 +87,7 @@ module.exports = (app) => {
       sourceKey: "uuid",
     });
     app.model.CompanyPchModel.hasMany(app.model.CompanyMjLandModel, {
-      foreignKey: "uuid",
+      foreignKey: "to_object",
       sourceKey: "uuid",
     });
   };

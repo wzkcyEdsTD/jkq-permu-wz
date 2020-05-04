@@ -9,7 +9,7 @@ module.exports = (app) => {
   router.get(`${prefix}/company`, companyController.getCompanyListByPch);
 
   router.get(
-    `${prefix}/company/:uuid`,
+    `${prefix}/company/:pch/:uuid`,
     checkPrivileges,
     companyController.getCompanyInfoByPch
   );

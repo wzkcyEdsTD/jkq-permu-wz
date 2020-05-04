@@ -19,6 +19,7 @@ module.exports = () => {
     password: "wzkcy@123",
     operatorsAliases: {
       $like: Op.like,
+      $in: Op.in,
     },
   };
 

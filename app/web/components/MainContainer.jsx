@@ -94,7 +94,6 @@ class MainContainer extends Component {
     const { currentMenu: MENUS } = this.props.store;
     const subMenuList = [],
       { defaultOpenKeys, defaultSelectedKeys } = this.state;
-    console.log(MENUS);
     for (let i = 0; i < MENUS.length; i++) {
       if (MENUS[i].children && MENUS[i].children.length) {
         const menuList = [],

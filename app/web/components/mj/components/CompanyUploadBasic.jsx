@@ -12,29 +12,29 @@ const formItemLayout = {
 @observer
 class CompanyUploadBasic extends Component {
   render() {
-    const { form, companybase, upload, savingLoad } = this.props;
+    const { form, company, upload, savingLoad } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form className="form-companyUploadBasic">
         <FormItem {...formItemLayout} label="公司名称">
           {getFieldDecorator("name", {
-            initialValue: companybase.name,
+            initialValue: company.name,
           })(<Input disabled />)}
         </FormItem>
         <FormItem {...formItemLayout} label="企业信用代码">
           {getFieldDecorator("uuid", {
-            initialValue: companybase.uuid,
+            initialValue: company.uuid,
           })(<Input disabled />)}
         </FormItem>
         <FormItem {...formItemLayout} label="联系人">
           {getFieldDecorator("link", {
-            initialValue: companybase.link,
+            initialValue: company.link,
             rules: [{ required: true, message: "请输入联系人" }],
           })(<Input placeholder="请输入企业联系人" />)}
         </FormItem>
         <FormItem {...formItemLayout} label="联系方式">
           {getFieldDecorator("linkphone", {
-            initialValue: companybase.linkphone,
+            initialValue: company.linkphone,
             rules: [
               { required: true, message: "请输入联系方式" },
               { validator: checkMobile },
