@@ -7,11 +7,15 @@ import { toJS } from "mobx";
 import CompanyDataForm, {
   COMPANY_DATA_FORM_HASH,
 } from "./components/CompanyDataForm";
+import CompanyPassportForm, {
+  COMPANY_PASSPORT_FORM_HASH,
+} from "./components/CompanyPassportForm";
 import hoc from "components/HOC/pageHeader";
 import "./CompanyData.less";
 
 @inject((stores) => ({
   store: stores.companyDataStore,
+  userStore: stores.userStore,
 }))
 @hoc({ name: "企业数据审核 - 街道", className: "page_companydata" })
 @observer
@@ -63,6 +67,13 @@ export default class CompanyData extends Component {
         });
         break;
       }
+      case COMPANY_PASSPORT_FORM_HASH: {
+        this.setState({
+          passportModalVisiable: false,
+          edit: null,
+        });
+        break;
+      }
     }
   }
   @autobind
@@ -72,6 +83,13 @@ export default class CompanyData extends Component {
       case COMPANY_DATA_FORM_HASH: {
         this.setState({
           formModalVisiable: true,
+          edit: obj,
+        });
+        break;
+      }
+      case COMPANY_PASSPORT_FORM_HASH: {
+        this.setState({
+          passportModalVisiable: true,
           edit: obj,
         });
         break;
@@ -86,8 +104,9 @@ export default class CompanyData extends Component {
   @autobind
   async fetchList() {
     const { getCompanyListByPch } = this.props.store;
+    const { currentUser, currentGroup } = this.props.userStore;
     this.setState({ loading: true });
-    await getCompanyListByPch();
+    await getCompanyListByPch(currentGroup[0].name, currentUser);
     this.setState({ loading: false });
   }
 
@@ -98,8 +117,11 @@ export default class CompanyData extends Component {
   @autobind
   async exportCompanyListByPch() {
     const { exportCompanyListByPch } = this.props.store;
+    const { currentUser, currentGroup } = this.props.userStore;
     this.setState({ downLoading: true });
-    if (!(await exportCompanyListByPch())) {
+    if (
+      !(await exportCompanyListByPch(currentGroup[0].name, currentUser)).length
+    ) {
       message.error("没有可以导出的数据");
     }
     this.setState({ downLoading: false });
@@ -118,8 +140,32 @@ export default class CompanyData extends Component {
       if (err) return;
       this.setState({ savingLoad: true });
       try {
-        updateCompanyInfoByPch(values, company_mj_elecs, company_mj_lands);
+        await updateCompanyInfoByPch(
+          values,
+          company_mj_elecs,
+          company_mj_lands
+        );
         this.hideModal(COMPANY_DATA_FORM_HASH);
+      } finally {
+        this.setState({ savingLoad: false });
+      }
+    });
+  }
+
+  /**
+   * 更新企业登录密码
+   * @memberof CompanyData
+   */
+  @autobind
+  saveCompanyPassport() {
+    const { form } = this.companyPassportForm.props;
+    const { updateCompanyPassport } = this.props.store;
+    form.validateFieldsAndScroll(async (err, values) => {
+      if (err) return;
+      this.setState({ savingLoad: true });
+      try {
+        await updateCompanyPassport(values);
+        this.hideModal(COMPANY_PASSPORT_FORM_HASH);
       } finally {
         this.setState({ savingLoad: false });
       }
@@ -350,12 +396,17 @@ export default class CompanyData extends Component {
               <Button
                 type="primary"
                 icon="check-circle"
-                disabled={t.disableConfirm}
+                // disabled={t.disableConfirm}
+                disabled
                 onClick={() => {}}
               >
                 确认
               </Button>
-              <Button type="primary" icon="tool" onClick={() => {}}>
+              <Button
+                type="primary"
+                icon="tool"
+                onClick={() => this.openModal(COMPANY_PASSPORT_FORM_HASH, t)}
+              >
                 密码修改
               </Button>
             </div>
@@ -435,6 +486,35 @@ export default class CompanyData extends Component {
             wrappedComponentRef={(instance) => {
               this.companyDataForm = instance;
             }}
+          />
+        </Modal>
+        <Modal
+          className="update-password-modal"
+          title="企业密码修改"
+          visible={passportModalVisiable}
+          width={400}
+          onCancel={() => this.hideModal(COMPANY_PASSPORT_FORM_HASH)}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => this.hideModal(COMPANY_PASSPORT_FORM_HASH)}
+            >
+              取消
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              onClick={this.saveCompanyPassport}
+            >
+              提交
+            </Button>,
+          ]}
+        >
+          <CompanyPassportForm
+            wrappedComponentRef={(instance) => {
+              this.companyPassportForm = instance;
+            }}
+            company={edit || {}}
           />
         </Modal>
       </div>

@@ -40,6 +40,9 @@ class CompanyDataStore {
   PCH = 2019;
 
   @observable
+  street = "";
+
+  @observable
   _list = [];
   @computed.struct
   get list() {
@@ -64,10 +67,11 @@ class CompanyDataStore {
    * @memberof CompanyDataStore
    */
   @action
-  getCompanyListByPch = async () => {
+  getCompanyListByPch = async (name, { username }) => {
     const params = {
       ...this._pageQuery,
       ..._fix_query(this._query),
+      street: name == "街道" ? username : "",
     };
     const { list, page } = await this.companyAPI.getCompanyListByPch(params);
     this._list = list.map((v) => {
@@ -96,10 +100,11 @@ class CompanyDataStore {
    * @memberof CompanyDataStore
    */
   @action
-  exportCompanyListByPch = async () => {
-    const data = await this.companyAPI.exportCompanyListByPch(
-      _fix_query(this._query)
-    );
+  exportCompanyListByPch = async (name, { username }) => {
+    const data = await this.companyAPI.exportCompanyListByPch({
+      ..._fix_query(this._query),
+      street: name == "街道" ? username : "",
+    });
     const scaleArr = ["规下", "规上"];
     const stateArr = ["正常", "非本街道", "注销", "迁出", "迁入保护"];
     const list = data.map((v) => {
@@ -132,6 +137,15 @@ class CompanyDataStore {
       elec,
       land,
     });
+  };
+
+  /**
+   * 更新企业登录密码
+   * @memberof CompanyDataStore
+   */
+  @action
+  updateCompanyPassport = async (values) => {
+    await this.companyAPI.updateCompanyPassport(values);
   };
 }
 

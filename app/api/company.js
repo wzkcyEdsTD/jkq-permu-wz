@@ -1,7 +1,7 @@
 import BaseFwAPI from "./base_mj_api";
 export default class CompanyAPI extends BaseFwAPI {
   getCompanyListByPch(params) {
-    return this.get("/mj/company", params);
+    return this.post("/mj/company", params);
   }
   /**
    * [根据筛选条件]导出
@@ -10,7 +10,7 @@ export default class CompanyAPI extends BaseFwAPI {
    * @memberof CompanyAPI
    */
   exportCompanyListByPch(params) {
-    return this.get("/mj/company/export", params);
+    return this.post("/mj/company/export", params);
   }
   /**
    * 企业获取信息
@@ -19,11 +19,11 @@ export default class CompanyAPI extends BaseFwAPI {
    * @memberof CompanyAPI
    */
   getCompanyInfoByPch({ username, pch }) {
-    return this.get(`/mj/company/${username}/${pch}`);
+    return this.post(`/mj/company/${pch}/${username}`);
   }
   /**
    * 更新企业信息
-   * @param {*} {basic,elec,land}
+   * @param {*} { basic, elec, land }
    * @returns
    * @memberof CompanyAPI
    */
@@ -33,5 +33,14 @@ export default class CompanyAPI extends BaseFwAPI {
       elec,
       land,
     });
+  }
+  /**
+   * 更新企业登陆密码
+   * @param {*} { username, passwordNew }
+   * @returns
+   * @memberof CompanyAPI
+   */
+  updateCompanyPassport({ username, passwordNew }) {
+    return this.put(`/mj/company/${username}`, { passwordNew });
   }
 }

@@ -1,15 +1,22 @@
 const Service = require("egg").Service;
+const md5 = require("md5");
 const _ = require("lodash");
+const { USERNAME } = require("../common/type");
+
 const PCH = "2019";
 class CompanyService extends Service {
   constructor(ctx) {
     super(ctx);
+    this.UserModel = ctx.model.UserModel;
+    this.PassportModel = ctx.model.PassportModel;
+    this.UserGroupRelation = ctx.model.UserGroupRelation;
     this.CompanyPchModel = ctx.model.CompanyPchModel;
     this.CompanyMjDataModel = ctx.model.CompanyMjDataModel;
     this.CompanyMjDataStateModel = ctx.model.CompanyMjDataStateModel;
     this.CompanyMjElecModel = ctx.model.CompanyMjElecModel;
     this.CompanyMjLandModel = ctx.model.CompanyMjLandModel;
     this.ServerResponse = ctx.response.ServerResponse;
+    this.salt = ctx.app.config.salt;
   }
 
   /**
@@ -19,10 +26,10 @@ class CompanyService extends Service {
    * @memberof CompanyService
    */
   async getCompanyListByPch(query) {
-    const { page, pageSize, pch, name, uuid, isconfirm, scale } = query;
+    const { street, page, pageSize, pch, name, uuid, isconfirm, scale } = query;
     const extra = {};
-    isconfirm && (extra.isconfirm = isconfirm);
-    scale && (extra.scale = scale);
+    (isconfirm || isconfirm == 0) && (extra.isconfirm = isconfirm);
+    (scale || scale == 0) && (extra.scale = scale);
     try {
       const { count, rows } = await this.CompanyPchModel.findAndCountAll({
         attributes: [
@@ -41,6 +48,9 @@ class CompanyService extends Service {
           },
           uuid: {
             $like: `%${uuid || ""}%`,
+          },
+          street: {
+            $like: `%${street || ""}%`,
           },
           pch: pch || PCH,
           ...extra,
@@ -129,7 +139,7 @@ class CompanyService extends Service {
    * @memberof CompanyService
    */
   async exportCompanyListByPch(query) {
-    const { pch, name, uuid, isconfirm, scale } = query;
+    const { street, pch, name, uuid, isconfirm, scale } = query;
     const extra = {};
     isconfirm && (extra.isconfirm = isconfirm);
     scale && (extra.scale = scale);
@@ -151,6 +161,9 @@ class CompanyService extends Service {
           },
           uuid: {
             $like: `%${uuid || ""}%`,
+          },
+          street: {
+            $like: `%${street || ""}%`,
           },
           pch: pch || PCH,
           ...extra,
@@ -273,6 +286,68 @@ class CompanyService extends Service {
       return this.ServerResponse.createByErrorMsg("企业不存在");
     }
     return this.ServerResponse.createBySuccessData(company.toJSON());
+  }
+
+  /**
+   * 是否存在用户
+   * @param field {String}
+   * @param value {String}
+   * @return {Promise.<boolean>}
+   */
+  async _checkExistColByField(field, value) {
+    const data = await this.UserModel.findOne({
+      where: { [field]: value },
+    });
+    return data && data.dataValues && data.dataValues.id
+      ? data.dataValues.id
+      : false;
+  }
+
+  /**
+   * 街道修改密码
+   * @param {STRING} username
+   * @param {STRING} passwordNew
+   */
+  async updateCompanyPassport({ username, passwordNew }) {
+    const password = md5(passwordNew + this.salt);
+    const check = await this._checkExistColByField(USERNAME, username);
+    if (check) {
+      await this.PassportModel.update(
+        {
+          p_password: password,
+        },
+        { where: { user: check }, individualHooks: true }
+      );
+      return this.ServerResponse.createBySuccessMsg("修改密码成功");
+    } else {
+      const group = [3];
+      const company = await this.UserModel.create({
+        username,
+        phone: "",
+        department: 0,
+        isActive: 1,
+        role: "000",
+      });
+      if (company) {
+        await this.PassportModel.create({
+          user: company.id,
+          protocol: "local",
+          password,
+          p_password: password,
+        });
+        await this.UserGroupRelation.bulkCreate(
+          group.map((v) => {
+            return { group_users: v, user_groups: company.id };
+          })
+        );
+        return this.ServerResponse.createBySuccessMsg(
+          "创建用户并修改密码成功",
+          company
+        );
+      } else {
+        return this.ServerResponse.createByErrorMsg("创建用户失败");
+      }
+    }
   }
 }
 

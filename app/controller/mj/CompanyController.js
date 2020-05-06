@@ -1,5 +1,4 @@
 const Controller = require("egg").Controller;
-const _ = require("lodash");
 
 class CompanyController extends Controller {
   constructor(ctx) {
@@ -16,7 +15,7 @@ class CompanyController extends Controller {
    */
   async getCompanyListByPch() {
     this.ctx.body = await this.CompanyService.getCompanyListByPch(
-      this.ctx.query
+      this.ctx.request.body
     );
   }
 
@@ -26,7 +25,7 @@ class CompanyController extends Controller {
    */
   async exportCompanyListByPch() {
     const res = await this.CompanyService.exportCompanyListByPch(
-      this.ctx.query
+      this.ctx.request.body
     );
     //  前端导出
     this.ctx.body = res;
@@ -41,6 +40,28 @@ class CompanyController extends Controller {
   async getCompanyInfoByPch() {
     const res = await this.CompanyService.getCompanyInfoByPch(this.ctx.params);
     this.ctx.body = res;
+  }
+
+  /**
+   * 更新企业信息
+   * @memberof CompanyController
+   */
+  async updateCompanyInfoByPch() {
+    console.log(this.ctx.params, this.ctx.request.body);
+    this.ctx.body = [];
+  }
+
+  /**
+   * 更新企业密码
+   * @memberof CompanyController
+   */
+  async updateCompanyPassport() {
+    const response = await this.CompanyService.updateCompanyPassport({
+      ...this.ctx.params,
+      ...this.ctx.request.body,
+    });
+    //  清除登录信息
+    this.ctx.body = response;
   }
 }
 
