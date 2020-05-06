@@ -377,6 +377,10 @@ class CompanyDataForm extends Component {
       case COMPANY_LAND_HASH: {
         const uuid = document.getElementsByClassName(`uuid_${r.id}`)[0].value;
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
+        if (!/^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g.test(uuid)) {
+          message.error(`请输入正确的统一信用代码`);
+          return false;
+        }
         if (
           ~company_mj_lands.map((v) => v.uuid).indexOf(uuid) &&
           company_mj_lands.filter((v) => v.uuid == uuid)[0].id != r.id
@@ -452,7 +456,7 @@ class CompanyDataForm extends Component {
           rowKey={(r) => r.id}
           pagination={false}
           rowClassName={(r) => (r.type ? "_self" : "_other")}
-          expandedRowRender={(r) => (r.type ? <p>{r.to_object}</p> : undefined)}
+          expandedRowRender={(r) => (r.type ? <p>{r.uuid}</p> : undefined)}
         />
         <Divider dashed orientation="left" className="elec_divider">
           [{company.name}] 用电数据登记

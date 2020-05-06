@@ -7,9 +7,12 @@ module.exports = (app) => {
   const prefix = "/api/mj";
 
   router.get(`${prefix}/company`, companyController.getCompanyListByPch);
-
   router.get(
-    `${prefix}/company/:pch/:uuid`,
+    `${prefix}/company/export`,
+    companyController.exportCompanyListByPch
+  );
+  router.get(
+    `${prefix}/company/:uuid/:pch`,
     checkPrivileges,
     companyController.getCompanyInfoByPch
   );

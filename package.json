@@ -55,7 +55,8 @@
     "react-router-config": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "shortid": "^2.2.14",
-    "superagent": "^5.0.5"
+    "superagent": "^5.0.5",
+    "xlsx": "^0.16.0"
   },
   "engines": {
     "node": ">=10.0.0"

@@ -19,6 +19,7 @@ export default class CompanyData extends Component {
   state = {
     loading: false,
     savingLoad: false,
+    downLoading: false,
     formModalVisiable: false,
     passportModalVisiable: false,
     edit: null,
@@ -88,6 +89,20 @@ export default class CompanyData extends Component {
     this.setState({ loading: true });
     await getCompanyListByPch();
     this.setState({ loading: false });
+  }
+
+  /**
+   * 导出企业信息列表
+   * @memberof CompanyData
+   */
+  @autobind
+  async exportCompanyListByPch() {
+    const { exportCompanyListByPch } = this.props.store;
+    this.setState({ downLoading: true });
+    if (!(await exportCompanyListByPch())) {
+      message.error("没有可以导出的数据");
+    }
+    this.setState({ downLoading: false });
   }
 
   /**
@@ -193,6 +208,13 @@ export default class CompanyData extends Component {
           }}
         >
           搜索
+        </Button>
+        <Button
+          type="primary"
+          icon="cloud-upload"
+          onClick={this.exportCompanyListByPch}
+        >
+          数据导出
         </Button>
       </span>
     );

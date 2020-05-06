@@ -15,9 +15,23 @@ class CompanyController extends Controller {
    * @memberof CompanyController
    */
   async getCompanyListByPch() {
-    const { query } = this.ctx;
-    const resList = await this.CompanyService.getCompanyListByPch(query);
-    this.ctx.body = resList;
+    this.ctx.body = await this.CompanyService.getCompanyListByPch(
+      this.ctx.query
+    );
+  }
+
+  /**
+   * 导出企业列表(params)
+   * @memberof CompanyController
+   */
+  async exportCompanyListByPch() {
+    const res = await this.CompanyService.exportCompanyListByPch(
+      this.ctx.query
+    );
+    //  前端导出
+    this.ctx.body = res;
+    //  后端导出
+    // this.ctx.helper.exportXLSX("file", "t", res);
   }
 
   /**

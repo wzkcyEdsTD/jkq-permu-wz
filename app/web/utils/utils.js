@@ -1,194 +1,74 @@
-export function uuid() {
-  /* jshint bitwise:false */
-  let i;
-  let random;
-  let uuidStr = '';
-
-  for (i = 0; i < 32; i++) {
-    random = (Math.random() * 16) | 0; // eslint-disable-line
-    if (i === 8 || i === 12 || i === 16 || i === 20) {
-      uuidStr += '-';
-    }
-    uuidStr += (i === 12 ? 4 : i === 16 ? (random & 3) | 8 : random).toString(
-      16
-    ); // eslint-disable-line
-  }
-
-  return uuidStr;
-}
-
-export function formatDate(date, mask) {
-  let d;
-  try {
-    d = new Date(date);
-  } catch (error) {
-    return '';
-  }
-
-  if (d.toString() === 'Invalid Date') {
-    return '';
-  }
-
-  function zeroize(value, length) {
-    let lengthTemp = length;
-    let valueTemp = String(value);
-    if (!length) {
-      lengthTemp = 2;
-      valueTemp = String(valueTemp);
-    }
-    let zeros = '';
-    for (let i = 0; i < lengthTemp - valueTemp.lengthTemp; i++) {
-      zeros += '0';
-    }
-    return zeros + valueTemp;
-  }
-
-  const regex = /"[^"]*"|'[^']*'|\b(?:d{1,4}|m{1,4}|yy(?:yy)?|([hHMstT])\1?|[lLZ])\b/g;
-
-  return mask.replace(regex, $0 => {
-    switch ($0) {
-      case 'd':
-        return d.getDate();
-      case 'dd':
-        return zeroize(d.getDate());
-      case 'ddd':
-        return ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'][d.getDay()];
-      case 'dddd':
-        return [
-          'Sunday',
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday'
-        ][d.getDay()];
-      case 'M':
-        return d.getMonth() + 1;
-      case 'MM':
-        return zeroize(d.getMonth() + 1);
-      case 'MMM':
-        return [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec'
-        ][d.getMonth()];
-      case 'MMMM':
-        return [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'November',
-          'December'
-        ][d.getMonth()];
-      case 'yy':
-        return String(d.getFullYear()).substr(2);
-      case 'yyyy':
-        return d.getFullYear();
-      case 'h':
-        return d.getHours() % 12 || 12;
-      case 'hh':
-        return zeroize(d.getHours() % 12 || 12);
-      case 'H':
-        return d.getHours();
-      case 'HH':
-        return zeroize(d.getHours());
-      case 'm':
-        return d.getMinutes();
-      case 'mm':
-        return zeroize(d.getMinutes());
-      case 's':
-        return d.getSeconds();
-      case 'ss':
-        return zeroize(d.getSeconds());
-      case 'l':
-        return zeroize(d.getMilliseconds(), 3);
-      case 'L':
-        let m = d.getMilliseconds();
-        if (m > 99) m = Math.round(m / 10);
-        return zeroize(m);
-      case 'tt':
-        return d.getHours() < 12 ? 'am' : 'pm';
-      case 'TT':
-        return d.getHours() < 12 ? 'AM' : 'PM';
-      case 'Z':
-        return d.toUTCString().match(/[A-Z]+$/);
-      default:
-        return $0.substr(1, $0.length - 2);
-    }
-  });
-}
-
-export function getSearchColumns(columns) {
-  return (
-    columns &&
-    columns.map(value => ({
-      data: value.dataIndex,
-      searchable: true,
-      orderable: true
-    }))
-  );
-}
-
-export function personTypes(value) {
-  let name = '';
-
-  switch (value) {
-    case 'INITIATOR':
-      name = '发布申请者';
-      break;
-    case 'TEST-QA':
-      name = '测试环境测试者';
-      break;
-    case 'TEST-PRE-PROD':
-      name = '预生产环境测试者';
-      break;
-    case 'TEST-PROD':
-      name = '生产环境测试者';
-      break;
-    case 'OP':
-      name = '部署发布者';
-      break;
-    case 'MGMT':
-      name = '审批者';
-      break;
-    case 'ADMIN':
-      name = '管理员';
-      break;
-    case 'TEST-APPROACH':
-      name = '准生产环境测试者';
-      break;
-    default:
-      name = value;
-      break;
-  }
-
-  return name;
-}
+/**
+ * base64 encode
+ * @param {*} s
+ */
+const base64 = (s) => {
+  return window.btoa(unescape(encodeURIComponent(s)));
+};
 
 /**
- * 手机号脱敏
- * @param {*} data
+ * 表头
  */
-export function desensitization(data) {
-  const reg = /^1\d{10}$/;
-  return reg.test(data)
-    ? `${data.substring(0, 3)}****${data.substring(7)}`
-    : data;
+const headerHash = {
+  address: "企业地址",
+  elecd: "企业用电数据（千瓦时）",
+  landd: "企业用地数据（平方米）",
+  legalphone: "联系方式",
+  name: "企业名称",
+  scale: "企业规模",
+  state: "企业状态",
+  street: "所在街道",
+  uuid: "统一社会信用代码",
+  tax: "实缴税金(万)",
+  revenue: "主营业收入(万)",
+  industrial: "工业增加值(万)",
+  energy: "综合能耗(吨标煤)",
+  rde: "研发经费(万)",
+  staff: "年平均员工(人)",
+};
+
+/**
+ * 导出excel
+ * @param {*} jsonData
+ * @param {*} worksheet
+ */
+export function tableToExcel(
+  jsonData,
+  worksheet = `亩均论英雄企业列表_${+new Date()}`
+) {
+  console.log(jsonData);
+  //列标题
+  const excelContent = `<tr>${Object.keys(jsonData[0])
+    .map((v) => `<td>${headerHash[v] || ``}</td>`)
+    .join(``)}</tr>
+    ${jsonData
+      .map(
+        (v) =>
+          `<tr>${Object.keys(v)
+            .map((d) => `<td>${v[d] || ``}</td>`)
+            .join(``)}</tr>`
+      )
+      .join(``)}`;
+  console.log(excelContent);
+  //Worksheet名
+  let uri = "data:application/vnd.ms-excel;base64,";
+
+  //下载的表格模板数据
+  let template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" 
+  xmlns:x="urn:schemas-microsoft-com:office:excel" 
+  xmlns="http://www.w3.org/TR/REC-html40">
+  <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+    <x:Name>${worksheet}</x:Name>
+    <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+    </x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+    </head><body><table>${excelContent}</table></body></html>`;
+  //下载模板
+  // window.location.href = ;
+  let link = document.createElement("a");
+  link.href = uri + encodeURIComponent(base64(template));
+  //对下载的文件命名
+  link.download = `${worksheet}.xls`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
