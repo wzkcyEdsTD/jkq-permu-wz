@@ -184,8 +184,6 @@ class CompanyService extends Service {
           },
         ],
         order: [["scale", "DESC"]],
-        limit: 2,
-        offset: 0,
       });
       rows.forEach((row) => row && row.toJSON());
       //  租赁信息

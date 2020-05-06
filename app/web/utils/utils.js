@@ -36,8 +36,6 @@ export function tableToExcel(
   jsonData,
   worksheet = `亩均论英雄企业列表_${+new Date()}`
 ) {
-  console.log(jsonData);
-  //列标题
   const excelContent = `<tr>${Object.keys(jsonData[0])
     .map((v) => `<td>${headerHash[v] || ``}</td>`)
     .join(``)}</tr>
@@ -49,12 +47,8 @@ export function tableToExcel(
             .join(``)}</tr>`
       )
       .join(``)}`;
-  console.log(excelContent);
-  //Worksheet名
-  let uri = "data:application/vnd.ms-excel;base64,";
-
-  //下载的表格模板数据
-  let template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" 
+  const uri = "data:application/vnd.ms-excel;base64,";
+  const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" 
   xmlns:x="urn:schemas-microsoft-com:office:excel" 
   xmlns="http://www.w3.org/TR/REC-html40">
   <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
@@ -64,7 +58,7 @@ export function tableToExcel(
     </head><body><table>${excelContent}</table></body></html>`;
   //下载模板
   // window.location.href = ;
-  let link = document.createElement("a");
+  const link = document.createElement("a");
   link.href = uri + encodeURIComponent(base64(template));
   //对下载的文件命名
   link.download = `${worksheet}.xls`;

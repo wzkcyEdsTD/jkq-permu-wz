@@ -111,7 +111,6 @@ class CompanyDataStore {
       Object.keys(v).map((n) =>
         typeof v[n] == "object" && v[n] != null ? undefined : (obj[n] = v[n])
       );
-      console.log(obj);
       obj.elecd = elecd;
       obj.landd = landd - landr;
       obj.scale = scaleArr[obj.scale];
