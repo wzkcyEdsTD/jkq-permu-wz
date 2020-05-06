@@ -47,8 +47,11 @@ class CompanyController extends Controller {
    * @memberof CompanyController
    */
   async updateCompanyInfoByPch() {
-    console.log(this.ctx.params, this.ctx.request.body);
-    this.ctx.body = [];
+    const response = await this.CompanyService.updateCompanyInfoByPch({
+      ...this.ctx.params,
+      ...this.ctx.request.body,
+    });
+    this.ctx.body = response;
   }
 
   /**
@@ -60,7 +63,6 @@ class CompanyController extends Controller {
       ...this.ctx.params,
       ...this.ctx.request.body,
     });
-    //  清除登录信息
     this.ctx.body = response;
   }
 }

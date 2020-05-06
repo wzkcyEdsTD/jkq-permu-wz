@@ -1,5 +1,6 @@
 const Service = require("egg").Service;
 const md5 = require("md5");
+const shortid = require("shortid");
 const _ = require("lodash");
 const { USERNAME } = require("../common/type");
 
@@ -304,6 +305,72 @@ class CompanyService extends Service {
   }
 
   /**
+   * 批量|更新用地用电数据
+   * @param {*} item 条目
+   * @param {*} type [1]用电数据[0]用地数据
+   * @param {*} to_object 自身uuid
+   * @memberof CompanyService
+   */
+  async addCompanyExtra(item, type, { uuid, pch }) {
+    //  shortid验证是否为已存在数据
+    await (type
+      ? this.CompanyMjElecModel.create({
+          elecmeter: item.elecmeter,
+          elec: item.elec,
+          uuid,
+          pch,
+        })
+      : this.CompanyMjLandModel.create({
+          area: item.area,
+          uuid: item.uuid,
+          type: item.type,
+          linktype: item.linktype || 1,
+          to_object: uuid,
+          pch,
+        }));
+  }
+
+  /**
+   * 删除现有关系
+   * @param {*} { uuid, pch }
+   * @memberof CompanyService
+   */
+  async destoryCompanyExtra({ uuid, pch }) {
+    await this.CompanyMjElecModel.destroy({
+      where: { pch, uuid },
+    });
+    await this.CompanyMjLandModel.destroy({
+      where: { pch, to_object: uuid },
+    });
+  }
+
+  /**
+   * 更新企业信息
+   * @param {*} { pch, uuid, basic, elec, land }
+   * @returns {ServerResponse}
+   * @memberof CompanyService
+   */
+  async updateCompanyInfoByPch({ pch, uuid, basic, elec, land }) {
+    const { address, legalphone, state } = basic;
+    await this.CompanyPchModel.update(
+      {
+        address: address,
+        state: state,
+        legalphone: legalphone,
+      },
+      { where: { uuid, pch } }
+    );
+    await this.destoryCompanyExtra(basic);
+    await Promise.all(
+      elec.map(async (i) => await this.addCompanyExtra(i, 1, basic))
+    );
+    await Promise.all(
+      land.map(async (i) => await this.addCompanyExtra(i, 0, basic))
+    );
+    return this.ServerResponse.createBySuccessMsg("修改企业信息成功");
+  }
+
+  /**
    * 街道修改密码
    * @param {STRING} username
    * @param {STRING} passwordNew
@@ -320,7 +387,7 @@ class CompanyService extends Service {
       );
       return this.ServerResponse.createBySuccessMsg("修改密码成功");
     } else {
-      const group = [3];
+      const group = [3]; //  !!写死,企业角色下标为3
       const company = await this.UserModel.create({
         username,
         phone: "",

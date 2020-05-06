@@ -19,6 +19,7 @@ class CompanyPassportForm extends Component {
   render() {
     const { form, company } = this.props;
     const { getFieldDecorator } = form;
+    getFieldDecorator("name", { initialValue: company.name });
     return (
       <Form className="user-add-update-form">
         <FormItem

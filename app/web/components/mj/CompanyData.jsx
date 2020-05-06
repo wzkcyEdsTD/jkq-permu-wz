@@ -146,6 +146,8 @@ export default class CompanyData extends Component {
           company_mj_lands
         );
         this.hideModal(COMPANY_DATA_FORM_HASH);
+        message.info(`[${values.name}] 企业信息更新成功`);
+        this.fetchList();
       } finally {
         this.setState({ savingLoad: false });
       }
@@ -166,6 +168,7 @@ export default class CompanyData extends Component {
       try {
         await updateCompanyPassport(values);
         this.hideModal(COMPANY_PASSPORT_FORM_HASH);
+        message.info(`[${values.name}] 登陆密码更新成功`);
       } finally {
         this.setState({ savingLoad: false });
       }
