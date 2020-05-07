@@ -43,4 +43,14 @@ export default class CompanyAPI extends BaseFwAPI {
   updateCompanyPassport({ username, passwordNew }) {
     return this.put(`/mj/company/${username}`, { passwordNew });
   }
+
+  /**
+   * 获取企业名称
+   * @param {*} uuids
+   * @returns
+   * @memberof CompanyAPI
+   */
+  fetchCompanyNameByUuid(uuids) {
+    return this.post("mj/company/names", { uuids });
+  }
 }

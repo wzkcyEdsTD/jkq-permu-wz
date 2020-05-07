@@ -30,6 +30,10 @@ export default class CompanyUploadIndicator extends Component {
     scale: "规上工业",
   };
 
+  componentDidMount() {
+    const { listIndex } = this.state;
+  }
+
   @autobind
   checkIcon(index) {
     const { listIndex } = this.state;
@@ -46,7 +50,7 @@ export default class CompanyUploadIndicator extends Component {
         <List
           header={
             <div>
-              <span style={{fontWeight:'bold'}}>[2019年度]</span>
+              <span style={{ fontWeight: "bold" }}>[2019年度]</span>
               {` ${company.name || " 公司名"} - ${scale}`}
             </div>
           }

@@ -90,7 +90,7 @@ class CompanyService extends Service {
           {
             model: this.app.model.CompanyMjLandModel,
             attributes: ["id", "type", "area", "linktype", "uuid"],
-            order: [["type", "DESC"]],
+            order: [["type", "ASC"]],
             // required: false,
           },
           {
@@ -99,7 +99,12 @@ class CompanyService extends Service {
             // required: false,
           },
         ],
-        order: [["scale", "DESC"]],
+        order: [
+          ["scale", "DESC"],
+          [this.app.model.CompanyMjLandModel, "type", "DESC"],
+          [this.app.model.CompanyMjLandModel, "area", "DESC"],
+          [this.app.model.CompanyMjElecModel, "elec", "DESC"],
+        ],
         limit: Number(pageSize || 10),
         offset: Number(page - 1 || 0) * Number(pageSize || 10),
       });
@@ -107,12 +112,13 @@ class CompanyService extends Service {
       //  租赁信息
       const rent = await this.app.model.CompanyMjLandModel.findAll({
         where: {
-          to_object: {
-            $in: rows.map((v) => v.dataValues.uuid),
+          uuid: {
+            $in: [...new Set(rows.map((v) => v.dataValues.uuid))],
           },
           pch: pch || PCH,
           type: 0,
         },
+        order: [["area", "DESC"]],
       });
       rows.forEach(
         (row) =>
@@ -203,12 +209,13 @@ class CompanyService extends Service {
       //  租赁信息
       const rent = await this.app.model.CompanyMjLandModel.findAll({
         where: {
-          to_object: {
-            $in: rows.map((v) => v.dataValues.uuid),
+          uuid: {
+            $in: [...new Set(rows.map((v) => v.dataValues.uuid))],
           },
           pch: pch || PCH,
           type: 0,
         },
+        order: [["area", "DESC"]],
       });
       rows.forEach(
         (row) =>
@@ -271,22 +278,39 @@ class CompanyService extends Service {
         {
           //  企业用地指标
           model: this.app.model.CompanyMjLandModel,
-          attributes: ["type", "area", "linktype", "to_object"],
+          attributes: ["id", "type", "area", "linktype", "uuid"],
           order: [["type", "DESC"]],
           // required: false,
         },
         {
           //  企业用电指标
           model: this.app.model.CompanyMjElecModel,
-          attributes: ["elecmeter", "elec"],
+          attributes: ["id", "elecmeter", "elec"],
           // required: false,
         },
+      ],
+      order: [
+        [this.app.model.CompanyMjLandModel, "type", "DESC"],
+        [this.app.model.CompanyMjLandModel, "area", "DESC"],
+        [this.app.model.CompanyMjElecModel, "elec", "DESC"],
       ],
     });
     if (!company) {
       return this.ServerResponse.createByErrorMsg("企业不存在");
     }
-    return this.ServerResponse.createBySuccessData(company.toJSON());
+    //  租赁信息
+    const rent = await this.app.model.CompanyMjLandModel.findAll({
+      where: {
+        uuid,
+        pch: pch || PCH,
+        type: 0,
+      },
+      order: [["area", "DESC"]],
+    });
+    company.dataValues.company_mj_land_rent = rent;
+    console.log(company);
+
+    return this.ServerResponse.createBySuccessData(company);
   }
 
   /**
@@ -415,6 +439,23 @@ class CompanyService extends Service {
         return this.ServerResponse.createByErrorMsg("创建用户失败");
       }
     }
+  }
+
+  /**
+   * uuids => names
+   * @param {*} {uuids = []}
+   * @memberof CompanyService
+   */
+  async fetchCompanyNameByUuid({ uuids = [] }) {
+    const names = await this.app.model.CompanyPchModel.findAll({
+      attributes: ["name", "uuid"],
+      where: {
+        uuid: {
+          $in: uuids,
+        },
+      },
+    });
+    return this.ServerResponse.createBySuccessData(names);
   }
 }
 

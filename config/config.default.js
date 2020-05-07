@@ -42,7 +42,7 @@ module.exports = (appInfo) => {
     maxAge: 24 * 3600 * 1000, // 1 day
     httpOnly: true,
     encrypt: true,
-    renew: true,
+    // renew: true,
   };
 
   // external

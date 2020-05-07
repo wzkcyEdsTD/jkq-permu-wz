@@ -20,7 +20,7 @@ export default class CompanyUpload extends Component {
     savingLoad: false,
   };
 
-  async componentDidMount() {
+  async componentWillMount() {
     this.setState({ loading: true });
     await this.fetchCompanyOption();
     this.setState({ loading: false });
@@ -70,23 +70,23 @@ export default class CompanyUpload extends Component {
   render() {
     const { loading } = this.state;
     const { company } = this.props.store;
-    console.log(company)
     return (
       <div>
         <Spin spinning={loading}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="企业数据核对" key="1">
-              <CompanyUploadIndicator
+            <TabPane tab="用地用电数据" key="1">
+              <CompanyUploadEl
                 company={company || {}}
                 upload={this.companyUploadIndicatorSubmit}
+                fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
                 saving={this.savingLoad}
                 wrappedComponentRef={(instance) => {
                   this.companyUploadIndicatorForm = instance;
                 }}
               />
             </TabPane>
-            <TabPane tab="用地用电数据" key="2">
-              <CompanyUploadEl
+            <TabPane tab="企业数据核对" key="2">
+              <CompanyUploadIndicator
                 company={company || {}}
                 upload={this.companyUploadIndicatorSubmit}
                 saving={this.savingLoad}

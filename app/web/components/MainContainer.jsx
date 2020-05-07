@@ -275,7 +275,11 @@ class MainContainer extends Component {
             </span>
             <Dropdown overlay={this.userMenu()}>
               <a>
-                <Avatar>ADMIN</Avatar>
+                <Avatar
+                  style={{ color: "#f56a00", backgroundColor: "#fde3cf" }}
+                >
+                  U
+                </Avatar>
               </a>
             </Dropdown>
           </div>

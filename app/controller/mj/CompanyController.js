@@ -65,6 +65,17 @@ class CompanyController extends Controller {
     });
     this.ctx.body = response;
   }
+
+  /**
+   * 根据统一社会信用代码查询企业名称
+   * @memberof CompanyController
+   */
+  async fetchCompanyNameByUuid() {
+    const response = await this.CompanyService.fetchCompanyNameByUuid(
+      this.ctx.request.body
+    );
+    this.ctx.body = response;
+  }
 }
 
 module.exports = CompanyController;

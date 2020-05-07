@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
 import shortid from "shortid";
 import {
   Form,
@@ -10,6 +10,9 @@ import {
   Tag,
   Select,
   message,
+  Statistic,
+  Row,
+  Col,
 } from "antd";
 const { Option } = Select;
 import { toJS } from "mobx";
@@ -34,7 +37,35 @@ class CompanyDataForm extends Component {
   state = {
     company_mj_lands: [],
     company_mj_elecs: [],
+    company_mj_land_rent: [],
   };
+
+  @autobind
+  async componentDidMount() {
+    const { company } = this.props;
+    const uuids2names = await this.fetchCompanyNameByUuid([
+      ...new Set([
+        ...company.company_mj_lands.map((v) => v.uuid),
+        ...company.company_mj_land_rent.map((v) => v.to_object),
+      ]),
+    ]);
+    this.setState({
+      company_mj_lands: company.company_mj_lands.map((v) => ({
+        ...v,
+        cname: uuids2names[v.uuid] || "",
+        edit: false,
+      })),
+      company_mj_elecs: company.company_mj_elecs.map((v) => ({
+        ...v,
+        edit: false,
+      })),
+      company_mj_land_rent: company.company_mj_land_rent.map((v) => ({
+        ...v,
+        cname: uuids2names[v.to_object] || "",
+        edit: false,
+      })),
+    });
+  }
 
   elecColumns = [
     {
@@ -61,7 +92,7 @@ class CompanyDataForm extends Component {
     },
     {
       title: "操作",
-      width: 160,
+      width: 180,
       dataIndex: "action",
       render: (t, r) => (
         <span>
@@ -126,7 +157,7 @@ class CompanyDataForm extends Component {
           t
         ),
     },
-    { title: "出租企业信息", dataIndex: "uid" },
+    { title: "出租企业信息", dataIndex: "cname" },
     {
       title: "出租企业信用代码",
       dataIndex: "uuid",
@@ -142,7 +173,7 @@ class CompanyDataForm extends Component {
     },
     {
       title: "操作",
-      width: 160,
+      width: 180,
       dataIndex: "action",
       render: (t, r) => (
         <span>
@@ -191,18 +222,23 @@ class CompanyDataForm extends Component {
     },
   ];
 
-  async componentDidMount() {
-    const { company } = this.props;
-    this.setState({
-      company_mj_lands: company.company_mj_lands.map((v) => ({
-        ...v,
-        edit: false,
-      })),
-      company_mj_elecs: company.company_mj_elecs.map((v) => ({
-        ...v,
-        edit: false,
-      })),
-    });
+  landRentColumns = [
+    { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
+    { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
+    { title: "承租企业名称", dataIndex: "cname", key: "cname" },
+    { title: "出租用地面积", dataIndex: "area", key: "area" },
+  ];
+
+  /**
+   * 获取企业名称
+   * @param {*} uuids
+   * @memberof CompanyDataForm
+   */
+  @autobind
+  async fetchCompanyNameByUuid(uuids) {
+    const { fetchCompanyNameByUuid } = this.props;
+    const uuids2names = await fetchCompanyNameByUuid(uuids);
+    return uuids2names;
   }
 
   /**
@@ -279,10 +315,16 @@ class CompanyDataForm extends Component {
    * @memberof CompanyDataForm
    */
   @autobind
-  editConfirmRecord(HASH, edit, isCancel, r, event) {
+  async editConfirmRecord(HASH, edit, isCancel, r, event) {
     const { company_mj_elecs, company_mj_lands } = this.state;
     console.log(`[${isCancel ? "cancel" : edit ? "edit" : "confirm"}]`, HASH);
     if (!this.verifyEdit(HASH, edit, isCancel, r)) return;
+    const uuids2names =
+      HASH == COMPANY_LAND_HASH && !edit && !isCancel
+        ? await this.fetchCompanyNameByUuid([
+            document.getElementsByClassName(`uuid_${r.id}`)[0].value,
+          ])
+        : "";
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
         edit
@@ -295,14 +337,14 @@ class CompanyDataForm extends Component {
               company_mj_elecs: company_mj_elecs.map((v) =>
                 v.id == r.id
                   ? {
-                      ...v,
+                      ...r,
                       elecmeter: isCancel
-                        ? v.elecmeter
+                        ? r.elecmeter
                         : document.getElementsByClassName(
                             `elecmeter_${r.id}`
                           )[0].value,
                       elec: isCancel
-                        ? v.elec
+                        ? r.elec
                         : document.getElementsByClassName(`elec_${r.id}`)[0]
                             .value,
                       edit,
@@ -323,13 +365,19 @@ class CompanyDataForm extends Component {
               company_mj_lands: company_mj_lands.map((v) =>
                 v.id == r.id
                   ? {
-                      ...v,
+                      ...r,
+                      cname: isCancel
+                        ? r.cname
+                        : uuids2names[
+                            document.getElementsByClassName(`uuid_${r.id}`)[0]
+                              .value
+                          ],
                       area: isCancel
-                        ? v.area
+                        ? r.area
                         : document.getElementsByClassName(`area_${r.id}`)[0]
                             .value,
                       uuid: isCancel
-                        ? v.uuid
+                        ? r.uuid
                         : document.getElementsByClassName(`uuid_${r.id}`)[0]
                             .value,
                       edit,
@@ -399,8 +447,19 @@ class CompanyDataForm extends Component {
 
   render() {
     const { form, company, status } = this.props;
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const {
+      company_mj_elecs,
+      company_mj_lands,
+      company_mj_land_rent,
+    } = this.state;
     const { getFieldDecorator } = form;
+    const landget =
+      eval(
+        company_mj_lands
+          .filter((d) => d.type != 1)
+          .map((d) => d.area)
+          .join("+")
+      ) || 0;
     // getFieldDecorator("id", { initialValue: company.id });
     return (
       <Form className="form-companyUploadBasic">
@@ -456,8 +515,45 @@ class CompanyDataForm extends Component {
           rowKey={(r) => r.id}
           pagination={false}
           rowClassName={(r) => (r.type ? "_self" : "_other")}
-          expandedRowRender={(r) => (r.type ? <p>{r.uuid}</p> : undefined)}
+          expandedRowRender={(r) => {
+            return r.type ? (
+              <Table
+                title={() => "企业用地出租信息"}
+                size="small"
+                columns={this.landRentColumns}
+                pagination={false}
+                rowKey={(_r) => _r.id}
+                dataSource={company_mj_land_rent}
+              />
+            ) : undefined;
+          }}
         />
+        <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
+          <Col span={3} offset={4}>
+            <Statistic title="自由用地(㎡)" value={company.landself} />
+          </Col>
+          <Col span={1} className="char">
+            +
+          </Col>
+          <Col span={3}>
+            <Statistic title="租赁用地(㎡)" value={landget} />
+          </Col>
+          <Col span={1} className="char">
+            -
+          </Col>
+          <Col span={3}>
+            <Statistic title="出租用地(㎡)" value={company.landr} />
+          </Col>
+          <Col span={1} className="char">
+            =
+          </Col>
+          <Col span={3}>
+            <Statistic
+              title="实际用地(㎡)"
+              value={company.landself + landget - company.landr}
+            />
+          </Col>
+        </Row>
         <Divider dashed orientation="left" className="elec_divider">
           [{company.name}] 用电数据登记
         </Divider>

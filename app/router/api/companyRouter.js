@@ -26,4 +26,9 @@ module.exports = (app) => {
     checkPrivileges,
     companyController.updateCompanyPassport
   );
+  router.post(
+    `${prefix}/company/names`,
+    checkPrivileges,
+    companyController.fetchCompanyNameByUuid
+  );
 };

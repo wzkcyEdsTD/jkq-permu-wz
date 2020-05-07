@@ -1,5 +1,6 @@
 import { action, observable, computed } from "mobx";
 import CompanyAPI from "api/company";
+import shortid from "shortid";
 import { tableToExcel } from "utils/utils";
 const initTable = {
   name: "",
@@ -76,11 +77,29 @@ class CompanyDataStore {
     const { list, page } = await this.companyAPI.getCompanyListByPch(params);
     this._list = list.map((v) => {
       let canConfirm = true;
+      const { uuid } = v;
       const elecd = eval(v.company_mj_elecs.map((d) => d.elec).join("+"));
-      const landd = eval(v.company_mj_lands.map((d) => d.area).join("+")) || 0;
+      const landself =
+        eval(
+          v.company_mj_lands
+            .filter((d) => d.type == 1)
+            .map((d) => d.area)
+            .join("+")
+        ) || 0;
+      const landget =
+        eval(
+          v.company_mj_lands
+            .filter((d) => d.type != 1)
+            .map((d) => d.area)
+            .join("+")
+        ) || 0;
       const landr =
         eval(v.company_mj_land_rent.map((d) => d.area).join("+")) || 0;
       const obj = { ...v, ...v.company_mj_datum };
+      !obj.company_mj_lands.filter((v) => v.type == 1).length &&
+        (obj.company_mj_lands = [
+          { type: 1, area: 0, uuid, to_object: uuid, id: shortid.generate() },
+        ].concat(obj.company_mj_lands));
       //  经济指标状态
       Object.keys(v.company_mj_data_state).map((d) => {
         obj[`${d}_state`] = v.company_mj_data_state[d];
@@ -89,7 +108,10 @@ class CompanyDataStore {
       //  确认按钮
       obj.disableConfirm = !canConfirm;
       obj.elecd = elecd;
-      obj.landd = [landd - landr > 0, landd - landr];
+      obj.landself = landself;
+      obj.landget = landget;
+      obj.landr = landr;
+      obj.landd = [landself + landget - landr > 0, landself + landget - landr];
       return obj;
     });
     this._pageQuery = page;
@@ -146,6 +168,23 @@ class CompanyDataStore {
   @action
   updateCompanyPassport = async (values) => {
     await this.companyAPI.updateCompanyPassport(values);
+  };
+
+  /**
+   * 根据统一社会信用代码查询企业名称
+   * @memberof CompanyDataStore
+   */
+  @action
+  fetchCompanyNameByUuid = async (uuids) => {
+    const fuuids = uuids.filter((v) =>
+      /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g.test(v)
+    );
+    const res = fuuids.length
+      ? await this.companyAPI.fetchCompanyNameByUuid(fuuids)
+      : [];
+    const uuids2names = {};
+    res.map(({ uuid, name }) => (uuids2names[uuid] = name));
+    return uuids2names;
   };
 }
 

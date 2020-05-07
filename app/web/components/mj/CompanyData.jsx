@@ -175,6 +175,11 @@ export default class CompanyData extends Component {
     });
   }
 
+  /**
+   * 搜索栏
+   * @returns
+   * @memberof CompanyData
+   */
   searchLeft() {
     const { _query, _pageQuery } = this.props.store;
     const { confirmOption, scaleOption, pchOption } = this.state;
@@ -486,6 +491,7 @@ export default class CompanyData extends Component {
           <CompanyDataForm
             company={edit || {}}
             status={statusOption}
+            fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
             wrappedComponentRef={(instance) => {
               this.companyDataForm = instance;
             }}
