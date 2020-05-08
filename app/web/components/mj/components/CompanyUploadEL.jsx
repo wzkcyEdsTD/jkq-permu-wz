@@ -80,10 +80,12 @@ class CompanyUploadEL extends Component {
         ...v,
         check: company.company_mj_data_state[v.v],
         value: company.company_mj_datum[v.v] || 0,
+        checkable: company.company_mj_data_state[v.v] ? false : true,
       })),
       extraIndex: extraIndex.map((v) => ({
         ...v,
         check: company.company_mj_data_state[v.v],
+        checkable: company.company_mj_data_state[v.v] ? false : true,
       })),
     });
   }
@@ -167,7 +169,7 @@ class CompanyUploadEL extends Component {
    */
   @autobind
   async updateCompanyDataState() {
-    const { company, updateCompanyDataState,fetchCompanyOption } = this.props;
+    const { company, updateCompanyDataState, fetchCompanyOption } = this.props;
     const { basicIndex, extraIndex } = this.state;
     const states = {};
     [...basicIndex, ...extraIndex].map((v) => {
@@ -232,7 +234,7 @@ class CompanyUploadEL extends Component {
             grid={{ gutter: 16, column: 4 }}
             style={{ textAlign: "center" }}
             dataSource={basicIndex}
-            renderItem={({ title, value, check }, index) => (
+            renderItem={({ title, value, check, checkable }, index) => (
               <List.Item>
                 <List.Item.Meta
                   title={
@@ -243,12 +245,12 @@ class CompanyUploadEL extends Component {
                   description={
                     <span
                       className="lspan"
-                      onClick={(e) => this.checkIcon(index, true)}
+                      onClick={(e) => checkable && this.checkIcon(index, true)}
                     >
                       <i>{value}</i>
                       {
-                        <Tag color={check ? "green" : "red"}>
-                          {check ? "确认" : "未确认"}
+                        <Tag color={!checkable ? "" : check ? "green" : "red"}>
+                          {!checkable ? "已确认" : check ? "确认" : "未确认"}
                         </Tag>
                       }
                     </span>
@@ -307,10 +309,22 @@ class CompanyUploadEL extends Component {
             </Col>
             <Col span={2} className="charCheck">
               <Tag
-                color={extraIndex[0].check ? "green" : "red"}
-                onClick={(e) => this.checkIcon(0, false)}
+                color={
+                  !extraIndex[0].checkable
+                    ? ""
+                    : extraIndex[0].check
+                    ? "green"
+                    : "red"
+                }
+                onClick={(e) =>
+                  extraIndex[0].checkable && this.checkIcon(0, false)
+                }
               >
-                {extraIndex[0].check ? "确认" : "未确认"}
+                {!extraIndex[0].checkable
+                  ? "已确认"
+                  : extraIndex[0].check
+                  ? "确认"
+                  : "未确认"}
               </Tag>
             </Col>
           </Row>
@@ -329,10 +343,22 @@ class CompanyUploadEL extends Component {
             </Col>
             <Col span={2} className="charCheck">
               <Tag
-                color={extraIndex[1].check ? "green" : "red"}
-                onClick={(e) => this.checkIcon(1, false)}
+                color={
+                  !extraIndex[1].checkable
+                    ? ""
+                    : extraIndex[1].check
+                    ? "green"
+                    : "red"
+                }
+                onClick={(e) =>
+                  extraIndex[1].checkable && this.checkIcon(1, false)
+                }
               >
-                {extraIndex[1].check ? "确认" : "未确认"}
+                {!extraIndex[1].checkable
+                  ? "已确认"
+                  : extraIndex[1].check
+                  ? "确认"
+                  : "未确认"}
               </Tag>
             </Col>
           </Row>

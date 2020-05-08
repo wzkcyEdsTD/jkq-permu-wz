@@ -67,6 +67,7 @@ class CompanyService extends Service {
               "rde",
               "staff",
               "sewage",
+              "taxtime",
             ],
             where: {
               pch: pch || PCH,
@@ -83,6 +84,7 @@ class CompanyService extends Service {
               "rde",
               "staff",
               "sewage",
+              "taxtime",
               "land",
               "elec",
             ],
@@ -190,6 +192,7 @@ class CompanyService extends Service {
               "rde",
               "staff",
               "sewage",
+              "taxtime",
             ],
             where: {
               pch: pch || PCH,
@@ -259,6 +262,7 @@ class CompanyService extends Service {
             "rde",
             "staff",
             "sewage",
+            "taxtime",
           ],
           where: {
             pch: pch || PCH,
@@ -276,6 +280,7 @@ class CompanyService extends Service {
             "rde",
             "staff",
             "sewage",
+            "taxtime",
             "land",
             "elec",
           ],
