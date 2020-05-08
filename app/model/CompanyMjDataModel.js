@@ -56,6 +56,11 @@ module.exports = (app) => {
         type: STRING,
         allowNull: true,
       } /** 纳税时间 */,
+      sewage: {
+        type: FLOAT,
+        allowNull: false,
+        defaultValue: 0,
+      } /** 排污量(吨) */,
     },
     {
       freezeTableName: false,

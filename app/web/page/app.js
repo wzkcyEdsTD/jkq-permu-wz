@@ -27,6 +27,8 @@ import CompanyData from "components/mj/CompanyData";
 import CompanyDataStore from "stores/mj/CompanyDataStore";
 import CompanyUpload from "components/mj/CompanyUpload";
 import CompanyUploadStore from "stores/mj/CompanyUploadStore";
+import CompanyProgress from "components/mj/CompanyProgress";
+import CompanyProgressStore from "stores/mj/CompanyProgressStore";
 
 const createStores = (ctx, state, userinfoState) => ({
   userStore: new UserStore(ctx, state, userinfoState),
@@ -34,6 +36,7 @@ const createStores = (ctx, state, userinfoState) => ({
   menuStore: new MenuStore(ctx, state),
   companyDataStore: new CompanyDataStore(ctx, state),
   companyUploadStore: new CompanyUploadStore(ctx, state),
+  companyProgressStore: new CompanyProgressStore(ctx, state),
 });
 
 const routes = [
@@ -55,6 +58,10 @@ const routes = [
         component: Menu,
       },
       //  company
+      {
+        path: "/home/companyProgress",
+        component: CompanyProgress,
+      },
       {
         path: "/home/companyData",
         component: CompanyData,

@@ -5,8 +5,8 @@ const TabPane = Tabs.TabPane;
 import { observer, inject } from "mobx-react";
 import hoc from "components/HOC/pageHeader";
 import CompanyUploadEl from "./components/CompanyUploadEL";
-import CompanyUploadIndicator from "./components/CompanyUploadIndicator";
 import CompanyUploadBasic from "./components/CompanyUploadBasic";
+import "./CompanyUpload.less";
 
 @inject((stores) => ({
   store: stores.companyUploadStore,
@@ -21,16 +21,16 @@ export default class CompanyUpload extends Component {
   };
 
   async componentWillMount() {
-    this.setState({ loading: true });
     await this.fetchCompanyOption();
-    this.setState({ loading: false });
   }
 
   @autobind
   async fetchCompanyOption() {
+    this.setState({ loading: true });
     const { currentUser } = this.props.userStore;
     const { getCompanyInfoByPch } = this.props.store;
     await getCompanyInfoByPch(currentUser);
+    this.setState({ loading: false });
   }
 
   /**
@@ -74,18 +74,20 @@ export default class CompanyUpload extends Component {
       <div>
         <Spin spinning={loading}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="用地用电数据" key="1">
+            <TabPane tab="企业数据核对" key="1">
               <CompanyUploadEl
                 company={company || {}}
                 upload={this.companyUploadIndicatorSubmit}
                 fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
+                updateCompanyDataState={this.props.store.updateCompanyDataState}
+                fetchCompanyOption={this.fetchCompanyOption}
                 saving={this.savingLoad}
                 wrappedComponentRef={(instance) => {
                   this.companyUploadIndicatorForm = instance;
                 }}
               />
             </TabPane>
-            <TabPane tab="企业数据核对" key="2">
+            {/* <TabPane tab="企业数据核对" key="2">
               <CompanyUploadIndicator
                 company={company || {}}
                 upload={this.companyUploadIndicatorSubmit}
@@ -94,8 +96,8 @@ export default class CompanyUpload extends Component {
                   this.companyUploadIndicatorForm = instance;
                 }}
               />
-            </TabPane>
-            <TabPane tab="企业信息" key="3">
+            </TabPane> */}
+            <TabPane tab="企业信息" key="2">
               <CompanyUploadBasic
                 company={company || {}}
                 upload={this.companyUploadBasicSubmit}

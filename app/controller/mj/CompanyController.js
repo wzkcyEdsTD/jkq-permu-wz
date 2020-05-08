@@ -76,6 +76,18 @@ class CompanyController extends Controller {
     );
     this.ctx.body = response;
   }
+
+  /**
+   * 更新企业指标数据状态(pch)
+   * @memberof CompanyController
+   */
+  async updateCompanyDataState() {
+    const response = await this.CompanyService.updateCompanyDataState({
+      basic: this.ctx.params,
+      states: this.ctx.request.body,
+    });
+    this.ctx.body = response;
+  }
 }
 
 module.exports = CompanyController;

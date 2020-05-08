@@ -5,7 +5,7 @@ const { Item: FormItem } = Form;
 import { checkMobile } from "utils/validation";
 export const COMPANY_UPLOAD_BASIC_FORM_HASH = Symbol("handled");
 const formItemLayout = {
-  labelCol: { span: 8 },
+  labelCol: { span: 3 },
   wrapperCol: { span: 10 },
 };
 
@@ -41,7 +41,7 @@ class CompanyUploadBasic extends Component {
             ],
           })(<Input placeholder="请输入联系方式" />)}
         </FormItem>
-        <Form.Item wrapperCol={{ span: 8, offset: 8 }}>
+        <Form.Item wrapperCol={{ span: 8, offset: 3 }}>
           <Button
             type="primary"
             htmlType="submit"

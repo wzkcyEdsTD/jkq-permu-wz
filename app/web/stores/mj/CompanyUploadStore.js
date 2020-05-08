@@ -30,6 +30,7 @@ class CompanyUploadStore {
       username,
       pch: pch || this.PCH,
     });
+    const elecd = eval(data.company_mj_elecs.map((d) => d.elec).join("+"));
     const landself =
       eval(
         data.company_mj_lands
@@ -50,6 +51,7 @@ class CompanyUploadStore {
       (data.company_mj_lands = [
         { type: 1, area: 0, uuid, to_object: uuid, id: shortid.generate() },
       ].concat(data.company_mj_lands));
+    data.elecd = elecd;
     data.landself = landself;
     data.landget = landget;
     data.landr = landr;
@@ -72,6 +74,15 @@ class CompanyUploadStore {
     const uuids2names = {};
     res.map(({ uuid, name }) => (uuids2names[uuid] = name));
     return uuids2names;
+  };
+
+  /**
+   * 更新企业数据状态(pch)
+   * @memberof CompanyUploadStore
+   */
+  @action
+  updateCompanyDataState = async (obj) => {
+    await this.companyAPI.updateCompanyDataState(obj);
   };
 }
 

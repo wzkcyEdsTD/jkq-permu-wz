@@ -7,31 +7,20 @@ import { List, Icon, Button, Tooltip } from "antd";
 export default class CompanyUploadIndicator extends Component {
   state = {
     listIndex: [
-      {
-        title: "实缴税金(万)",
-        v: "tax",
-        value: 0,
-        check: false,
-        lowCase: true,
-      },
-      { title: "主营业收入(万)", v: "revenue", value: 0, check: true },
-      {
-        title: "纳税登记时间",
-        v: "taxtime",
-        value: 0,
-        check: false,
-        lowCase: true,
-      },
+      { title: "实缴税金(万)", v: "tax", value: 0, check: false },
+      { title: "主营业收入(万)", v: "revenue", value: 0, check: false },
+      { title: "纳税登记时间", v: "taxtime", value: 0, check: false },
       { title: "工业增加值(万)", v: "industrial", value: 0, check: false },
-      { title: "年平均员工数(人)", v: "staff", value: 0, check: true },
+      { title: "年平均员工数(人)", v: "staff", value: 0, check: false },
       { title: "年综合能耗(吨标煤)", v: "energy", value: 0, check: false },
       { title: "研发经费(万)", v: "rde", value: 0, check: false },
     ],
     scale: "规上工业",
   };
 
-  componentDidMount() {
+  UNSAFE_componentWillReceiveProps() {
     const { listIndex } = this.state;
+    const { company } = this.props;
   }
 
   @autobind

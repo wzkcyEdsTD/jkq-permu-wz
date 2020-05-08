@@ -157,7 +157,11 @@ class CompanyDataForm extends Component {
           t
         ),
     },
-    { title: "出租企业信息", dataIndex: "cname" },
+    {
+      title: "出租企业信息",
+      dataIndex: "cname",
+      render: (t, r) => (r.type ? "" : t),
+    },
     {
       title: "出租企业信用代码",
       dataIndex: "uuid",
@@ -166,7 +170,7 @@ class CompanyDataForm extends Component {
         r.edit ? (
           <Input className={`uuid_${r.id}`} defaultValue={t} />
         ) : r.type ? (
-          "自有"
+          ""
         ) : (
           t
         ),
@@ -224,9 +228,9 @@ class CompanyDataForm extends Component {
 
   landRentColumns = [
     { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
-    { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
+    { title: "出租用地面积(平方米)", dataIndex: "area", key: "area" },
     { title: "承租企业名称", dataIndex: "cname", key: "cname" },
-    { title: "出租用地面积", dataIndex: "area", key: "area" },
+    { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
   ];
 
   /**
@@ -460,11 +464,12 @@ class CompanyDataForm extends Component {
           .map((d) => d.area)
           .join("+")
       ) || 0;
+    const elecd = eval(company_mj_elecs.map((d) => d.elec).join("+")) || 0;
     // getFieldDecorator("id", { initialValue: company.id });
     return (
       <Form className="form-companyUploadBasic">
         <Divider dashed orientation="left" className="basic_divider">
-          [{company.name}] 基本信息
+          [ {company.name} ] 基本信息
         </Divider>
         <FormItem {...formItemLayout} label="公司名称">
           {getFieldDecorator("name", {
@@ -501,7 +506,7 @@ class CompanyDataForm extends Component {
           )}
         </FormItem>
         <Divider dashed orientation="left" className="land_divider">
-          [{company.name}] 用地数据登记
+          [ {company.name} ] 用地数据登记
         </Divider>
         <Button
           type="primary"
@@ -555,7 +560,7 @@ class CompanyDataForm extends Component {
           </Col>
         </Row>
         <Divider dashed orientation="left" className="elec_divider">
-          [{company.name}] 用电数据登记
+          [ {company.name} ] 用电数据登记
         </Divider>
         <Button
           type="primary"
@@ -569,6 +574,11 @@ class CompanyDataForm extends Component {
           rowKey={(r) => r.id}
           pagination={false}
         />
+        <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
+          <Col span={3} offset={10}>
+            <Statistic title="总用电量(千瓦时)" value={elecd} />
+          </Col>
+        </Row>
       </Form>
     );
   }

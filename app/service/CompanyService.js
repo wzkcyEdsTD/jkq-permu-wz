@@ -66,6 +66,7 @@ class CompanyService extends Service {
               "energy",
               "rde",
               "staff",
+              "sewage",
             ],
             where: {
               pch: pch || PCH,
@@ -81,6 +82,9 @@ class CompanyService extends Service {
               "energy",
               "rde",
               "staff",
+              "sewage",
+              "land",
+              "elec",
             ],
             where: {
               pch: pch || PCH,
@@ -185,6 +189,7 @@ class CompanyService extends Service {
               "energy",
               "rde",
               "staff",
+              "sewage",
             ],
             where: {
               pch: pch || PCH,
@@ -253,6 +258,7 @@ class CompanyService extends Service {
             "energy",
             "rde",
             "staff",
+            "sewage",
           ],
           where: {
             pch: pch || PCH,
@@ -269,6 +275,9 @@ class CompanyService extends Service {
             "energy",
             "rde",
             "staff",
+            "sewage",
+            "land",
+            "elec",
           ],
           where: {
             pch: pch || PCH,
@@ -308,8 +317,6 @@ class CompanyService extends Service {
       order: [["area", "DESC"]],
     });
     company.dataValues.company_mj_land_rent = rent;
-    console.log(company);
-
     return this.ServerResponse.createBySuccessData(company);
   }
 
@@ -456,6 +463,18 @@ class CompanyService extends Service {
       },
     });
     return this.ServerResponse.createBySuccessData(names);
+  }
+
+  /**
+   * update data states
+   * @param {*} { basic, states }
+   * @memberof CompanyService
+   */
+  async updateCompanyDataState({ basic, states }) {
+    console.log(basic, states);
+    await this.CompanyMjDataStateModel.destroy({ where: basic });
+    await this.CompanyMjDataStateModel.create({ ...basic, ...states });
+    return this.ServerResponse.createBySuccessMsg("更新企业指标状态成功");
   }
 }
 

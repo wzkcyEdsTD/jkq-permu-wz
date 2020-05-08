@@ -1,5 +1,6 @@
 /**
  * 企业指标信息状态确认表(含年份号)
+ * [true]确认 [false]未确认
  * @param {*} app
  */
 module.exports = (app) => {
@@ -57,6 +58,21 @@ module.exports = (app) => {
         allowNull: false,
         defaultValue: false,
       } /** 纳税时间 */,
+      sewage: {
+        type: BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      } /** 排污量 */,
+      land: {
+        type: BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      } /** 用地确认 */,
+      elec: {
+        type: BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      } /** 用电确认 */,
     },
     {
       freezeTableName: false,

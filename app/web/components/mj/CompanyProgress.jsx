@@ -17,9 +17,9 @@ import "./CompanyData.less";
   store: stores.companyDataStore,
   userStore: stores.userStore,
 }))
-@hoc({ name: "企业数据审核 - 街道", className: "page_companydata" })
+@hoc({ name: "企业数据确认进度 - 管理员", className: "page_companydata" })
 @observer
-export default class CompanyData extends Component {
+export default class CompanyProgress extends Component {
   state = {
     loading: false,
     savingLoad: false,

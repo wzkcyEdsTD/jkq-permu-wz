@@ -31,4 +31,9 @@ module.exports = (app) => {
     checkPrivileges,
     companyController.fetchCompanyNameByUuid
   );
+  router.put(
+    `${prefix}/company/state/:pch/:uuid`,
+    checkPrivileges,
+    companyController.updateCompanyDataState
+  );
 };

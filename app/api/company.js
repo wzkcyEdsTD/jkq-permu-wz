@@ -53,4 +53,14 @@ export default class CompanyAPI extends BaseFwAPI {
   fetchCompanyNameByUuid(uuids) {
     return this.post("mj/company/names", { uuids });
   }
+
+  /**
+   * 更新企业状态信息
+   * @param {*} { uuid, pch, states }
+   * @returns
+   * @memberof CompanyAPI
+   */
+  updateCompanyDataState({ uuid, pch, states }) {
+    return this.put(`mj/company/state/${pch}/${uuid}`, states);
+  }
 }
