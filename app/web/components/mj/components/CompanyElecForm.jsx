@@ -22,6 +22,10 @@ class CompanyElecForm extends Component {
     elecList: [],
   };
 
+  /**
+   * 表单企业组新增标识
+   * @memberof CompanyElecForm
+   */
   addCompany = () => {
     const { elecList } = this.state;
     this.setState({
@@ -31,6 +35,11 @@ class CompanyElecForm extends Component {
     });
   };
 
+  /**
+   * 根据标识删除表单企业组
+   * @param {String} 标识
+   * @memberof CompanyElecForm
+   */
   removeCompany = (id) => {
     const { elecList } = this.state;
     this.setState({ elecList: elecList.filter((v) => v.id != id) });
@@ -42,7 +51,6 @@ class CompanyElecForm extends Component {
    * @param {*} id
    */
   async fetchCompanyNameByUuid(uuid, id) {
-    console.log(uuid, id);
     const { fetchCompanyNameByUuid } = this.props;
     if (!/^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g.test(uuid)) return false;
     const company = await fetchCompanyNameByUuid([uuid]);
