@@ -180,6 +180,7 @@ export default class CompanyData extends Component {
    * @returns
    * @memberof CompanyData
    */
+  @autobind
   searchLeft() {
     const { _query, _pageQuery } = this.props.store;
     const { confirmOption, scaleOption, pchOption } = this.state;
@@ -291,6 +292,11 @@ export default class CompanyData extends Component {
         width: 240,
         dataIndex: "name",
         fixed: "left",
+        render: (t, r) => (
+          <span>
+            {t} {!r.disableConfirm ? <Tag color="green">已确认</Tag> : ""}
+          </span>
+        ),
       },
       {
         title: "统一社会信用代码",
@@ -305,6 +311,12 @@ export default class CompanyData extends Component {
         fixed: "left",
       },
       {
+        title: "联系人号码",
+        width: 110,
+        dataIndex: "linkphone",
+        fixed: "left",
+      },
+      {
         title: "规模",
         dataIndex: "scale",
         fixed: "left",
@@ -312,13 +324,13 @@ export default class CompanyData extends Component {
         render: (t) => (t ? "规上" : "规下"),
       },
       {
-        title: "地址",
+        title: "企业地址",
         width: 160,
         dataIndex: "address",
       },
       {
-        title: "联系电话",
-        width: 120,
+        title: "法人联系方式",
+        width: 110,
         dataIndex: "legalphone",
       },
       {
@@ -413,14 +425,8 @@ export default class CompanyData extends Component {
               >
                 编辑
               </Button>
-              <Button
-                type="primary"
-                icon="check-circle"
-                // disabled={t.disableConfirm}
-                disabled
-                onClick={() => {}}
-              >
-                确认
+              <Button type="primary" icon="check-circle" disabled>
+                锁定
               </Button>
               <Button
                 type="primary"

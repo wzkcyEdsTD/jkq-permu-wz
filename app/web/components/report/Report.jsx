@@ -22,7 +22,7 @@ class Report extends Component {
     NEGATIVELABEL_HASH: Symbol('negativelabel')
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const createEnd = `${moment()
       .subtract(0, 'days')
       .format(dateFormat)}`;

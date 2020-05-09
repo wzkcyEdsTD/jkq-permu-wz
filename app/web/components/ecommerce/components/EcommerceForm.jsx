@@ -51,7 +51,7 @@ class EcommerceForm extends Component {
     ]
   };
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     const { expressionTypeOption, behaviorLabelObjectOption } = this.state;
     const { data } = this.props;
     //  判断后置表达式类型 获取树

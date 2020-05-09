@@ -18,7 +18,7 @@ class KeywordForm extends Component {
     _keywordTypeValue: null
   };
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     const { keyword, keyword_no_phone_list, keyword_phone_list } = this.props;
     this.setState({
       _keywordOption: keyword

@@ -1,10 +1,8 @@
 const Service = require("egg").Service;
 const md5 = require("md5");
-const shortid = require("shortid");
-const _ = require("lodash");
 const { USERNAME } = require("../common/type");
-
 const PCH = "2019";
+
 class CompanyService extends Service {
   constructor(ctx) {
     super(ctx);
@@ -33,16 +31,6 @@ class CompanyService extends Service {
     (scale || scale == 0) && (extra.scale = scale);
     try {
       const { count, rows } = await this.CompanyPchModel.findAndCountAll({
-        attributes: [
-          // "id", //  update for /home/companyData [CompanyDataForm]
-          "name",
-          "uuid",
-          "street",
-          "scale",
-          "state",
-          "address",
-          "legalphone",
-        ],
         where: {
           name: {
             $like: `%${name || ""}%`,
@@ -158,16 +146,6 @@ class CompanyService extends Service {
     scale && (extra.scale = scale);
     try {
       const rows = await this.CompanyPchModel.findAll({
-        attributes: [
-          // "id", //  update for /home/companyData [CompanyDataForm]
-          "name",
-          "uuid",
-          "street",
-          "scale",
-          "state",
-          "address",
-          "legalphone",
-        ],
         where: {
           name: {
             $like: `%${name || ""}%`,
@@ -476,10 +454,19 @@ class CompanyService extends Service {
    * @memberof CompanyService
    */
   async updateCompanyDataState({ basic, states }) {
-    console.log(basic, states);
     await this.CompanyMjDataStateModel.destroy({ where: basic });
     await this.CompanyMjDataStateModel.create({ ...basic, ...states });
     return this.ServerResponse.createBySuccessMsg("更新企业指标状态成功");
+  }
+
+  /**
+   * update basic
+   * @param {*} { basic, states }
+   * @memberof CompanyService
+   */
+  async companyUploadBasicSubmit({ basic, states }) {
+    await this.CompanyPchModel.update(states, { where: basic });
+    return this.ServerResponse.createBySuccessMsg("更新基本信息成功");
   }
 }
 

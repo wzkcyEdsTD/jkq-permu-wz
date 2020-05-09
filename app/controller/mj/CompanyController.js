@@ -88,6 +88,18 @@ class CompanyController extends Controller {
     });
     this.ctx.body = response;
   }
+
+  /**
+   * 更新企业基本数据(pch)
+   * @memberof CompanyController
+   */
+  async companyUploadBasicSubmit() {
+    const response = await this.CompanyService.companyUploadBasicSubmit({
+      basic: this.ctx.params,
+      states: this.ctx.request.body,
+    });
+    this.ctx.body = response;
+  }
 }
 
 module.exports = CompanyController;

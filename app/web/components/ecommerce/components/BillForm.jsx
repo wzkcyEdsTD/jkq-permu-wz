@@ -76,7 +76,7 @@ class BillForm extends Component {
     return treeOption;
   }
 
-  async componentWillMount() {
+  async UNSAFE_componentWillMount() {
     const { data } = this.props;
     //  判断后置表达式类型 获取树
     await this.fetchTree(data.expressionType || '1');

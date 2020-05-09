@@ -17,7 +17,7 @@ import "./CompanyData.less";
   store: stores.companyDataStore,
   userStore: stores.userStore,
 }))
-@hoc({ name: "企业数据确认进度 - 管理员", className: "page_companydata" })
+@hoc({ name: "企业数据审核 - 街道", className: "page_companydata" })
 @observer
 export default class CompanyProgress extends Component {
   state = {
@@ -99,7 +99,7 @@ export default class CompanyProgress extends Component {
 
   /**
    * 获取企业信息列表
-   * @memberof CompanyData
+   * @memberof CompanyProgress
    */
   @autobind
   async fetchList() {
@@ -112,7 +112,7 @@ export default class CompanyProgress extends Component {
 
   /**
    * 导出企业信息列表
-   * @memberof CompanyData
+   * @memberof CompanyProgress
    */
   @autobind
   async exportCompanyListByPch() {
@@ -129,7 +129,7 @@ export default class CompanyProgress extends Component {
 
   /**
    * 编辑企业信息
-   * @memberof CompanyData
+   * @memberof CompanyProgress
    */
   @autobind
   saveCompanyData() {
@@ -156,7 +156,7 @@ export default class CompanyProgress extends Component {
 
   /**
    * 更新企业登录密码
-   * @memberof CompanyData
+   * @memberof CompanyProgress
    */
   @autobind
   saveCompanyPassport() {
@@ -178,8 +178,9 @@ export default class CompanyProgress extends Component {
   /**
    * 搜索栏
    * @returns
-   * @memberof CompanyData
+   * @memberof CompanyProgress
    */
+  @autobind
   searchLeft() {
     const { _query, _pageQuery } = this.props.store;
     const { confirmOption, scaleOption, pchOption } = this.state;
@@ -291,6 +292,11 @@ export default class CompanyProgress extends Component {
         width: 240,
         dataIndex: "name",
         fixed: "left",
+        render: (t, r) => (
+          <span>
+            {t} {!r.disableConfirm ? <Tag color="green">已确认</Tag> : ""}
+          </span>
+        ),
       },
       {
         title: "统一社会信用代码",
@@ -305,6 +311,12 @@ export default class CompanyProgress extends Component {
         fixed: "left",
       },
       {
+        title: "联系人号码",
+        width: 110,
+        dataIndex: "linkphone",
+        fixed: "left",
+      },
+      {
         title: "规模",
         dataIndex: "scale",
         fixed: "left",
@@ -312,13 +324,13 @@ export default class CompanyProgress extends Component {
         render: (t) => (t ? "规上" : "规下"),
       },
       {
-        title: "地址",
+        title: "企业地址",
         width: 160,
         dataIndex: "address",
       },
       {
-        title: "联系电话",
-        width: 120,
+        title: "法人联系方式",
+        width: 110,
         dataIndex: "legalphone",
       },
       {
@@ -413,14 +425,8 @@ export default class CompanyProgress extends Component {
               >
                 编辑
               </Button>
-              <Button
-                type="primary"
-                icon="check-circle"
-                // disabled={t.disableConfirm}
-                disabled
-                onClick={() => {}}
-              >
-                确认
+              <Button type="primary" icon="check-circle" disabled>
+                锁定
               </Button>
               <Button
                 type="primary"

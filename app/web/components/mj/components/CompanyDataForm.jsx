@@ -486,7 +486,7 @@ class CompanyDataForm extends Component {
             initialValue: company.address,
           })(<Input placeholder="请输入企业地址" />)}
         </FormItem>
-        <FormItem {...formItemLayout} label="联系方式">
+        <FormItem {...formItemLayout} label="法人联系方式">
           {getFieldDecorator("legalphone", {
             initialValue: company.legalphone,
             rules: [{ validator: checkMobile }],
@@ -575,7 +575,7 @@ class CompanyDataForm extends Component {
           pagination={false}
         />
         <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
-          <Col span={3} offset={10}>
+          <Col span={4} offset={10}>
             <Statistic title="总用电量(千瓦时)" value={elecd} />
           </Col>
         </Row>

@@ -42,6 +42,7 @@ class CompanyUploadEL extends Component {
       { title: "年平均员工数(人)", v: "staff", value: 0, check: false },
       { title: "年综合能耗(吨标煤)", v: "energy", value: 0, check: false },
       { title: "研发经费(万)", v: "rde", value: 0, check: false },
+      { title: "排污量(吨)", v: "sewage", value: 0, check: false },
     ],
     extraIndex: [
       { title: "用地数据", v: "land", check: false },
@@ -51,7 +52,7 @@ class CompanyUploadEL extends Component {
   };
 
   @autobind
-  async UNSAFE_componentWillReceiveProps() {
+  async UNSAFE_componentWillReceiveProps(nextProps) {
     const { company } = this.props;
     const { basicIndex, extraIndex } = this.state;
     if (!company.uuid) return;
@@ -169,22 +170,22 @@ class CompanyUploadEL extends Component {
    */
   @autobind
   async updateCompanyDataState() {
-    const { company, updateCompanyDataState, fetchCompanyOption } = this.props;
+    const { company, updateCompanyDataState } = this.props;
     const { basicIndex, extraIndex } = this.state;
     const states = {};
     [...basicIndex, ...extraIndex].map((v) => {
       states[v.v] = v.check;
     });
+    this.setState({ savingLoad: true });
     try {
       await updateCompanyDataState({
         uuid: company.uuid,
         pch: company.pch,
+        name: company.name,
         states,
       });
-      message.info("企业指标数据更新成功");
-      // await fetchCompanyOption();
-    } catch (e) {
-      console.log("[error]", e);
+    } finally {
+      this.setState({ savingLoad: false });
     }
   }
 

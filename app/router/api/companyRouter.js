@@ -36,4 +36,9 @@ module.exports = (app) => {
     checkPrivileges,
     companyController.updateCompanyDataState
   );
+  router.put(
+    `${prefix}/company/basic/:pch/:uuid`,
+    checkPrivileges,
+    companyController.companyUploadBasicSubmit
+  );
 };

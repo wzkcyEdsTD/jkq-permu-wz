@@ -3,6 +3,7 @@ import { observer } from "mobx-react";
 import { Form, Input, Button } from "antd";
 const { Item: FormItem } = Form;
 import { checkMobile } from "utils/validation";
+import autobind from "autobind-decorator";
 export const COMPANY_UPLOAD_BASIC_FORM_HASH = Symbol("handled");
 const formItemLayout = {
   labelCol: { span: 3 },
@@ -11,9 +12,27 @@ const formItemLayout = {
 
 @observer
 class CompanyUploadBasic extends Component {
+  state = {
+    savingLoad: false,
+  };
+
+  @autobind
+  async companyUploadBasicSubmit() {
+    const { companyUploadBasicSubmit } = this.props;
+    this.setState({ savingLoad: true });
+    try {
+      await companyUploadBasicSubmit();
+    } finally {
+      this.setState({ savingLoad: false });
+    }
+  }
+
   render() {
-    const { form, company, upload, savingLoad } = this.props;
+    const { form, company } = this.props;
+    const { savingLoad } = this.state;
     const { getFieldDecorator } = form;
+    getFieldDecorator("pch", { initialValue: company.pch });
+
     return (
       <Form className="form-companyUploadBasic">
         <FormItem {...formItemLayout} label="公司名称">
@@ -45,7 +64,7 @@ class CompanyUploadBasic extends Component {
           <Button
             type="primary"
             htmlType="submit"
-            onClick={upload}
+            onClick={this.companyUploadBasicSubmit}
             loading={savingLoad}
           >
             基本信息更新

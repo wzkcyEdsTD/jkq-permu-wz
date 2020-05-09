@@ -10,7 +10,7 @@ export default obj => WrappedComponent =>
   class HOC extends PureComponent {
     static displayName = `HOC(${getDisplayName(WrappedComponent)})`;
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       console.log(`[OPEN]: ${getDisplayName(WrappedComponent)}`);
     }
 

@@ -28,7 +28,7 @@ class ExrecordManagement extends Component {
     ACCUMULATIONFUND_HASH: Symbol('accumulationfund')
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const updateStart = `${moment()
       .subtract(7, 'days')
       .format(dateFormat)}`;

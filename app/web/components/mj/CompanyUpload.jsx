@@ -17,13 +17,16 @@ import "./CompanyUpload.less";
 export default class CompanyUpload extends Component {
   state = {
     loading: false,
-    savingLoad: false,
   };
 
-  async componentWillMount() {
+  async componentDidMount() {
     await this.fetchCompanyOption();
   }
 
+  /**
+   * fetch basic info (pch)
+   * @memberof CompanyUpload
+   */
   @autobind
   async fetchCompanyOption() {
     this.setState({ loading: true });
@@ -34,12 +37,28 @@ export default class CompanyUpload extends Component {
   }
 
   /**
-   * 企业数据核对上报
-   * @param {*} listIndex
+   * 企业指标确认提交
+   * @param {*} params
+   * @memberof CompanyUpload
    */
   @autobind
-  async companyUploadIndicatorSubmit(listIndex) {
-    console.log(listIndex);
+  async updateCompanyDataState(params) {
+    const { updateCompanyDataState } = this.props.store;
+    Modal.confirm({
+      title: "确认更新以上企业指标确认情况?",
+      okText: "确定",
+      cancelText: "取消",
+      onOk: async () => {
+        try {
+          await updateCompanyDataState(params);
+          message.success(`[${params.name}] 基本信息修改成功`);
+          await this.fetchCompanyOption();
+        } catch (e) {
+          message.error(e);
+        } finally {
+        }
+      },
+    });
   }
 
   /**
@@ -49,22 +68,31 @@ export default class CompanyUpload extends Component {
   @autobind
   async companyUploadBasicSubmit() {
     const { form } = this.companyUploadBasicForm.props;
-    form.validateFieldsAndScroll(async (err, values) => {
-      if (err) return;
-      Modal.confirm({
-        title: "确认更新企业基本信息?",
-        okText: "确定",
-        cancelText: "取消",
-        onOk: async () => {
-          this.setState({ savingLoad: true });
-          try {
-            message.success(`[${values.name}] 基本信息修改成功`);
-          } finally {
-            this.setState({ savingLoad: false });
-          }
-        },
-      });
-    });
+    const { companyUploadBasicSubmit } = this.props.store;
+
+    form.validateFieldsAndScroll(
+      async (err, { pch, uuid, name, link, linkphone }) => {
+        if (err) return;
+        Modal.confirm({
+          title: "确认更新企业基本信息?",
+          okText: "确定",
+          cancelText: "取消",
+          onOk: async () => {
+            try {
+              await companyUploadBasicSubmit({
+                pch,
+                uuid,
+                states: { link, linkphone },
+              });
+              message.success(`[${name}] 基本信息修改成功`);
+            } catch (e) {
+              message.error(e);
+            } finally {
+            }
+          },
+        });
+      }
+    );
   }
 
   render() {
@@ -77,31 +105,17 @@ export default class CompanyUpload extends Component {
             <TabPane tab="企业数据核对" key="1">
               <CompanyUploadEl
                 company={company || {}}
-                upload={this.companyUploadIndicatorSubmit}
                 fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
-                updateCompanyDataState={this.props.store.updateCompanyDataState}
-                fetchCompanyOption={this.fetchCompanyOption}
-                saving={this.savingLoad}
+                updateCompanyDataState={this.updateCompanyDataState}
                 wrappedComponentRef={(instance) => {
                   this.companyUploadIndicatorForm = instance;
                 }}
               />
             </TabPane>
-            {/* <TabPane tab="企业数据核对" key="2">
-              <CompanyUploadIndicator
-                company={company || {}}
-                upload={this.companyUploadIndicatorSubmit}
-                saving={this.savingLoad}
-                wrappedComponentRef={(instance) => {
-                  this.companyUploadIndicatorForm = instance;
-                }}
-              />
-            </TabPane> */}
             <TabPane tab="企业信息" key="2">
               <CompanyUploadBasic
                 company={company || {}}
-                upload={this.companyUploadBasicSubmit}
-                saving={this.savingLoad}
+                companyUploadBasicSubmit={this.companyUploadBasicSubmit}
                 wrappedComponentRef={(instance) => {
                   this.companyUploadBasicForm = instance;
                 }}

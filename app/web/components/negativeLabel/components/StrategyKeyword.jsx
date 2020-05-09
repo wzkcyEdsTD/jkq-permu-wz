@@ -73,7 +73,7 @@ class StrategyKeyword extends Component {
     ]
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     //  默认状态
     this.props.store._query.updateEnd = `${moment()
       .subtract(0, 'days')

@@ -84,6 +84,15 @@ class CompanyUploadStore {
   updateCompanyDataState = async (obj) => {
     await this.companyAPI.updateCompanyDataState(obj);
   };
+
+  /**
+   * 更新企业基本信息(pch)
+   * @memberof CompanyUploadStore
+   */
+  @action
+  companyUploadBasicSubmit = async (obj) => {
+    await this.companyAPI.companyUploadBasicSubmit(obj);
+  };
 }
 
 export default CompanyUploadStore;
