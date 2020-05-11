@@ -32,6 +32,11 @@ module.exports = (app) => {
     companyController.fetchCompanyNameByUuid
   );
   router.put(
+    `${prefix}/company/data/:pch/:uuid`,
+    checkPrivileges,
+    companyController.updateCompanyData
+  );
+  router.put(
     `${prefix}/company/state/:pch/:uuid`,
     checkPrivileges,
     companyController.updateCompanyDataState
@@ -45,5 +50,10 @@ module.exports = (app) => {
     `${prefix}/company/elecmeter/:pch/:elecmeter`,
     checkPrivileges,
     companyController.updateCompanyElecmenter
+  );
+  router.get(
+    `${prefix}/company/elecmeter/:pch/:uuid`,
+    checkPrivileges,
+    companyController.getCompanyElecmenter
   );
 };

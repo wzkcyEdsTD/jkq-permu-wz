@@ -14,6 +14,7 @@ import {
   Row,
   Col,
 } from "antd";
+import _ from "lodash";
 const { Option } = Select;
 import { toJS } from "mobx";
 const { Item: FormItem } = Form;
@@ -26,6 +27,8 @@ const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 10 },
 };
+const vreg = /^3303710[0-9]{5}/g;
+const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g;
 
 /**
  * 企业信息填报核对
@@ -427,10 +430,12 @@ class CompanyDataForm extends Component {
         return true;
       }
       case COMPANY_LAND_HASH: {
-        const uuid = document.getElementsByClassName(`uuid_${r.id}`)[0].value;
+        const uuid = _.trim(
+          document.getElementsByClassName(`uuid_${r.id}`)[0].value
+        );
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
-        if (!/^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g.test(uuid)) {
-          message.error(`请输入正确的统一信用代码`);
+        if (!reg.test(uuid) && !vreg.test(uuid)) {
+          message.error(`请输入正确的统一信用代码/行政区划代码`);
           return false;
         }
         if (

@@ -1,5 +1,6 @@
 import { action, observable, computed } from "mobx";
 import CompanyAPI from "api/company";
+import village from "enums/Village";
 
 class CompanyUploadStore {
   constructor(ctx, initialState) {
@@ -71,7 +72,7 @@ class CompanyUploadStore {
     const res = fuuids.length
       ? await this.companyAPI.fetchCompanyNameByUuid(fuuids)
       : [];
-    const uuids2names = {};
+    const uuids2names = { ...village };
     res.map(({ uuid, name }) => (uuids2names[uuid] = name));
     return uuids2names;
   };

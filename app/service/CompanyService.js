@@ -104,7 +104,6 @@ class CompanyService extends Service {
         offset: Number(page - 1 || 0) * Number(pageSize || 10),
       });
       rows.forEach((row) => row && row.toJSON());
-      //  租赁信息
       const rent = await this.app.model.CompanyMjLandModel.findAll({
         where: {
           uuid: {
@@ -450,6 +449,18 @@ class CompanyService extends Service {
   }
 
   /**
+   * update data
+   * @param {*} { basic, data }
+   * @returns
+   * @memberof CompanyService
+   */
+  async updateCompanyData({ basic, data }) {
+    console.log(basic, data);
+    await this.CompanyMjDataModel.update(data, { where: basic });
+    return this.ServerResponse.createBySuccessMsg("更新企业指标数据成功");
+  }
+
+  /**
    * update data states
    * @param {*} { basic, states }
    * @memberof CompanyService
@@ -498,7 +509,15 @@ class CompanyService extends Service {
   async updateCompanyElecmenter({ basic, states }) {
     const { pch, elecmeter } = basic;
     const { elec, operator, elecDataObj } = states;
+    //  release relation
     await this.CompanyMjElecModel.destroy({ where: { pch, elecmeter } });
+    await this.CompanyElecmeterModel.update(
+      {
+        enable: false,
+      },
+      { where: { pch, elecmeter } }
+    );
+    //  create new
     await this.CompanyMjElecModel.bulkCreate(
       elecDataObj.map((v) => {
         return { pch, uuid: v.uuid, elecmeter, elec: v.elec };
@@ -512,6 +531,25 @@ class CompanyService extends Service {
       companys: JSON.stringify(elecDataObj),
     });
     return this.ServerResponse.createBySuccessMsg("公用电表信息登记成功");
+  }
+
+  /**
+   * 共用电表信息
+   * @param {*} { pch, uuid }
+   * @returns
+   * @memberof CompanyService
+   */
+  async getCompanyElecmenter({ pch, uuid }) {
+    const companys = await this.CompanyElecmeterModel.findAll({
+      where: {
+        companys: {
+          $like: `%${uuid}%`,
+        },
+        pch,
+        enable: true,
+      },
+    });
+    return this.ServerResponse.createBySuccessData(companys);
   }
 }
 

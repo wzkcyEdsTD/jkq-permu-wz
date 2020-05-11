@@ -2,6 +2,8 @@ import { action, observable, computed } from "mobx";
 import CompanyAPI from "api/company";
 import shortid from "shortid";
 import { tableToExcel } from "utils/utils";
+import village from "enums/Village";
+
 const initTable = {
   name: "",
   uuid: "",
@@ -180,9 +182,36 @@ class CompanyProgressStore {
     const res = fuuids.length
       ? await this.companyAPI.fetchCompanyNameByUuid(fuuids)
       : [];
-    const uuids2names = {};
+    const uuids2names = { ...village };
     res.map(({ uuid, name }) => (uuids2names[uuid] = name));
     return uuids2names;
+  };
+
+  /**
+   * 共用电表查询
+   * @memberof CompanyProgressStore
+   */
+  @action
+  getCompanyElecmenter = async (uuid) => {
+    const elecList = await this.companyAPI.getCompanyElecmenter(this.PCH, uuid);
+    return elecList.map((v) => {
+      return { ...v, companys: JSON.parse(v.companys) };
+    });
+  };
+
+  /**
+   * 更新企业指标
+   * @param {*} obj { uuid, pch, data }
+   * @memberof CompanyProgressStore
+   */
+  @action
+  updateCompanyData = async (obj) => {
+    const { uuid, pch } = obj;
+    const data = {};
+    for (let v in obj) {
+      !~["pch", "uuid", "name"].indexOf(v) && (data[v] = parseFloat(obj[v]));
+    }
+    await this.companyAPI.updateCompanyData({ uuid, pch, data });
   };
 }
 

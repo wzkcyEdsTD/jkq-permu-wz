@@ -1,5 +1,6 @@
 import { action, observable } from "mobx";
 import CompanyAPI from "api/company";
+import village from "enums/Village";
 
 class CompanyElecmeterStore {
   constructor(ctx) {
@@ -25,7 +26,7 @@ class CompanyElecmeterStore {
     const res = fuuids.length
       ? await this.companyAPI.fetchCompanyNameByUuid(fuuids)
       : [];
-    const uuids2names = {};
+    const uuids2names = { ...village };;
     res.map(({ uuid, name }) => (uuids2names[uuid] = name));
     return uuids2names;
   };

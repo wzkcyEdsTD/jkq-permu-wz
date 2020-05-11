@@ -212,7 +212,7 @@ class CompanyUploadEL extends Component {
       <div>
         <div className="companyUploadHeader">
           <span style={{ fontWeight: "bold" }}>[ 2019年度 ]</span>
-          {` ${company.name || " 公司名"} - ${scale ? "规上" : "规下"}企业`}
+          {` ${company.name || " 公司名"} - ${scale ? "规上" : "规下"}企业 - ${company.street}`}
         </div>
         <Form className="form-companyUploadBasic">
           <Divider dashed orientation="left" className="basic_divider">

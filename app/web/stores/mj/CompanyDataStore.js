@@ -2,6 +2,7 @@ import { action, observable, computed } from "mobx";
 import CompanyAPI from "api/company";
 import shortid from "shortid";
 import { tableToExcel } from "utils/utils";
+import village from "enums/Village";
 const initTable = {
   name: "",
   uuid: "",
@@ -180,7 +181,7 @@ class CompanyDataStore {
     const res = fuuids.length
       ? await this.companyAPI.fetchCompanyNameByUuid(fuuids)
       : [];
-    const uuids2names = {};
+    const uuids2names = { ...village };
     res.map(({ uuid, name }) => (uuids2names[uuid] = name));
     return uuids2names;
   };

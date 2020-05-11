@@ -78,6 +78,18 @@ class CompanyController extends Controller {
   }
 
   /**
+   * 更新企业指标数据(pch)
+   * @memberof CompanyController
+   */
+  async updateCompanyData() {
+    const response = await this.CompanyService.updateCompanyData({
+      basic: this.ctx.params,
+      data: this.ctx.request.body,
+    });
+    this.ctx.body = response;
+  }
+
+  /**
    * 更新企业指标数据状态(pch)
    * @memberof CompanyController
    */
@@ -110,6 +122,17 @@ class CompanyController extends Controller {
       basic: this.ctx.params,
       states: this.ctx.request.body,
     });
+    this.ctx.body = response;
+  }
+
+  /**
+   * 获取共用电表信息(pch,uuid)
+   * @memberof CompanyController
+   */
+  async getCompanyElecmenter() {
+    const response = await this.CompanyService.getCompanyElecmenter(
+      this.ctx.params
+    );
     this.ctx.body = response;
   }
 }

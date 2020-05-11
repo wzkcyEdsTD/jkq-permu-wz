@@ -25,6 +25,10 @@ const headerHash = {
   energy: "综合能耗(吨标煤)",
   rde: "研发经费(万)",
   staff: "年平均员工(人)",
+  id: "序号",
+  pch: "年份",
+  sewage: "排污量(吨)",
+  isconfirm: "指标全部确认",
 };
 
 /**

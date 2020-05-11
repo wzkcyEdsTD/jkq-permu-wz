@@ -4,28 +4,32 @@ import { Button, Table, Modal, Input, Select, message, Tag } from "antd";
 const { Option } = Select;
 import { observer, inject } from "mobx-react";
 import { toJS } from "mobx";
+import CompanyIndexForm, {
+  COMPANY_INDEX_FORM_HASH,
+} from "./components/CompanyIndexForm";
 import CompanyDataForm, {
   COMPANY_DATA_FORM_HASH,
 } from "./components/CompanyDataForm";
-import CompanyPassportForm, {
-  COMPANY_PASSPORT_FORM_HASH,
-} from "./components/CompanyPassportForm";
+import CompanyElecmeterList, {
+  COMPANY_ELECMETER_LIST_HASH,
+} from "./components/CompanyElecmeterList";
 import hoc from "components/HOC/pageHeader";
 import "./CompanyData.less";
 
 @inject((stores) => ({
-  store: stores.companyDataStore,
+  store: stores.companyProgressStore,
   userStore: stores.userStore,
 }))
-@hoc({ name: "企业数据审核 - 街道", className: "page_companydata" })
+@hoc({ name: "企业数据确认进度 - 管理员", className: "page_companyprogress" })
 @observer
 export default class CompanyProgress extends Component {
   state = {
     loading: false,
     savingLoad: false,
     downLoading: false,
+    indexModalVisiable: false,
     formModalVisiable: false,
-    passportModalVisiable: false,
+    elecmeterModalVisiable: false,
     edit: null,
     statusOption: [
       { key: 0, title: "正常" },
@@ -60,6 +64,13 @@ export default class CompanyProgress extends Component {
   @autobind
   hideModal(hash) {
     switch (hash) {
+      case COMPANY_INDEX_FORM_HASH: {
+        this.setState({
+          indexModalVisiable: false,
+          edit: null,
+        });
+        break;
+      }
       case COMPANY_DATA_FORM_HASH: {
         this.setState({
           formModalVisiable: false,
@@ -67,9 +78,9 @@ export default class CompanyProgress extends Component {
         });
         break;
       }
-      case COMPANY_PASSPORT_FORM_HASH: {
+      case COMPANY_ELECMETER_LIST_HASH: {
         this.setState({
-          passportModalVisiable: false,
+          elecmeterModalVisiable: false,
           edit: null,
         });
         break;
@@ -80,6 +91,13 @@ export default class CompanyProgress extends Component {
   openModal(hash, obj = null) {
     console.log("[open]", hash);
     switch (hash) {
+      case COMPANY_INDEX_FORM_HASH: {
+        this.setState({
+          indexModalVisiable: true,
+          edit: obj,
+        });
+        break;
+      }
       case COMPANY_DATA_FORM_HASH: {
         this.setState({
           formModalVisiable: true,
@@ -87,9 +105,9 @@ export default class CompanyProgress extends Component {
         });
         break;
       }
-      case COMPANY_PASSPORT_FORM_HASH: {
+      case COMPANY_ELECMETER_LIST_HASH: {
         this.setState({
-          passportModalVisiable: true,
+          elecmeterModalVisiable: true,
           edit: obj,
         });
         break;
@@ -128,11 +146,33 @@ export default class CompanyProgress extends Component {
   }
 
   /**
+   * 编辑企业指标
+   * @memberof CompanyProgress
+   */
+  @autobind
+  async updateCompanyData() {
+    const { form } = this.companyIndexForm.props;
+    const { updateCompanyData } = this.props.store;
+    form.validateFieldsAndScroll(async (err, values) => {
+      if (err) return;
+      this.setState({ savingLoad: true });
+      try {
+        await updateCompanyData(values);
+        this.hideModal(COMPANY_INDEX_FORM_HASH);
+        message.info(`[${values.name}] 企业指标更新成功`);
+        this.fetchList();
+      } finally {
+        this.setState({ savingLoad: false });
+      }
+    });
+  }
+
+  /**
    * 编辑企业信息
    * @memberof CompanyProgress
    */
   @autobind
-  saveCompanyData() {
+  updateCompanyInfoByPch() {
     const { form } = this.companyDataForm.props;
     const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
     const { updateCompanyInfoByPch } = this.props.store;
@@ -159,15 +199,15 @@ export default class CompanyProgress extends Component {
    * @memberof CompanyProgress
    */
   @autobind
-  saveCompanyPassport() {
-    const { form } = this.companyPassportForm.props;
+  updateCompanyPassport() {
+    const { form } = this.companyElecmeterList.props;
     const { updateCompanyPassport } = this.props.store;
     form.validateFieldsAndScroll(async (err, values) => {
       if (err) return;
       this.setState({ savingLoad: true });
       try {
         await updateCompanyPassport(values);
-        this.hideModal(COMPANY_PASSPORT_FORM_HASH);
+        this.hideModal(COMPANY_ELECMETER_LIST_HASH);
         message.info(`[${values.name}] 登陆密码更新成功`);
       } finally {
         this.setState({ savingLoad: false });
@@ -413,7 +453,7 @@ export default class CompanyProgress extends Component {
       },
       {
         title: "操作",
-        width: 240,
+        width: 300,
         fixed: "right",
         render: (r, t) => {
           return (
@@ -421,19 +461,23 @@ export default class CompanyProgress extends Component {
               <Button
                 type="primary"
                 icon="edit"
+                onClick={() => this.openModal(COMPANY_INDEX_FORM_HASH, t)}
+              >
+                数据指标
+              </Button>
+              <Button
+                type="primary"
+                icon="check-circle"
                 onClick={() => this.openModal(COMPANY_DATA_FORM_HASH, t)}
               >
-                编辑
-              </Button>
-              <Button type="primary" icon="check-circle" disabled>
-                锁定
+                用地用电
               </Button>
               <Button
                 type="primary"
                 icon="tool"
-                onClick={() => this.openModal(COMPANY_PASSPORT_FORM_HASH, t)}
+                onClick={() => this.openModal(COMPANY_ELECMETER_LIST_HASH, t)}
               >
-                密码修改
+                公用电表
               </Button>
             </div>
           );
@@ -449,7 +493,8 @@ export default class CompanyProgress extends Component {
       loading,
       savingLoad,
       formModalVisiable,
-      passportModalVisiable,
+      elecmeterModalVisiable,
+      indexModalVisiable,
       edit,
       statusOption,
     } = this.state;
@@ -483,6 +528,36 @@ export default class CompanyProgress extends Component {
           loading={loading}
         />
         <Modal
+          className="index-modal"
+          title="企业指标更新"
+          visible={indexModalVisiable}
+          width={600}
+          destroyOnClose={true}
+          onCancel={() => this.hideModal(COMPANY_INDEX_FORM_HASH)}
+          footer={[
+            <Button
+              key="back"
+              onClick={() => this.hideModal(COMPANY_INDEX_FORM_HASH)}
+            >
+              取消
+            </Button>,
+            <Button
+              key="submit"
+              type="primary"
+              onClick={this.updateCompanyData}
+            >
+              提交
+            </Button>,
+          ]}
+        >
+          <CompanyIndexForm
+            company={edit || {}}
+            wrappedComponentRef={(instance) => {
+              this.companyIndexForm = instance;
+            }}
+          />
+        </Modal>
+        <Modal
           className="modal-handled"
           title={"企业数据审核"}
           width={1000}
@@ -500,7 +575,7 @@ export default class CompanyProgress extends Component {
               key="submit"
               type="primary"
               loading={savingLoad}
-              onClick={this.saveCompanyData}
+              onClick={this.updateCompanyInfoByPch}
             >
               保存
             </Button>,
@@ -516,31 +591,30 @@ export default class CompanyProgress extends Component {
           />
         </Modal>
         <Modal
-          className="update-password-modal"
-          title="企业密码修改"
-          visible={passportModalVisiable}
-          width={400}
-          onCancel={() => this.hideModal(COMPANY_PASSPORT_FORM_HASH)}
+          className="elecmeter-modal"
+          title="共用电表数据"
+          visible={elecmeterModalVisiable}
+          width={900}
+          destroyOnClose={true}
+          onCancel={() => this.hideModal(COMPANY_ELECMETER_LIST_HASH)}
           footer={[
             <Button
               key="back"
-              onClick={() => this.hideModal(COMPANY_PASSPORT_FORM_HASH)}
+              onClick={() => this.hideModal(COMPANY_ELECMETER_LIST_HASH)}
             >
               取消
             </Button>,
             <Button
               key="submit"
               type="primary"
-              onClick={this.saveCompanyPassport}
+              onClick={this.updateCompanyPassport}
             >
               提交
             </Button>,
           ]}
         >
-          <CompanyPassportForm
-            wrappedComponentRef={(instance) => {
-              this.companyPassportForm = instance;
-            }}
+          <CompanyElecmeterList
+            getCompanyElecmenter={this.props.store.getCompanyElecmenter}
             company={edit || {}}
           />
         </Modal>

@@ -3,7 +3,7 @@
  * @param {*} app
  */
 module.exports = (app) => {
-  const { INTEGER, STRING, FLOAT } = app.Sequelize;
+  const { INTEGER, STRING, FLOAT, BOOLEAN } = app.Sequelize;
   const CompanyElecmeterModel = app.model.define(
     "company_elecmeter",
     {
@@ -11,11 +11,11 @@ module.exports = (app) => {
         type: INTEGER,
         autoIncrement: true,
         allowNull: false,
+        primaryKey: true,
       } /** 自增id */,
       pch: {
         type: STRING(4),
         allowNull: false,
-        primaryKey: true,
       } /** 年份 */,
       elecmeter: {
         type: STRING,
@@ -34,6 +34,11 @@ module.exports = (app) => {
         type: STRING,
         allowNull: false,
       } /** 共用电表json */,
+      enable: {
+        type: BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      } /** 该记录是否有效 */,
     },
     {
       freezeTableName: false,

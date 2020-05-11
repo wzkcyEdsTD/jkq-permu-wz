@@ -55,6 +55,16 @@ export default class CompanyAPI extends BaseFwAPI {
   }
 
   /**
+   * 更新企业指标信息
+   * @param {*} { uuid, pch, data }
+   * @returns
+   * @memberof CompanyAPI
+   */
+  updateCompanyData({ uuid, pch, data }) {
+    return this.put(`mj/company/data/${pch}/${uuid}`, data);
+  }
+
+  /**
    * 更新企业状态信息
    * @param {*} { uuid, pch, states }
    * @returns
@@ -84,5 +94,15 @@ export default class CompanyAPI extends BaseFwAPI {
    */
   updateCompanyElecmenter(elecmeter, pch, params) {
     return this.put(`mj/company/elecmeter/${pch}/${elecmeter}`, params);
+  }
+
+  /**
+   * 获取共用电表信息
+   * @param {*} uuid
+   * @returns
+   * @memberof CompanyAPI
+   */
+  getCompanyElecmenter(pch, uuid) {
+    return this.get(`mj/company/elecmeter/${pch}/${uuid}`);
   }
 }

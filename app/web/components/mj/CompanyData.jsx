@@ -132,7 +132,7 @@ export default class CompanyData extends Component {
    * @memberof CompanyData
    */
   @autobind
-  saveCompanyData() {
+  updateCompanyInfoByPch() {
     const { form } = this.companyDataForm.props;
     const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
     const { updateCompanyInfoByPch } = this.props.store;
@@ -159,7 +159,7 @@ export default class CompanyData extends Component {
    * @memberof CompanyData
    */
   @autobind
-  saveCompanyPassport() {
+  updateCompanyPassport() {
     const { form } = this.companyPassportForm.props;
     const { updateCompanyPassport } = this.props.store;
     form.validateFieldsAndScroll(async (err, values) => {
@@ -413,7 +413,7 @@ export default class CompanyData extends Component {
       },
       {
         title: "操作",
-        width: 240,
+        width: 180,
         fixed: "right",
         render: (r, t) => {
           return (
@@ -425,9 +425,9 @@ export default class CompanyData extends Component {
               >
                 编辑
               </Button>
-              <Button type="primary" icon="check-circle" disabled>
+              {/* <Button type="primary" icon="check-circle" disabled>
                 锁定
-              </Button>
+              </Button> */}
               <Button
                 type="primary"
                 icon="tool"
@@ -500,7 +500,7 @@ export default class CompanyData extends Component {
               key="submit"
               type="primary"
               loading={savingLoad}
-              onClick={this.saveCompanyData}
+              onClick={this.updateCompanyInfoByPch}
             >
               保存
             </Button>,
@@ -520,6 +520,7 @@ export default class CompanyData extends Component {
           title="企业密码修改"
           visible={passportModalVisiable}
           width={400}
+          destroyOnClose={true}
           onCancel={() => this.hideModal(COMPANY_PASSPORT_FORM_HASH)}
           footer={[
             <Button
@@ -531,7 +532,7 @@ export default class CompanyData extends Component {
             <Button
               key="submit"
               type="primary"
-              onClick={this.saveCompanyPassport}
+              onClick={this.updateCompanyPassport}
             >
               提交
             </Button>,
