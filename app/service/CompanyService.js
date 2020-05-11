@@ -14,6 +14,7 @@ class CompanyService extends Service {
     this.CompanyMjDataStateModel = ctx.model.CompanyMjDataStateModel;
     this.CompanyMjElecModel = ctx.model.CompanyMjElecModel;
     this.CompanyMjLandModel = ctx.model.CompanyMjLandModel;
+    this.CompanyElecmeterModel = ctx.model.CompanyElecmeterModel;
     this.ServerResponse = ctx.response.ServerResponse;
     this.salt = ctx.app.config.salt;
   }
@@ -456,6 +457,18 @@ class CompanyService extends Service {
   async updateCompanyDataState({ basic, states }) {
     await this.CompanyMjDataStateModel.destroy({ where: basic });
     await this.CompanyMjDataStateModel.create({ ...basic, ...states });
+    await this.CompanyPchModel.update(
+      {
+        isconfirm: eval(
+          Object.keys(states)
+            .map((v) => states[v])
+            .join("&&")
+        )
+          ? 1
+          : 0,
+      },
+      { where: basic }
+    );
     return this.ServerResponse.createBySuccessMsg("更新企业指标状态成功");
   }
 
@@ -467,6 +480,38 @@ class CompanyService extends Service {
   async companyUploadBasicSubmit({ basic, states }) {
     await this.CompanyPchModel.update(states, { where: basic });
     return this.ServerResponse.createBySuccessMsg("更新基本信息成功");
+  }
+
+  /**
+   * delete & update elec relation by elecmeter
+   * insert elecmeter as log records
+   * @param {*} {
+   *     pch,
+   *     elecmeter,
+   *     elec,
+   *     operator,
+   *     elecDataObj,
+   *   }
+   * @returns
+   * @memberof CompanyService
+   */
+  async updateCompanyElecmenter({ basic, states }) {
+    const { pch, elecmeter } = basic;
+    const { elec, operator, elecDataObj } = states;
+    await this.CompanyMjElecModel.destroy({ where: { pch, elecmeter } });
+    await this.CompanyMjElecModel.bulkCreate(
+      elecDataObj.map((v) => {
+        return { pch, uuid: v.uuid, elecmeter, elec: v.elec };
+      })
+    );
+    await this.CompanyElecmeterModel.create({
+      pch,
+      elecmeter,
+      elec,
+      operator,
+      companys: JSON.stringify(elecDataObj),
+    });
+    return this.ServerResponse.createBySuccessMsg("公用电表信息登记成功");
   }
 }
 

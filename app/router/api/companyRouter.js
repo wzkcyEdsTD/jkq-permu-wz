@@ -41,4 +41,9 @@ module.exports = (app) => {
     checkPrivileges,
     companyController.companyUploadBasicSubmit
   );
+  router.put(
+    `${prefix}/company/elecmeter/:pch/:elecmeter`,
+    checkPrivileges,
+    companyController.updateCompanyElecmenter
+  );
 };

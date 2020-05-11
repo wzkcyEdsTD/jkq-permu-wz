@@ -29,6 +29,24 @@ class CompanyElecmeterStore {
     res.map(({ uuid, name }) => (uuids2names[uuid] = name));
     return uuids2names;
   };
+
+  /**
+   * 电表更新
+   * @memberof CompanyElecmeterStore
+   */
+  @action
+  updateCompanyElecmenter = async (
+    elecmeter,
+    elec,
+    elecDataObj,
+    { username }
+  ) => {
+    await this.companyAPI.updateCompanyElecmenter(elecmeter, this.PCH, {
+      elec,
+      operator: username,
+      elecDataObj,
+    });
+  };
 }
 
 export default CompanyElecmeterStore;

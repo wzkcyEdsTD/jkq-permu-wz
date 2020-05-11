@@ -100,6 +100,18 @@ class CompanyController extends Controller {
     });
     this.ctx.body = response;
   }
+
+  /**
+   * 插用电计量,更新用电表(elecmeter)
+   * @memberof CompanyController
+   */
+  async updateCompanyElecmenter() {
+    const response = await this.CompanyService.updateCompanyElecmenter({
+      basic: this.ctx.params,
+      states: this.ctx.request.body,
+    });
+    this.ctx.body = response;
+  }
 }
 
 module.exports = CompanyController;

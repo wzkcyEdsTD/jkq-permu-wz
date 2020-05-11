@@ -76,7 +76,6 @@ class CompanyProgressStore {
     };
     const { list, page } = await this.companyAPI.getCompanyListByPch(params);
     this._list = list.map((v) => {
-      let canConfirm = true;
       const { uuid } = v;
       const elecd = eval(v.company_mj_elecs.map((d) => d.elec).join("+"));
       const landself =
@@ -103,10 +102,9 @@ class CompanyProgressStore {
       //  经济指标状态
       Object.keys(v.company_mj_data_state).map((d) => {
         obj[`${d}_state`] = v.company_mj_data_state[d];
-        canConfirm = !canConfirm ? canConfirm : v.company_mj_data_state[d];
       });
       //  确认按钮
-      obj.disableConfirm = !canConfirm;
+      obj.disableConfirm = !obj.isconfirm;
       obj.elecd = elecd;
       obj.landself = landself;
       obj.landget = landget;

@@ -50,6 +50,8 @@ class MainContainer extends Component {
   async componentDidMount() {
     const { setMenuSession } = this.props.store;
     await setMenuSession();
+    const { history } = this.props;
+    const { pathname } = this.props.location;
     const { currentMenu: MENUS } = this.props.store;
     const BREADCRUMB = {};
     //  面包屑映射
@@ -64,17 +66,20 @@ class MainContainer extends Component {
       }
     });
     //  菜单节点显示
-    const { pathname } = this.props.location;
     const defaultSelectedKeys = pathname;
     const defaultOpenKeys = this.getFatherPoint(defaultSelectedKeys);
+    const goByDefault = pathname == "/";
     this.setState({
-      defaultOpenKeys: [defaultOpenKeys],
-      defaultSelectedKeys: [defaultSelectedKeys],
+      defaultOpenKeys: [goByDefault ? MENUS[0].key : defaultOpenKeys],
+      defaultSelectedKeys: [
+        goByDefault ? MENUS[0].children[0].key : defaultSelectedKeys,
+      ],
       BREADCRUMB,
       routerSwitch: true,
       menuSwitch: true,
     });
-    //  获取信息后打开路由
+    // //  跳转第一路由
+    goByDefault && history.push(MENUS[0].children[0].key);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -147,12 +152,12 @@ class MainContainer extends Component {
    * 菜单点击切换
    * @param {String} key
    */
-  switchMenu = ({ key }) => {
+  switchMenu = (event) => {
     const { history } = this.props;
     this.setState({
-      defaultSelectedKeys: [key],
+      defaultSelectedKeys: [event.key],
     });
-    history.push(key);
+    history.push(event.key);
   };
 
   /**

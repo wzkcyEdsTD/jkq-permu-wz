@@ -1,10 +1,12 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import { Form, Button, Input, Row, Col, Divider } from "antd";
 import shortid from "shortid";
 import autobind from "autobind-decorator";
+import { checkMobile, checkUuid, positiveNumber } from "utils/validation";
+
 const SINGLE_ELEC = {
   uuid: undefined,
-  name: undefined,
+  name: 2,
   elec: undefined,
   link: undefined,
   linkphone: undefined,
@@ -17,7 +19,8 @@ const formt2 = {
   labelCol: { span: 12 },
   wrapperCol: { span: 12 },
 };
-class CompanyElecForm extends Component {
+const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g;
+class CompanyElecForm extends PureComponent {
   state = {
     elecList: [],
   };
@@ -51,9 +54,12 @@ class CompanyElecForm extends Component {
    * @param {*} id
    */
   async fetchCompanyNameByUuid(uuid, id) {
+    const { setFieldsValue } = this.props.form;
     const { fetchCompanyNameByUuid } = this.props;
-    if (!/^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g.test(uuid)) return false;
+    if (!reg.test(uuid)) return false;
+    console.log(uuid, id);
     const company = await fetchCompanyNameByUuid([uuid]);
+    setFieldsValue({ [`name-${id}`]: company[uuid] || "未找到企业信息" });
   }
 
   /**
@@ -69,26 +75,33 @@ class CompanyElecForm extends Component {
       <div key={key}>
         <Row gutter={24}>
           <Col span={9}>
-            <Form.Item {...formt1} label="社会统一信用代码">
+            <Form.Item {...formt1} label="统一信用代码">
               {getFieldDecorator(`uuid-${single_elec.id}`, {
-                rules: [{ required: true, message: "请填写统一信用代码" }],
+                rules: [
+                  { required: true, message: "请填写统一信用代码" },
+                  { validator: checkUuid },
+                ],
               })(
                 <Input
-                  onChange={(e) =>
+                  onBlur={(e) => {
                     this.fetchCompanyNameByUuid(
                       e.currentTarget.value,
                       single_elec.id
-                    )
-                  }
+                    );
+                  }}
+                  onChange={(e) => {
+                    this.fetchCompanyNameByUuid(
+                      e.currentTarget.value,
+                      single_elec.id
+                    );
+                  }}
                 />
               )}
             </Form.Item>
           </Col>
           <Col span={9}>
             <Form.Item {...formt1} label="企业名称">
-              {getFieldDecorator(`name-${single_elec.id}`)(
-                <Input val={single_elec.name} disabled />
-              )}
+              {getFieldDecorator(`name-${single_elec.id}`)(<Input disabled />)}
             </Form.Item>
           </Col>
         </Row>
@@ -96,8 +109,13 @@ class CompanyElecForm extends Component {
           <Col span={6}>
             <Form.Item {...formt2} offset={2} label="用电量">
               {getFieldDecorator(`elec-${single_elec.id}`, {
-                rules: [{ required: true, message: "请填写用电量" }],
-              })(<Input />)}
+                rules: [
+                  { required: true, message: "请填写用电量" },
+                  {
+                    validator: positiveNumber,
+                  },
+                ],
+              })(<Input type="number" />)}
             </Form.Item>
           </Col>
           <Col span={6}>
@@ -110,7 +128,10 @@ class CompanyElecForm extends Component {
           <Col span={6}>
             <Form.Item {...formt2} label="联系人方式">
               {getFieldDecorator(`linkphone-${single_elec.id}`, {
-                rules: [{ required: true, message: "请填写联系人方式" }],
+                rules: [
+                  { required: true, message: "请填写联系人方式" },
+                  { validator: checkMobile },
+                ],
               })(<Input />)}
             </Form.Item>
           </Col>

@@ -73,4 +73,16 @@ export default class CompanyAPI extends BaseFwAPI {
   companyUploadBasicSubmit({ uuid, pch, states }) {
     return this.put(`mj/company/basic/${pch}/${uuid}`, states);
   }
+
+  /**
+   * 1.插电表登记记录
+   * 2.更新电表数据
+   * @param {*} elecmeter     电表号
+   * @param {*} elec          用电量
+   * @param {*} elecDataObj   公用企业信息
+   * @memberof CompanyAPI
+   */
+  updateCompanyElecmenter(elecmeter, pch, params) {
+    return this.put(`mj/company/elecmeter/${pch}/${elecmeter}`, params);
+  }
 }

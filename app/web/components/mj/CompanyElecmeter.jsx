@@ -8,6 +8,7 @@ import CompanyElecForm from "./components/CompanyElecForm";
 import "./CompanyElecmeter.less";
 @inject((stores) => ({
   store: stores.companyElecmeterStore,
+  userStore: stores.userStore,
 }))
 @hoc({ name: "共用电表登记 - 街道", className: "page_companyelecmeter" })
 @observer
@@ -37,6 +38,7 @@ export default class CompanyElecmeter extends Component {
           <Input
             placeholder="请输入用电量"
             style={{ width: "180px" }}
+            type="number"
             onChange={(e) => {
               this.setState({ elec: e.target.value });
             }}
@@ -54,15 +56,44 @@ export default class CompanyElecmeter extends Component {
    */
   @autobind
   validateElecData(elec, values) {
-    return (
-      elec ==
-      evel(
-        Object.keys(values)
-          .filter((v) => v.includes("elec"))
-          .map((v) => values[v].elec)
-          .join("+")
-      )
+    const sval = eval(
+      Object.keys(values)
+        .filter((v) => v.includes("elec"))
+        .map((v) => parseInt(values[v], 10))
+        .join("+")
     );
+    return elec == sval;
+  }
+
+  /**
+   * 生成用电列表
+   * @param {*} values
+   */
+  @autobind
+  fixElecDatatoObj(values) {
+    const keys = Object.keys(values);
+    const ids = [...new Set(keys.map((v) => v.split("-")[1]))];
+    const obj = {},
+      arr = [];
+    for (let i in values) {
+      const [index, id] = i.split("-");
+      if (!~ids.indexOf(id)) continue;
+      else {
+        !obj[id] && (obj[id] = {});
+        obj[id][index] = values[i];
+      }
+    }
+    //  check
+    if (
+      [...new Set(Object.keys(obj).map((v) => obj[v].uuid))].length !=
+      ids.length
+    ) {
+      return false;
+    }
+    ids.map((v) => {
+      arr.push(obj[v]);
+    });
+    return arr;
   }
 
   /**
@@ -72,6 +103,8 @@ export default class CompanyElecmeter extends Component {
    */
   @autobind
   async updateCompanyElecmenter() {
+    const { updateCompanyElecmenter } = this.props.store;
+    const { currentUser } = this.props.userStore;
     const { elecmeter, elec } = this.state;
     if (!elecmeter) return message.error("请填写电表号");
     if (!elec) return message.error("请填写总用电量");
@@ -82,6 +115,8 @@ export default class CompanyElecmeter extends Component {
       }
       if (!this.validateElecData(elec, values))
         return message.error("请验证用电量总和");
+      const elecDataObj = this.fixElecDatatoObj(values);
+      if (!elecDataObj) return message.error("社会统一信用代码不可重复");
       Modal.confirm({
         title: "确认提交该共用电表登记信息?",
         okText: "确定",
@@ -89,6 +124,12 @@ export default class CompanyElecmeter extends Component {
         onOk: async () => {
           try {
             this.setState({ loading: true });
+            await updateCompanyElecmenter(
+              elecmeter,
+              elec,
+              elecDataObj,
+              currentUser
+            );
             message.success(`电表号 [${elecmeter}] 公用信息登记成功`);
           } catch (e) {
             message.error(e);
