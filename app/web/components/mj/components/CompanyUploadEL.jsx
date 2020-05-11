@@ -119,12 +119,12 @@ class CompanyUploadEL extends Component {
       width: 180,
     },
     {
-      title: "出租企业信息",
+      title: "出租对象信息",
       dataIndex: "cname",
       render: (t, r) => (r.type ? "" : t),
     },
     {
-      title: "出租企业信用代码",
+      title: "统一信用代码/行政区划代码",
       dataIndex: "uuid",
       width: 180,
       render: (t, r) => (r.type ? "" : t),
