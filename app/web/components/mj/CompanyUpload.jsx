@@ -33,7 +33,6 @@ export default class CompanyUpload extends Component {
     const { currentUser } = this.props.userStore;
     const { getCompanyInfoByPch } = this.props.store;
     const visible = await getCompanyInfoByPch(currentUser);
-    console.log(!visible);
     !visible &&
       visible !== undefined &&
       notification.warning({
