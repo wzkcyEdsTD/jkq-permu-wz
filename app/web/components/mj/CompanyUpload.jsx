@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import autobind from "autobind-decorator";
-import { Tabs, message, Modal, Spin } from "antd";
+import { Tabs, message, Modal, Spin, notification } from "antd";
 const TabPane = Tabs.TabPane;
 import { observer, inject } from "mobx-react";
 import hoc from "components/HOC/pageHeader";
@@ -19,7 +19,7 @@ export default class CompanyUpload extends Component {
     loading: false,
   };
 
-  async componentDidMount() {
+  async UNSAFE_componentWillMount() {
     await this.fetchCompanyOption();
   }
 
@@ -32,7 +32,14 @@ export default class CompanyUpload extends Component {
     this.setState({ loading: true });
     const { currentUser } = this.props.userStore;
     const { getCompanyInfoByPch } = this.props.store;
-    await getCompanyInfoByPch(currentUser);
+    const visible = await getCompanyInfoByPch(currentUser);
+    console.log(!visible);
+    !visible &&
+      visible !== undefined &&
+      notification.warning({
+        message: `请完善企业信息`,
+        description: "企业用户完善企业信息后,即可查看、核对企业数据",
+      });
     this.setState({ loading: false });
   }
 
@@ -85,6 +92,7 @@ export default class CompanyUpload extends Component {
                 states: { link, linkphone },
               });
               message.success(`[${name}] 基本信息修改成功`);
+              await this.fetchCompanyOption();
             } catch (e) {
               message.error(e);
             } finally {
@@ -98,11 +106,13 @@ export default class CompanyUpload extends Component {
   render() {
     const { loading } = this.state;
     const { company } = this.props.store;
-    return (
+    return company.visible === undefined ? (
+      ""
+    ) : (
       <div>
         <Spin spinning={loading}>
-          <Tabs defaultActiveKey="1">
-            <TabPane tab="企业数据核对" key="1">
+          <Tabs defaultActiveKey={company.visible ? "1" : "2"}>
+            <TabPane tab="企业数据核对" key="1" disabled={!company.visible}>
               <CompanyUploadEl
                 company={company || {}}
                 fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}

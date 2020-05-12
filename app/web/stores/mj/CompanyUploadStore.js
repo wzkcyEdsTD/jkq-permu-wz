@@ -1,4 +1,5 @@
 import { action, observable, computed } from "mobx";
+import shortid from "shortid";
 import CompanyAPI from "api/company";
 import village from "enums/Village";
 
@@ -31,6 +32,7 @@ class CompanyUploadStore {
       username,
       pch: pch || this.PCH,
     });
+    const { uuid } = data;
     const elecd = eval(data.company_mj_elecs.map((d) => d.elec).join("+"));
     const landself =
       eval(
@@ -57,7 +59,9 @@ class CompanyUploadStore {
     data.landget = landget;
     data.landr = landr;
     data.landd = [landself + landget - landr > 0, landself + landget - landr];
+    data.visible = data.link && data.linkphone;
     this._company = data;
+    return data.visible;
   };
 
   /**
