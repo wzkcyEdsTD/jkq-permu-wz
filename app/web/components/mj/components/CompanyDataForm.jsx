@@ -13,6 +13,8 @@ import {
   Statistic,
   Row,
   Col,
+  Tooltip,
+  Icon 
 } from "antd";
 import _ from "lodash";
 const { Option } = Select;
@@ -78,7 +80,19 @@ class CompanyDataForm extends Component {
       render: (t, r, index) => ++index,
     },
     {
-      title: "电表号",
+      title: (
+        <Tooltip title={"若无电表号则填写统一信用代码"}>
+          企业电表号
+          <Icon
+            type="question-circle"
+            style={{
+              fontSize: 18,
+              marginLeft: 10,
+              verticalAlign: "middle",
+            }}
+          />
+        </Tooltip>
+      ),
       dataIndex: "elecmeter",
       render: (t, r) =>
         r.edit ? <Input className={`elecmeter_${r.id}`} defaultValue={t} /> : t,
