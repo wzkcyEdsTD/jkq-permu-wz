@@ -121,7 +121,7 @@ class NormalRegisteForm extends Component {
                 addonBefore={
                   <Icon type="api" style={{ color: "rgba(0,0,0,.25)" }} />
                 }
-                placeholder="请输入验证码"
+                placeholder="输入验证码"
               />
             )}
           </FormItem>
@@ -131,7 +131,7 @@ class NormalRegisteForm extends Component {
             disabled={sendingCode}
             onClick={this.sendCode}
           >
-            {!sendingCode ? "发送验证码" : `输入验证码(${time}s)`}
+            {!sendingCode ? "发送验证码" : `获取验证码(${time}s)`}
           </Button>
         </div>
 
@@ -142,7 +142,7 @@ class NormalRegisteForm extends Component {
             className="login-form-button"
             loading={loading}
           >
-            登录
+            注册
           </Button>
         </FormItem>
       </Form>

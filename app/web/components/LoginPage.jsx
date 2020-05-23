@@ -12,7 +12,7 @@ import autobind from "autobind-decorator";
 @observer
 class LoginPage extends Component {
   state = {
-    isLogin: false,
+    isLogin: true,
   };
 
   @autobind

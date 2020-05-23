@@ -1,11 +1,12 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-21 14:45:16
+ * @LastEditTime: 2020-05-21 20:06:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.default.js
- */ 
+ */
+
 /* eslint valid-jsdoc: "off" */
 
 const path = require("path");
@@ -59,9 +60,9 @@ module.exports = (appInfo) => {
       //  接口入口地址
       baseURL: "http://192.168.0.139:7001/api",
     },
-    javaGateway: {
-      //  后端java接口地址
-      baseURL: "http://192.168.5.147:8084/risk-control-operating-system",
+    oGateway: {
+      //  短信机接口地址
+      smsURL: "http://wz023.openmas.net:9080/OpenMasService?wsdl",
     },
   };
 
