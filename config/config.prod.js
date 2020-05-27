@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-05-27 10:00:34
- * @LastEditTime: 2020-05-27 10:17:46
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2020-05-27 17:57:57
+ * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.prod.js
  */ 
@@ -21,7 +21,7 @@ module.exports = () => {
   exports.sequelize = {
     dialect: "mssql",
     database: "permu",
-    host: "127.0.0.1",
+    host: "192.168.39.149",
     port: "1433",
     username: "sa",
     password: "wzkcy@123",
@@ -58,7 +58,7 @@ module.exports = () => {
   exports.externalAPI = {
     fwGateway: {
       //  接口入口地址
-      baseURL: "http://192.168.0.139:7001/api",
+      baseURL: "http://112.17.19.110:7001/api",
     },
     oGateway: {
       //  短信机接口地址
