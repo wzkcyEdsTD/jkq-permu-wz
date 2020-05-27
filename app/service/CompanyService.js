@@ -103,11 +103,11 @@ class CompanyService extends Service {
         limit: Number(pageSize || 10),
         offset: Number(page - 1 || 0) * Number(pageSize || 10),
       });
-      rows.forEach((row) => row && row.toJSON());
+      rows.forEach(row => row && row.toJSON());
       const rent = await this.app.model.CompanyMjLandModel.findAll({
         where: {
           uuid: {
-            $in: [...new Set(rows.map((v) => v.dataValues.uuid))],
+            $in: [...new Set(rows.map(v => v.dataValues.uuid))],
           },
           pch: pch || PCH,
           type: 0,
@@ -115,9 +115,9 @@ class CompanyService extends Service {
         order: [["area", "DESC"]],
       });
       rows.forEach(
-        (row) =>
+        row =>
           (row.dataValues.company_mj_land_rent = rent.filter(
-            (d) => d.uuid == row.dataValues.uuid
+            d => d.uuid == row.dataValues.uuid
           ))
       );
       return this.ServerResponse.createBySuccessData({
@@ -191,12 +191,12 @@ class CompanyService extends Service {
         ],
         order: [["scale", "DESC"]],
       });
-      rows.forEach((row) => row && row.toJSON());
+      rows.forEach(row => row && row.toJSON());
       //  租赁信息
       const rent = await this.app.model.CompanyMjLandModel.findAll({
         where: {
           uuid: {
-            $in: [...new Set(rows.map((v) => v.dataValues.uuid))],
+            $in: [...new Set(rows.map(v => v.dataValues.uuid))],
           },
           pch: pch || PCH,
           type: 0,
@@ -204,15 +204,32 @@ class CompanyService extends Service {
         order: [["area", "DESC"]],
       });
       rows.forEach(
-        (row) =>
+        row =>
           (row.dataValues.company_mj_land_rent = rent.filter(
-            (d) => d.uuid == row.dataValues.uuid
+            d => d.uuid == row.dataValues.uuid
           ))
       );
       return this.ServerResponse.createBySuccessData(rows);
     } catch (error) {
       return this.ServerResponse.createByErrorMsg("导出企业列表失败");
     }
+  }
+
+  /**
+   * 获取企业信息(pch),简单信息
+   * @param {*} params
+   * @returns
+   * @memberof CompanyService
+   */
+  async getCompanyInfoByPchSimple(params) {
+    const { uuid, pch } = params;
+    const company = await this.CompanyPchModel.findOne({
+      where: {
+        uuid,
+        pch: pch || PCH,
+      },
+    });
+    return this.ServerResponse.createBySuccessData(company);
   }
 
   /**
@@ -376,10 +393,10 @@ class CompanyService extends Service {
     );
     await this.destoryCompanyExtra(basic);
     await Promise.all(
-      elec.map(async (i) => await this.addCompanyExtra(i, 1, basic))
+      elec.map(async i => await this.addCompanyExtra(i, 1, basic))
     );
     await Promise.all(
-      land.map(async (i) => await this.addCompanyExtra(i, 0, basic))
+      land.map(async i => await this.addCompanyExtra(i, 0, basic))
     );
     return this.ServerResponse.createBySuccessMsg("修改企业信息成功");
   }
@@ -417,7 +434,7 @@ class CompanyService extends Service {
           p_password: password,
         });
         await this.UserGroupRelation.bulkCreate(
-          group.map((v) => {
+          group.map(v => {
             return { group_users: v, user_groups: company.id };
           })
         );
@@ -472,7 +489,7 @@ class CompanyService extends Service {
       {
         isconfirm: eval(
           Object.keys(states)
-            .map((v) => states[v])
+            .map(v => states[v])
             .join("&&")
         )
           ? 1
@@ -519,7 +536,7 @@ class CompanyService extends Service {
     );
     //  create new
     await this.CompanyMjElecModel.bulkCreate(
-      elecDataObj.map((v) => {
+      elecDataObj.map(v => {
         return { pch, uuid: v.uuid, elecmeter, elec: v.elec };
       })
     );

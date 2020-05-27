@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-27 10:17:01
- * @LastEditors: your name
+ * @LastEditTime: 2020-05-27 14:07:47
+ * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.local.js
  */ 
@@ -21,7 +21,7 @@ module.exports = () => {
   exports.sequelize = {
     dialect: "mssql",
     database: "permu",
-    host: "127.0.0.1",
+    host: "192.168.39.149",
     port: "1433",
     username: "sa",
     password: "wzkcy@123",

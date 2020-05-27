@@ -15,7 +15,6 @@ import { Provider } from "mobx-react";
 import Layout from "framework/layout.jsx";
 import MainContainer from "components/MainContainer";
 import UserStore from "stores/console/UserStore";
-
 //  控制台
 import User from "components/console/UserManagement";
 import Group from "components/console/GroupManagement";
@@ -92,7 +91,7 @@ const clientRender = () => {
       <BrowserRouter>{renderRoutes(routes)}</BrowserRouter>
     </Provider>
   );
-  const render = (App) => {
+  const render = App => {
     ReactDOM.hydrate(
       EASY_ENV_IS_DEV ? (
         <AppContainer>
@@ -114,7 +113,7 @@ const clientRender = () => {
   render(Entry);
 };
 
-const serverRender = async (locals) => {
+const serverRender = async locals => {
   const { ctx, apiConfig } = locals.state;
   const { url, service } = ctx;
   const stores = createStores(ctx);

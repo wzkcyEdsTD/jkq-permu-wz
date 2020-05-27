@@ -52,38 +52,53 @@ class CompanyUploadEL extends Component {
   };
 
   @autobind
-  async UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
+    this.doProps();
+  }
+  @autobind
+  componentDidMount() {
+    this.doProps();
+  }
+
+  /**
+   * 公司赋值
+   * @returns
+   * @memberof CompanyUploadEL
+   */
+  @autobind
+  async doProps() {
     const { company } = this.props;
     const { basicIndex, extraIndex } = this.state;
     if (!company.uuid) return;
     const uuids2names = await this.fetchCompanyNameByUuid([
       ...new Set([
-        ...company.company_mj_lands.map((v) => v.uuid),
-        ...company.company_mj_land_rent.map((v) => v.to_object),
+        ...company.company_mj_lands.map(v => v.uuid),
+        ...company.company_mj_land_rent.map(v => v.to_object),
       ]),
     ]);
+    console.log(company);
     this.setState({
-      company_mj_lands: company.company_mj_lands.map((v) => ({
+      company_mj_lands: company.company_mj_lands.map(v => ({
         ...v,
         cname: uuids2names[v.uuid] || "",
         edit: false,
       })),
-      company_mj_elecs: company.company_mj_elecs.map((v) => ({
+      company_mj_elecs: company.company_mj_elecs.map(v => ({
         ...v,
         edit: false,
       })),
-      company_mj_land_rent: company.company_mj_land_rent.map((v) => ({
+      company_mj_land_rent: company.company_mj_land_rent.map(v => ({
         ...v,
         cname: uuids2names[v.to_object] || "",
         edit: false,
       })),
-      basicIndex: basicIndex.map((v) => ({
+      basicIndex: basicIndex.map(v => ({
         ...v,
         check: company.company_mj_data_state[v.v],
         value: company.company_mj_datum[v.v] || 0,
         checkable: company.company_mj_data_state[v.v] ? false : true,
       })),
-      extraIndex: extraIndex.map((v) => ({
+      extraIndex: extraIndex.map(v => ({
         ...v,
         check: company.company_mj_data_state[v.v],
         checkable: company.company_mj_data_state[v.v] ? false : true,
@@ -173,7 +188,7 @@ class CompanyUploadEL extends Component {
     const { company, updateCompanyDataState } = this.props;
     const { basicIndex, extraIndex } = this.state;
     const states = {};
-    [...basicIndex, ...extraIndex].map((v) => {
+    [...basicIndex, ...extraIndex].map(v => {
       states[v.v] = v.check;
     });
     this.setState({ savingLoad: true });
@@ -204,15 +219,17 @@ class CompanyUploadEL extends Component {
     const landget =
       eval(
         company_mj_lands
-          .filter((d) => d.type != 1)
-          .map((d) => d.area)
+          .filter(d => d.type != 1)
+          .map(d => d.area)
           .join("+")
       ) || 0;
     return (
       <div>
         <div className="companyUploadHeader">
           <span style={{ fontWeight: "bold" }}>[ 2019年度 ]</span>
-          {` ${company.name || " 公司名"} - ${scale ? "规上" : "规下"}企业 - ${company.street}`}
+          {` ${company.name || " 公司名"} - ${scale ? "规上" : "规下"}企业 - ${
+            company.street
+          }`}
         </div>
         <Form className="form-companyUploadBasic">
           <Divider dashed orientation="left" className="basic_divider">
@@ -246,7 +263,7 @@ class CompanyUploadEL extends Component {
                   description={
                     <span
                       className="lspan"
-                      onClick={(e) => checkable && this.checkIcon(index, true)}
+                      onClick={e => checkable && this.checkIcon(index, true)}
                     >
                       <i>{value}</i>
                       {
@@ -267,17 +284,17 @@ class CompanyUploadEL extends Component {
           <Table
             dataSource={toJS(company_mj_lands)}
             columns={this.landColumns}
-            rowKey={(r) => r.id}
+            rowKey={r => r.id}
             pagination={false}
-            rowClassName={(r) => (r.type ? "_self" : "_other")}
-            expandedRowRender={(r) => {
+            rowClassName={r => (r.type ? "_self" : "_other")}
+            expandedRowRender={r => {
               return r.type ? (
                 <Table
                   title={() => "企业用地出租信息"}
                   size="small"
                   columns={this.landRentColumns}
                   pagination={false}
-                  rowKey={(_r) => _r.id}
+                  rowKey={_r => _r.id}
                   dataSource={company_mj_land_rent}
                 />
               ) : undefined;
@@ -317,7 +334,7 @@ class CompanyUploadEL extends Component {
                     ? "green"
                     : "red"
                 }
-                onClick={(e) =>
+                onClick={e =>
                   extraIndex[0].checkable && this.checkIcon(0, false)
                 }
               >
@@ -335,7 +352,7 @@ class CompanyUploadEL extends Component {
           <Table
             dataSource={toJS(company_mj_elecs)}
             columns={this.elecColumns}
-            rowKey={(r) => r.id}
+            rowKey={r => r.id}
             pagination={false}
           />
           <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
@@ -351,7 +368,7 @@ class CompanyUploadEL extends Component {
                     ? "green"
                     : "red"
                 }
-                onClick={(e) =>
+                onClick={e =>
                   extraIndex[1].checkable && this.checkIcon(1, false)
                 }
               >

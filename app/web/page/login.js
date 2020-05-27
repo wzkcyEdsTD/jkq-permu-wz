@@ -1,3 +1,11 @@
+/*
+ * @Author: eds
+ * @Date: 2020-04-27 08:50:23
+ * @LastEditTime: 2020-05-27 16:17:52
+ * @LastEditors: eds
+ * @Description: 
+ * @FilePath: \jkq-permu-wz\app\web\page\login.js
+ */ 
 import "styles/pages/login.less";
 
 import React, { Component } from "react";
@@ -10,7 +18,8 @@ import { Provider } from "mobx-react";
 import LoginPage from "components/LoginPage";
 import Layout from "framework/layout.jsx";
 import UserStore from "stores/console/UserStore";
-
+//  短信机
+import NormalRegisteStore from "stores/login/NormalRegisteStore";
 const routes = [
   {
     path: "/",
@@ -20,6 +29,7 @@ const routes = [
 
 const createStores = (ctx, state) => ({
   userStore: new UserStore(ctx, state),
+  normalRegisteStore: new NormalRegisteStore(ctx, state),
 });
 
 const clientRender = () => {

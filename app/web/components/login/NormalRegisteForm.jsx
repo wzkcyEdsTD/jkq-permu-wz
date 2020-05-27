@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import { observer, inject } from "mobx-react";
 import { Form, Icon, Input, Button, message } from "antd";
+import { checkMobile, checkUuid } from "utils/validation";
 import autobind from "autobind-decorator";
 const FormItem = Form.Item;
 const _TIME_ = 60;
-@inject((stores) => ({
-  store: stores.userStore,
+
+@inject(stores => ({
+  store: stores.normalRegisteStore,
 }))
 @observer
 class NormalRegisteForm extends Component {
@@ -29,16 +31,11 @@ class NormalRegisteForm extends Component {
     form.validateFieldsAndScroll(async (err, values) => {
       if (err) return;
       const params = form.getFieldsValue();
-      if (!(params.username && params.password)) {
-        return false;
-      }
       this.setState({ loading: true });
       try {
-        const result = await store.login(params);
-        if (result) {
-          message.info("登录成功");
-          window.location.replace("/");
-        }
+        await store.registeBySmsCode(params);
+        message.info("注册成功!");
+        window.location.replace("/");
       } finally {
         this.setState({ loading: false });
       }
@@ -52,17 +49,28 @@ class NormalRegisteForm extends Component {
   @autobind
   async sendCode() {
     const { store, form } = this.props;
-    this.setState({
-      sendingCode: true,
-      time: _TIME_,
-      timer: setInterval(() => {
-        this.setState({ time: this.state.time - 1 });
-        if (this.state.time - 1 < 0) {
-          clearInterval(this.state.timer);
-          this.setState({ sendingCode: false, timer: undefined });
-        }
-      }, 1000),
-    });
+    const { phone } = form.getFieldsValue();
+    if (
+      !phone ||
+      !/^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$/.test(phone)
+    ) {
+      return message.error("请输入正确手机号码");
+    }
+    try {
+      this.setState({
+        sendingCode: true,
+        time: _TIME_,
+        timer: setInterval(() => {
+          this.setState({ time: this.state.time - 1 });
+          if (this.state.time - 1 < 0) {
+            clearInterval(this.state.timer);
+            this.setState({ sendingCode: false, timer: undefined });
+          }
+        }, 1000),
+      });
+      await store.getSmsCode(phone);
+    } finally {
+    }
   }
 
   render() {
@@ -73,14 +81,18 @@ class NormalRegisteForm extends Component {
         <div className="title">账号注册</div>
         <FormItem>
           {getFieldDecorator("username", {
-            rules: [{ required: true, message: "请输入用户名" }],
+            rules: [
+              { required: true, message: "请输入统一信用代码" },
+              ,
+              { validator: checkUuid },
+            ],
           })(
             <Input
               className="input"
               addonBefore={
                 <Icon type="user" style={{ color: "rgba(0,0,0,.25)" }} />
               }
-              placeholder="请输入用户名"
+              placeholder="请输入统一信用代码"
             />
           )}
         </FormItem>
@@ -100,7 +112,10 @@ class NormalRegisteForm extends Component {
         </FormItem>
         <FormItem>
           {getFieldDecorator("phone", {
-            rules: [{ required: true, message: "请输入手机号码" }],
+            rules: [
+              { required: true, message: "请输入手机号码" },
+              { validator: checkMobile },
+            ],
           })(
             <Input
               className="input"

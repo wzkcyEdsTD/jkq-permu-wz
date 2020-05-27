@@ -7,7 +7,6 @@ class UserController extends Controller {
   constructor(ctx) {
     super(ctx);
     this.session = ctx.session;
-    this.UserModel = ctx.model.UserModel;
     this.UserService = ctx.service.userService;
     this.ResponseCode = ctx.response.ResponseCode;
     this.ServerResponse = ctx.response.ServerResponse;

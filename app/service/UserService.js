@@ -147,13 +147,13 @@ class UserService extends Service {
           p_password: password,
         });
         await this.UserGroupRelation.bulkCreate(
-          group.map((v) => {
+          group.map(v => {
             return { group_users: v, user_groups: user.id };
           })
         );
         job &&
           (await this.UserJobRelation.bulkCreate(
-            job.map((v) => {
+            job.map(v => {
               return { job_users: v, user_jobs: user.id };
             })
           ));
@@ -187,7 +187,7 @@ class UserService extends Service {
         where: { user_groups: user.id },
       });
       await this.UserGroupRelation.bulkCreate(
-        user.group.map((v) => {
+        user.group.map(v => {
           return { group_users: v, user_groups: user.id };
         })
       );
@@ -240,6 +240,19 @@ class UserService extends Service {
       { where: { user: userId }, individualHooks: true }
     );
     return this.ServerResponse.createBySuccessMsg("修改密码成功");
+  }
+
+  /**
+   * 获取用户信息(用户名)
+   * @param {*} username
+   * @returns
+   * @memberof UserService
+   */
+  async getUserByUsername(username) {
+    const user = await this.UserModel.findOne({
+      where: { username },
+    });
+    return this.ServerResponse.createBySuccessData(user);
   }
 
   /**
@@ -323,7 +336,7 @@ class UserService extends Service {
         this.ServerResponse.createBySuccessMsg("无数据");
       }
 
-      rows.forEach((row) => row && row.toJSON());
+      rows.forEach(row => row && row.toJSON());
 
       return this.ServerResponse.createBySuccessData({
         page: {
