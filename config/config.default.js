@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-21 20:06:45
+ * @LastEditTime: 2020-05-27 10:16:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.default.js
@@ -52,18 +52,6 @@ module.exports = (appInfo) => {
     httpOnly: true,
     encrypt: true,
     // renew: true,
-  };
-
-  // external
-  config.externalAPI = {
-    fwGateway: {
-      //  接口入口地址
-      baseURL: "http://192.168.0.139:7001/api",
-    },
-    oGateway: {
-      //  短信机接口地址
-      smsURL: "http://wz023.openmas.net:9080/OpenMasService?wsdl",
-    },
   };
 
   return {

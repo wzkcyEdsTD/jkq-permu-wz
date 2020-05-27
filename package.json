@@ -45,6 +45,7 @@
     "egg-webpack-react": "^2.0.2",
     "eslint": "^5.13.0",
     "eslint-config-egg": "^7.1.0",
+    "imagemin-webpack-plugin": "^2.4.2",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
     "moment": "^2.24.0",
@@ -61,9 +62,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon",
+    "start": "egg-scripts start --port=7001 --daemon --ignore-stderr --env=prod --title=egg-server-test",
     "stop": "egg-scripts stop --title=egg-server-test",
-    "build": "easy build",
+    "build": "easy build prod",
     "dev": "egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",

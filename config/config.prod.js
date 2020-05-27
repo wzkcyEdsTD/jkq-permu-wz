@@ -1,10 +1,10 @@
 /*
  * @Author: your name
- * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-27 10:17:01
- * @LastEditors: your name
+ * @Date: 2020-05-27 10:00:34
+ * @LastEditTime: 2020-05-27 10:17:46
+ * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
- * @FilePath: \jkq-permu-wz\config\config.local.js
+ * @FilePath: \jkq-permu-wz\config\config.prod.js
  */ 
 const ip = require("ip");
 const EasyWebpack = require("easywebpack-react");
@@ -52,6 +52,8 @@ module.exports = () => {
     domainWhiteList.push(`http://${localIP}:${port}`);
   });
 
+  exports.security = { domainWhiteList };
+
   // external
   exports.externalAPI = {
     fwGateway: {
@@ -63,8 +65,6 @@ module.exports = () => {
       smsURL: "http://wz023.openmas.net:9080/OpenMasService?wsdl",
     },
   };
-
-  exports.security = { domainWhiteList };
 
   return exports;
 };
