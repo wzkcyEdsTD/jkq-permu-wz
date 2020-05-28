@@ -1,11 +1,12 @@
 /*
- * @Author: your name
+ * @Author: eds
  * @Date: 2020-05-27 10:00:34
- * @LastEditTime: 2020-05-27 17:57:57
+ * @LastEditTime: 2020-05-28 09:36:40
  * @LastEditors: eds
- * @Description: In User Settings Edit
+ * @Description: 
  * @FilePath: \jkq-permu-wz\config\config.prod.js
  */ 
+
 const ip = require("ip");
 const EasyWebpack = require("easywebpack-react");
 const Op = require("sequelize").Op;

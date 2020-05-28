@@ -1,37 +1,135 @@
-.companyUploadHeader {
-    height     : 44px;
-    line-height: 44px;
-    font-size  : 22px;
-}
+.page_companyupload {
 
-.lspan {
-    display    : block;
-    height     : 40px;
-    line-height: 40px;
-    cursor     : pointer;
 
-    >i {
-        font-style: normal;
-        font-size : 22px;
-        min-width : 100px;
-        text-align: left;
-        color     : black;
+    .thtd() {
+        padding: 12px 8px;
     }
 
-    >* {
-        display       : inline-block;
-        vertical-align: middle;
-        cursor        : pointer;
-
-    }
-}
-
-.charCheck {
-    height     : 60px;
-    line-height: 80px;
-
-    >span {
-        cursor: pointer;
+    .companyUploadHeader {
+        height     : 44px;
+        line-height: 44px;
+        font-size  : 22px;
     }
 
+    .lspan {
+        display    : block;
+        height     : 40px;
+        line-height: 40px;
+        cursor     : pointer;
+
+        >i {
+            font-style: normal;
+            font-size : 22px;
+            min-width : 100px;
+            text-align: left;
+            color     : black;
+        }
+
+        >* {
+            display       : inline-block;
+            vertical-align: middle;
+            cursor        : pointer;
+
+        }
+    }
+
+    .charCheck {
+        height     : 60px;
+        line-height: 80px;
+
+        >span {
+            cursor: pointer;
+        }
+
+    }
+
+    .ant-table-body::-webkit-scrollbar {
+        height          : 10px;
+        border-radius   : 4px;
+        background-color: #dadada;
+    }
+
+    .ant-table-body::-webkit-scrollbar-thumb {
+        border-radius   : 4px;
+        background-color: rgba(24, 143, 255, 0.4);
+    }
+
+    .ant-table-body {
+        .ant-table-thead {
+            th {
+                .thtd()
+            }
+        }
+
+        .ant-table-tbody {
+            td {
+                // .thtd();
+
+                .ant-btn {
+                    padding: 0 6px;
+                    height : 30px;
+                }
+
+                .d {
+                    color: rgb(84, 212, 70)
+                }
+
+                .nd {
+                    color: rgb(218, 75, 75)
+                }
+            }
+
+            // .ant-table-expanded-row {
+            //     > * {
+            //         padding: 0px;
+            //     }
+            // }
+        }
+    }
+
+    .ant-table-fixed {
+        .ant-table-thead {
+            th {
+                .thtd()
+            }
+        }
+
+        .ant-table-tbody {
+            td {
+                .thtd();
+
+                .ant-btn {
+                    padding: 0 6px;
+                    height : 30px;
+                }
+            }
+        }
+    }
+
+    /**   modal css   */
+    .basic_divider,
+    .land_divider,
+    .elec_divider {
+        >span {
+            font-size  : 16px !important;
+            font-weight: bold;
+        }
+    }
+
+    ._self {
+        background-color: rgb(237, 237, 255);
+    }
+
+    ._other {
+        .ant-table-row-expand-icon-cell {
+            visibility: hidden;
+        }
+    }
+
+    .char {
+        height     : 60px;
+        line-height: 80px;
+        font-size  : 24px;
+        font-weight: bold;
+    }
 }

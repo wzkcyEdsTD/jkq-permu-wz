@@ -14,7 +14,7 @@ import {
   Row,
   Col,
   Tooltip,
-  Icon 
+  Icon,
 } from "antd";
 import _ from "lodash";
 const { Option } = Select;
@@ -50,22 +50,24 @@ class CompanyDataForm extends Component {
     const { company } = this.props;
     const uuids2names = await this.fetchCompanyNameByUuid([
       ...new Set([
-        ...company.company_mj_lands.map((v) => v.uuid),
-        ...company.company_mj_land_rent.map((v) => v.to_object),
+        ...company.company_mj_lands.map(v => v.uuid),
+        ...company.company_mj_land_rent.map(v => v.to_object),
       ]),
     ]);
     this.setState({
-      company_mj_lands: company.company_mj_lands.map((v) => ({
+      company_mj_lands: company.company_mj_lands.map((v, index) => ({
         ...v,
+        key: `t${index}`,
         cname: uuids2names[v.uuid] || "",
         edit: false,
       })),
-      company_mj_elecs: company.company_mj_elecs.map((v) => ({
+      company_mj_elecs: company.company_mj_elecs.map(v => ({
         ...v,
         edit: false,
       })),
-      company_mj_land_rent: company.company_mj_land_rent.map((v) => ({
+      company_mj_land_rent: company.company_mj_land_rent.map((v, index) => ({
         ...v,
+        key: `_t${index}`,
         cname: uuids2names[v.to_object] || "",
         edit: false,
       })),
@@ -117,7 +119,7 @@ class CompanyDataForm extends Component {
             <span>
               <Button
                 type="primary"
-                onClick={(e) =>
+                onClick={e =>
                   this.editConfirmRecord(COMPANY_ELEC_HASH, false, false, r, e)
                 }
               >
@@ -204,7 +206,7 @@ class CompanyDataForm extends Component {
             <span>
               <Button
                 type="primary"
-                onClick={(e) =>
+                onClick={e =>
                   this.editConfirmRecord(COMPANY_LAND_HASH, false, false, r, e)
                 }
               >
@@ -244,10 +246,10 @@ class CompanyDataForm extends Component {
   ];
 
   landRentColumns = [
-    { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
-    { title: "出租用地面积(平方米)", dataIndex: "area", key: "area" },
-    { title: "承租企业名称", dataIndex: "cname", key: "cname" },
+    // { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
     { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
+    { title: "承租企业名称", dataIndex: "cname", key: "cname" },
+    { title: "出租用地面积(平方米)", dataIndex: "area", key: "area" },
   ];
 
   /**
@@ -314,13 +316,13 @@ class CompanyDataForm extends Component {
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
         this.setState({
-          company_mj_elecs: company_mj_elecs.filter((v) => v.id != r.id),
+          company_mj_elecs: company_mj_elecs.filter(v => v.id != r.id),
         });
         break;
       }
       case COMPANY_LAND_HASH: {
         this.setState({
-          company_mj_lands: company_mj_lands.filter((v) => v.id != r.id),
+          company_mj_lands: company_mj_lands.filter(v => v.id != r.id),
         });
         break;
       }
@@ -350,12 +352,12 @@ class CompanyDataForm extends Component {
       case COMPANY_ELEC_HASH: {
         edit
           ? this.setState({
-              company_mj_elecs: company_mj_elecs.map((v) =>
+              company_mj_elecs: company_mj_elecs.map(v =>
                 v.id == r.id ? { ...v, edit } : v
               ),
             })
           : this.setState({
-              company_mj_elecs: company_mj_elecs.map((v) =>
+              company_mj_elecs: company_mj_elecs.map(v =>
                 v.id == r.id
                   ? {
                       ...r,
@@ -378,12 +380,12 @@ class CompanyDataForm extends Component {
       case COMPANY_LAND_HASH: {
         edit
           ? this.setState({
-              company_mj_lands: company_mj_lands.map((v) =>
+              company_mj_lands: company_mj_lands.map(v =>
                 v.id == r.id ? { ...v, edit } : v
               ),
             })
           : this.setState({
-              company_mj_lands: company_mj_lands.map((v) =>
+              company_mj_lands: company_mj_lands.map(v =>
                 v.id == r.id
                   ? {
                       ...r,
@@ -431,8 +433,8 @@ class CompanyDataForm extends Component {
         )[0].value;
         const elec = document.getElementsByClassName(`elec_${r.id}`)[0].value;
         if (
-          ~company_mj_elecs.map((v) => v.elecmeter).indexOf(elecmeter) &&
-          company_mj_elecs.filter((v) => v.elecmeter == elecmeter)[0].id != r.id
+          ~company_mj_elecs.map(v => v.elecmeter).indexOf(elecmeter) &&
+          company_mj_elecs.filter(v => v.elecmeter == elecmeter)[0].id != r.id
         ) {
           message.error(`该企业已存在 [${elecmeter}] 电表数据`);
           return false;
@@ -453,8 +455,8 @@ class CompanyDataForm extends Component {
           return false;
         }
         if (
-          ~company_mj_lands.map((v) => v.uuid).indexOf(uuid) &&
-          company_mj_lands.filter((v) => v.uuid == uuid)[0].id != r.id
+          ~company_mj_lands.map(v => v.uuid).indexOf(uuid) &&
+          company_mj_lands.filter(v => v.uuid == uuid)[0].id != r.id
         ) {
           message.error(`该企业已存在 [${uuid}] 出租企业数据`);
           return false;
@@ -479,11 +481,11 @@ class CompanyDataForm extends Component {
     const landget =
       eval(
         company_mj_lands
-          .filter((d) => d.type != 1)
-          .map((d) => d.area)
+          .filter(d => d.type != 1)
+          .map(d => d.area)
           .join("+")
       ) || 0;
-    const elecd = eval(company_mj_elecs.map((d) => d.elec).join("+")) || 0;
+    const elecd = eval(company_mj_elecs.map(d => d.elec).join("+")) || 0;
     // getFieldDecorator("id", { initialValue: company.id });
     return (
       <Form className="form-companyUploadBasic">
@@ -516,7 +518,7 @@ class CompanyDataForm extends Component {
             initialValue: company.state,
           })(
             <Select>
-              {status.map((item) => (
+              {status.map(item => (
                 <Option value={item.key} key={item.key}>
                   {item.title}
                 </Option>
@@ -533,25 +535,28 @@ class CompanyDataForm extends Component {
         >
           新增用地数据
         </Button>
-        <Table
-          dataSource={toJS(company_mj_lands)}
-          columns={this.landColumns}
-          rowKey={(r) => r.id}
-          pagination={false}
-          rowClassName={(r) => (r.type ? "_self" : "_other")}
-          expandedRowRender={(r) => {
-            return r.type ? (
-              <Table
-                title={() => "企业用地出租信息"}
-                size="small"
-                columns={this.landRentColumns}
-                pagination={false}
-                rowKey={(_r) => _r.id}
-                dataSource={company_mj_land_rent}
-              />
-            ) : undefined;
-          }}
-        />
+        {company_mj_lands.length ? (
+          <Table
+            dataSource={toJS(company_mj_lands)}
+            columns={this.landColumns}
+            pagination={false}
+            rowClassName={r => (r.type ? "_self" : "_other")}
+            rowKey={r => r.key}
+            defaultExpandedRowKeys={["t0"]}
+            expandedRowRender={r => {
+              return r.type ? (
+                <Table
+                  title={() => "企业用地出租信息"}
+                  rowKey={r => r.key}
+                  size="small"
+                  columns={this.landRentColumns}
+                  pagination={false}
+                  dataSource={company_mj_land_rent}
+                />
+              ) : undefined;
+            }}
+          />
+        ) : undefined}
         <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
           <Col span={3} offset={4}>
             <Statistic title="自由用地(㎡)" value={company.landself} />
@@ -590,7 +595,7 @@ class CompanyDataForm extends Component {
         <Table
           dataSource={toJS(company_mj_elecs)}
           columns={this.elecColumns}
-          rowKey={(r) => r.id}
+          rowKey={r => r.id}
           pagination={false}
         />
         <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
