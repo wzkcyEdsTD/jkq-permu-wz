@@ -8,9 +8,8 @@ import CompanyUploadEl from "./components/CompanyUploadEL";
 import CompanyUploadBasic from "./components/CompanyUploadBasic";
 import "./CompanyUpload.less";
 
-@inject((stores) => ({
+@inject(stores => ({
   store: stores.companyUploadStore,
-  userStore: stores.userStore,
 }))
 @hoc({ name: "企业数据上报核对 - 企业", className: "page_companyupload" })
 @observer
@@ -30,9 +29,8 @@ export default class CompanyUpload extends Component {
   @autobind
   async fetchCompanyOption() {
     this.setState({ loading: true });
-    const { currentUser } = this.props.userStore;
     const { getCompanyInfoByPch } = this.props.store;
-    const visible = await getCompanyInfoByPch(currentUser);
+    const visible = await getCompanyInfoByPch();
     !visible &&
       visible !== undefined &&
       notification.warning({
@@ -51,7 +49,7 @@ export default class CompanyUpload extends Component {
   async updateCompanyDataState(params) {
     const { updateCompanyDataState } = this.props.store;
     Modal.confirm({
-      title: "确认更新以上企业指标确认情况?",
+      title: "确认更新以上企业信息?",
       okText: "确定",
       cancelText: "取消",
       onOk: async () => {
@@ -116,7 +114,7 @@ export default class CompanyUpload extends Component {
                 company={company || {}}
                 fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
                 updateCompanyDataState={this.updateCompanyDataState}
-                wrappedComponentRef={(instance) => {
+                wrappedComponentRef={instance => {
                   this.companyUploadIndicatorForm = instance;
                 }}
               />
@@ -125,7 +123,7 @@ export default class CompanyUpload extends Component {
               <CompanyUploadBasic
                 company={company || {}}
                 companyUploadBasicSubmit={this.companyUploadBasicSubmit}
-                wrappedComponentRef={(instance) => {
+                wrappedComponentRef={instance => {
                   this.companyUploadBasicForm = instance;
                 }}
               />

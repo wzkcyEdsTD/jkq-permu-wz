@@ -77,7 +77,6 @@ class UserService extends Service {
 
     // 检查密码是否正确
     const user = await this.UserModel.findOne({
-      attributes: ["id", "username", "phone", "role", "department", "isActive"],
       include: [
         {
           model: this.app.model.PassportModel,
@@ -128,12 +127,14 @@ class UserService extends Service {
       password,
       group,
       job,
+      alias,
     } = user;
     try {
       user.password = md5(user.password + this.salt);
       user = await this.UserModel.create({
         username,
         phone,
+        alias,
         department,
         isActive,
         role: "000",
@@ -172,11 +173,12 @@ class UserService extends Service {
 
   async updateUser(user) {
     const errorMsg = "保存用户失败";
-    const { department, isActive } = user;
+    const { department, isActive, alias } = user;
     try {
       const [rowCount] = await this.UserModel.update(
         {
           // department,
+          alias,
           isActive,
         },
         {

@@ -54,15 +54,18 @@ class UserForm extends Component {
                 message: "请输入手机号",
               },
             ],
-          })(
-            <Input placeholder="输入手机号" disabled={isUpdate} />
-          )}
+          })(<Input placeholder="输入手机号" disabled={isUpdate} />)}
+        </FormItem>
+        <FormItem {...defaultItemProps} label="别名">
+          {getFieldDecorator("alias", {
+            initialValue: user ? user.alias : "",
+          })(<Input placeholder="输入别名" />)}
         </FormItem>
         <FormItem {...defaultItemProps} label="用户组">
           {getFieldDecorator("group", {
             initialValue:
               user && user.groups
-                ? user.groups.map((v) => {
+                ? user.groups.map(v => {
                     return v.id;
                   })
                 : [],
@@ -98,7 +101,7 @@ class UserForm extends Component {
           {getFieldDecorator("job", {
             initialValue:
               user && user.jobs
-                ? user.jobs.map((v) => {
+                ? user.jobs.map(v => {
                     return v.id;
                   })
                 : [],

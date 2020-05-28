@@ -27,30 +27,27 @@ class CompanyUploadStore {
    * @memberof CompanyUploadStore
    */
   @action
-  getCompanyInfoByPch = async ({ username }, pch) => {
-    const data = await this.companyAPI.getCompanyInfoByPch({
-      username,
-      pch: pch || this.PCH,
-    });
+  getCompanyInfoByPch = async pch => {
+    const data = await this.companyAPI.getCompanyInfoByPch(pch || this.PCH);
     const { uuid } = data;
-    const elecd = eval(data.company_mj_elecs.map((d) => d.elec).join("+"));
+    const elecd = eval(data.company_mj_elecs.map(d => d.elec).join("+"));
     const landself =
       eval(
         data.company_mj_lands
-          .filter((d) => d.type == 1)
-          .map((d) => d.area)
+          .filter(d => d.type == 1)
+          .map(d => d.area)
           .join("+")
       ) || 0;
     const landget =
       eval(
         data.company_mj_lands
-          .filter((d) => d.type != 1)
-          .map((d) => d.area)
+          .filter(d => d.type != 1)
+          .map(d => d.area)
           .join("+")
       ) || 0;
     const landr =
-      eval(data.company_mj_land_rent.map((d) => d.area).join("+")) || 0;
-    !data.company_mj_lands.filter((data) => data.type == 1).length &&
+      eval(data.company_mj_land_rent.map(d => d.area).join("+")) || 0;
+    !data.company_mj_lands.filter(data => data.type == 1).length &&
       (data.company_mj_lands = [
         { type: 1, area: 0, uuid, to_object: uuid, id: shortid.generate() },
       ].concat(data.company_mj_lands));
@@ -69,8 +66,8 @@ class CompanyUploadStore {
    * @memberof CompanyDataStore
    */
   @action
-  fetchCompanyNameByUuid = async (uuids) => {
-    const fuuids = uuids.filter((v) =>
+  fetchCompanyNameByUuid = async uuids => {
+    const fuuids = uuids.filter(v =>
       /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g.test(v)
     );
     const res = fuuids.length
@@ -86,7 +83,7 @@ class CompanyUploadStore {
    * @memberof CompanyUploadStore
    */
   @action
-  updateCompanyDataState = async (obj) => {
+  updateCompanyDataState = async obj => {
     await this.companyAPI.updateCompanyDataState(obj);
   };
 
@@ -95,7 +92,7 @@ class CompanyUploadStore {
    * @memberof CompanyUploadStore
    */
   @action
-  companyUploadBasicSubmit = async (obj) => {
+  companyUploadBasicSubmit = async obj => {
     await this.companyAPI.companyUploadBasicSubmit(obj);
   };
 }

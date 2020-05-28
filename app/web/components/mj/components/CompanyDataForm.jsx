@@ -126,7 +126,6 @@ class CompanyDataForm extends Component {
                 确认
               </Button>
               <Button
-                style={{ marginLeft: 10 }}
                 onClick={() =>
                   this.editConfirmRecord(COMPANY_ELEC_HASH, false, true, r)
                 }
@@ -213,7 +212,6 @@ class CompanyDataForm extends Component {
                 确认
               </Button>
               <Button
-                style={{ marginLeft: 10 }}
                 onClick={() =>
                   this.editConfirmRecord(COMPANY_LAND_HASH, false, true, r)
                 }

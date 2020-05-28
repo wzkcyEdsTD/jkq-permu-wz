@@ -8,7 +8,6 @@ import {
   Table,
   Button,
   Tag,
-  Select,
   message,
   Statistic,
   Row,
@@ -16,6 +15,7 @@ import {
   List,
   Icon,
   Tooltip,
+  Upload,
 } from "antd";
 import _ from "lodash";
 import { toJS } from "mobx";
@@ -23,10 +23,6 @@ import autobind from "autobind-decorator";
 export const COMPANY_DATA_FORM_HASH = Symbol("companydata");
 const COMPANY_LAND_HASH = Symbol("landtag");
 const COMPANY_ELEC_HASH = Symbol("electag");
-const formItemLayout = {
-  labelCol: { span: 3 },
-  wrapperCol: { span: 10 },
-};
 const vreg = /^3303710[0-9]{5}/g;
 const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g;
 
@@ -56,6 +52,7 @@ class CompanyUploadEL extends Component {
       { title: "用地数据", v: "land", check: false },
       { title: "用电数据", v: "elec", check: false },
     ],
+    fileList: [],
     scale: 1,
   };
 
@@ -168,7 +165,6 @@ class CompanyUploadEL extends Component {
                 确认
               </Button>
               <Button
-                style={{ marginLeft: 10 }}
                 onClick={() =>
                   this.editConfirmRecord(COMPANY_ELEC_HASH, false, true, r)
                 }
@@ -255,7 +251,6 @@ class CompanyUploadEL extends Component {
                 确认
               </Button>
               <Button
-                style={{ marginLeft: 10 }}
                 onClick={() =>
                   this.editConfirmRecord(COMPANY_LAND_HASH, false, true, r)
                 }
@@ -270,11 +265,6 @@ class CompanyUploadEL extends Component {
               }
             >
               编辑
-            </Button>
-          )}
-          {r.type ? undefined : (
-            <Button style={{ marginLeft: 10 }} type="primary">
-              上传凭证
             </Button>
           )}
           {r.type ? undefined : (
@@ -295,12 +285,23 @@ class CompanyUploadEL extends Component {
     { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
     { title: "承租企业名称", dataIndex: "cname", key: "cname" },
     { title: "出租用地面积(平方米)", dataIndex: "area", key: "area" },
-    {
-      title: "操作",
-      dataIndex: "action",
-      render: (t, r) => <Button type="primary">上传凭证</Button>,
-    },
   ];
+
+  /**
+   * 传输返回
+   * @param {*} info
+   * @memberof CompanyUploadEL
+   */
+  @autobind
+  UploadEvidenceChange(e) {
+    const _fileList_ = [...e.fileList];
+    const fileList = _fileList_.map(file => {
+      file.response &&
+        (file.url = `http://${window.location.host}${file.response.msg}`);
+      return file;
+    });
+    this.setState({ fileList });
+  }
 
   /**
    * 获取企业名称
@@ -541,7 +542,12 @@ class CompanyUploadEL extends Component {
   @autobind
   async updateCompanyDataState() {
     const { company, updateCompanyDataState } = this.props;
-    const { basicIndex, extraIndex } = this.state;
+    const {
+      basicIndex,
+      extraIndex,
+      company_mj_elecs,
+      company_mj_lands,
+    } = this.state;
     const states = {};
     [...basicIndex, ...extraIndex].map(v => {
       states[v.v] = v.check;
@@ -553,6 +559,8 @@ class CompanyUploadEL extends Component {
         pch: company.pch,
         name: company.name,
         states,
+        company_mj_elecs,
+        company_mj_lands,
       });
     } finally {
       this.setState({ savingLoad: false });
@@ -569,6 +577,7 @@ class CompanyUploadEL extends Component {
       scale,
       basicIndex,
       extraIndex,
+      fileList,
     } = this.state;
 
     const landget =
@@ -633,6 +642,21 @@ class CompanyUploadEL extends Component {
               </List.Item>
             )}
           />
+          <Divider dashed orientation="left" className="land_divider">
+            [ 用地用电凭证上传 ]
+          </Divider>
+          <Row>
+            <Col span={22} offset={1}>
+              <Upload
+                accept="image/gif,image/jpeg,image/jpg,image/png"
+                action={`${window.__API_CONFIG__.fwGateway.baseURL}/mj/evidence/upload/${company.pch}/${company.uuid}`}
+                onChange={this.UploadEvidenceChange}
+                fileList={fileList}
+              >
+                <Button type="primary">上传凭证</Button>
+              </Upload>
+            </Col>
+          </Row>
           <Divider dashed orientation="left" className="land_divider">
             [ 用地数据确认 ]
           </Divider>

@@ -18,8 +18,8 @@ export default class CompanyAPI extends BaseFwAPI {
    * @returns
    * @memberof CompanyAPI
    */
-  getCompanyInfoByPch({ username, pch }) {
-    return this.post(`/mj/company/${pch}/${username}`);
+  getCompanyInfoByPch(pch) {
+    return this.get(`/mj/company/${pch}`);
   }
   /**
    * 更新企业信息
@@ -70,8 +70,18 @@ export default class CompanyAPI extends BaseFwAPI {
    * @returns
    * @memberof CompanyAPI
    */
-  updateCompanyDataState({ uuid, pch, states }) {
-    return this.put(`mj/company/state/${pch}/${uuid}`, states);
+  updateCompanyDataState({
+    uuid,
+    pch,
+    states,
+    company_mj_elecs,
+    company_mj_lands,
+  }) {
+    return this.put(`mj/company/state/${pch}/${uuid}`, {
+      states,
+      company_mj_elecs,
+      company_mj_lands,
+    });
   }
 
   /**

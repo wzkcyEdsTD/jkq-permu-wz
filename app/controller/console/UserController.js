@@ -1,6 +1,5 @@
 const Controller = require("egg").Controller;
 const _ = require("lodash");
-const Role = require("../../enum/Role");
 const DEFAULT_PASSWORD = "123456";
 
 class UserController extends Controller {
@@ -113,6 +112,7 @@ class UserController extends Controller {
         "isActive",
         "username",
         "phone",
+        "alias"
       ]),
     };
 
@@ -136,7 +136,7 @@ class UserController extends Controller {
     };
     const user = {
       id: ctx.params.userId,
-      ..._.pick(ctx.request.body, ["department", "group", "job", "isActive"]),
+      ..._.pick(ctx.request.body, ["department", "group", "job","alias", "isActive"]),
     };
     ctx.validate(rules, user);
 

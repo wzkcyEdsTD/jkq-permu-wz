@@ -1,5 +1,6 @@
 logs/
 public/
+files/
 npm-debug.log
 yarn-error.log
 node_modules/

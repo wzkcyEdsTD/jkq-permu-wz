@@ -287,14 +287,21 @@ class CompanyService extends Service {
         {
           //  企业用地指标
           model: this.app.model.CompanyMjLandModel,
-          attributes: ["id", "type", "area", "linktype", "uuid"],
+          attributes: [
+            "id",
+            "type",
+            "area",
+            "linktype",
+            "uuid",
+            "to_object",
+            "pch",
+          ],
           order: [["type", "DESC"]],
           // required: false,
         },
         {
           //  企业用电指标
           model: this.app.model.CompanyMjElecModel,
-          attributes: ["id", "elecmeter", "elec"],
           // required: false,
         },
       ],
@@ -482,7 +489,7 @@ class CompanyService extends Service {
    * @param {*} { basic, states }
    * @memberof CompanyService
    */
-  async updateCompanyDataState({ basic, states }) {
+  async updateCompanyDataState({ basic, states, elec, land }) {
     await this.CompanyMjDataStateModel.destroy({ where: basic });
     await this.CompanyMjDataStateModel.create({ ...basic, ...states });
     await this.CompanyPchModel.update(
@@ -497,7 +504,14 @@ class CompanyService extends Service {
       },
       { where: basic }
     );
-    return this.ServerResponse.createBySuccessMsg("更新企业指标状态成功");
+    await this.destoryCompanyExtra(basic);
+    await Promise.all(
+      elec.map(async i => await this.addCompanyExtra(i, 1, basic))
+    );
+    await Promise.all(
+      land.map(async i => await this.addCompanyExtra(i, 0, basic))
+    );
+    return this.ServerResponse.createBySuccessMsg("修改企业信息成功");
   }
 
   /**
@@ -523,9 +537,9 @@ class CompanyService extends Service {
    * @returns
    * @memberof CompanyService
    */
-  async updateCompanyElecmenter({ basic, states }) {
+  async updateCompanyElecmenter({ basic, states }, operator) {
     const { pch, elecmeter } = basic;
-    const { elec, operator, elecDataObj } = states;
+    const { elec, elecDataObj } = states;
     //  release relation
     await this.CompanyMjElecModel.destroy({ where: { pch, elecmeter } });
     await this.CompanyElecmeterModel.update(

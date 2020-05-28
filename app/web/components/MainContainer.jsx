@@ -21,7 +21,7 @@ import UpdatePasswordForm from "components/common/UpdatePasswordForm";
 const { SubMenu } = Menu;
 const { Header, Content, Sider, Footer } = Layout;
 
-@inject((stores) => ({
+@inject(stores => ({
   store: stores.userStore,
 }))
 @observer
@@ -55,12 +55,12 @@ class MainContainer extends Component {
     const { currentMenu: MENUS } = this.props.store;
     const BREADCRUMB = {};
     //  面包屑映射
-    MENUS.map((item) => {
+    MENUS.map(item => {
       if (item.key && item.title) {
         BREADCRUMB[item.key] = item.title;
       }
       if (item.children && item.children.length) {
-        item.children.map((_item) => {
+        item.children.map(_item => {
           BREADCRUMB[_item.key] = _item.title;
         });
       }
@@ -103,7 +103,7 @@ class MainContainer extends Component {
       if (MENUS[i].children && MENUS[i].children.length) {
         const menuList = [],
           children = MENUS[i].children;
-        children.map((v) => {
+        children.map(v => {
           menuList.push(<Menu.Item key={v.key}>{v.title}</Menu.Item>);
         });
         subMenuList.push(
@@ -152,7 +152,7 @@ class MainContainer extends Component {
    * 菜单点击切换
    * @param {String} key
    */
-  switchMenu = (event) => {
+  switchMenu = event => {
     const { history } = this.props;
     this.setState({
       defaultSelectedKeys: [event.key],
@@ -164,12 +164,12 @@ class MainContainer extends Component {
    * 根据子节点key寻找父节点key
    * @param key <String> 菜单key
    */
-  getFatherPoint = (key) => {
+  getFatherPoint = key => {
     const { currentMenu: MENUS } = this.props.store;
     let target = null;
-    [...MENUS].map((item) => {
+    [...MENUS].map(item => {
       item.children &&
-        item.children.map((_item) => {
+        item.children.map(_item => {
           if (_item.key == key) {
             target = item.key;
           }
@@ -276,7 +276,10 @@ class MainContainer extends Component {
           <div className="logo">温州市经开区亩均论英雄</div>
           <div className="avater-user">
             <span style={{ color: "#fff" }}>
-              hi , {store.currentUser ? store.currentUser.username : ""}
+              hi ,{" "}
+              {store.currentUser
+                ? store.currentUser.alias || store.currentUser.username
+                : ""}
             </span>
             <Dropdown overlay={this.userMenu()}>
               <a>
@@ -321,7 +324,7 @@ class MainContainer extends Component {
           ]}
         >
           <UpdatePasswordForm
-            wrappedComponentRef={(instance) => {
+            wrappedComponentRef={instance => {
               this.updatePasswordForm = instance;
             }}
             updateUser={store.currentUser}

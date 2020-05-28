@@ -30,6 +30,8 @@ import CompanyProgress from "components/mj/CompanyProgress";
 import CompanyProgressStore from "stores/mj/CompanyProgressStore";
 import CompanyElecmeter from "components/mj/CompanyElecmeter";
 import CompanyElecmeterStore from "stores/mj/CompanyElecmeterStore";
+import CompanyLog from "components/mj/CompanyLog";
+import CompanyLogStore from "stores/mj/CompanyLogStore";
 
 const createStores = (ctx, state, userinfoState) => ({
   userStore: new UserStore(ctx, state, userinfoState),
@@ -39,6 +41,7 @@ const createStores = (ctx, state, userinfoState) => ({
   companyUploadStore: new CompanyUploadStore(ctx, state),
   companyProgressStore: new CompanyProgressStore(ctx, state),
   companyElecmeterStore: new CompanyElecmeterStore(ctx, state),
+  companyLogStore: new CompanyLogStore(ctx, state),
 });
 
 const routes = [
@@ -75,6 +78,10 @@ const routes = [
       {
         path: "/home/companyElecmeter",
         component: CompanyElecmeter,
+      },
+      {
+        path: "/home/companyLog",
+        component: CompanyLog,
       },
     ],
   },

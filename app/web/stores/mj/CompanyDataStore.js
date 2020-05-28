@@ -76,32 +76,32 @@ class CompanyDataStore {
       street: name == "街道" ? username : "",
     };
     const { list, page } = await this.companyAPI.getCompanyListByPch(params);
-    this._list = list.map((v) => {
+    this._list = list.map(v => {
       const { uuid } = v;
-      const elecd = eval(v.company_mj_elecs.map((d) => d.elec).join("+"));
+      const elecd = eval(v.company_mj_elecs.map(d => d.elec).join("+"));
       const landself =
         eval(
           v.company_mj_lands
-            .filter((d) => d.type == 1)
-            .map((d) => d.area)
+            .filter(d => d.type == 1)
+            .map(d => d.area)
             .join("+")
         ) || 0;
       const landget =
         eval(
           v.company_mj_lands
-            .filter((d) => d.type != 1)
-            .map((d) => d.area)
+            .filter(d => d.type != 1)
+            .map(d => d.area)
             .join("+")
         ) || 0;
       const landr =
-        eval(v.company_mj_land_rent.map((d) => d.area).join("+")) || 0;
+        eval(v.company_mj_land_rent.map(d => d.area).join("+")) || 0;
       const obj = { ...v, ...v.company_mj_datum };
-      !obj.company_mj_lands.filter((v) => v.type == 1).length &&
+      !obj.company_mj_lands.filter(v => v.type == 1).length &&
         (obj.company_mj_lands = [
           { type: 1, area: 0, uuid, to_object: uuid, id: shortid.generate() },
         ].concat(obj.company_mj_lands));
       //  经济指标状态
-      Object.keys(v.company_mj_data_state).map((d) => {
+      Object.keys(v.company_mj_data_state).map(d => {
         obj[`${d}_state`] = v.company_mj_data_state[d];
       });
       //  确认按钮
@@ -128,13 +128,13 @@ class CompanyDataStore {
     });
     const scaleArr = ["规下", "规上"];
     const stateArr = ["正常", "非本街道", "注销", "迁出", "迁入保护"];
-    const list = data.map((v) => {
-      const elecd = eval(v.company_mj_elecs.map((d) => d.elec).join("+")) || 0;
-      const landd = eval(v.company_mj_lands.map((d) => d.area).join("+")) || 0;
+    const list = data.map(v => {
+      const elecd = eval(v.company_mj_elecs.map(d => d.elec).join("+")) || 0;
+      const landd = eval(v.company_mj_lands.map(d => d.area).join("+")) || 0;
       const landr =
-        eval(v.company_mj_land_rent.map((d) => d.area).join("+")) || 0;
+        eval(v.company_mj_land_rent.map(d => d.area).join("+")) || 0;
       const obj = { ...v.company_mj_datum };
-      Object.keys(v).map((n) =>
+      Object.keys(v).map(n =>
         typeof v[n] == "object" && v[n] != null ? undefined : (obj[n] = v[n])
       );
       obj.elecd = elecd;
@@ -165,7 +165,7 @@ class CompanyDataStore {
    * @memberof CompanyDataStore
    */
   @action
-  updateCompanyPassport = async (values) => {
+  updateCompanyPassport = async values => {
     await this.companyAPI.updateCompanyPassport(values);
   };
 
@@ -174,8 +174,8 @@ class CompanyDataStore {
    * @memberof CompanyDataStore
    */
   @action
-  fetchCompanyNameByUuid = async (uuids) => {
-    const fuuids = uuids.filter((v) =>
+  fetchCompanyNameByUuid = async uuids => {
+    const fuuids = uuids.filter(v =>
       /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g.test(v)
     );
     const res = fuuids.length

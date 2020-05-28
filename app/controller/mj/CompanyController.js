@@ -38,7 +38,11 @@ class CompanyController extends Controller {
    * @memberof CompanyController
    */
   async getCompanyInfoByPch() {
-    const res = await this.CompanyService.getCompanyInfoByPch(this.ctx.params);
+    const { username } = this.ctx.session.currentUser;
+    const res = await this.CompanyService.getCompanyInfoByPch({
+      uuid: username,
+      pch: this.ctx.params.pch,
+    });
     this.ctx.body = res;
   }
 
@@ -94,9 +98,16 @@ class CompanyController extends Controller {
    * @memberof CompanyController
    */
   async updateCompanyDataState() {
+    const {
+      states,
+      company_mj_elecs,
+      company_mj_lands,
+    } = this.ctx.request.body;
     const response = await this.CompanyService.updateCompanyDataState({
       basic: this.ctx.params,
-      states: this.ctx.request.body,
+      states,
+      elec: company_mj_elecs,
+      land: company_mj_lands,
     });
     this.ctx.body = response;
   }
@@ -118,10 +129,14 @@ class CompanyController extends Controller {
    * @memberof CompanyController
    */
   async updateCompanyElecmenter() {
-    const response = await this.CompanyService.updateCompanyElecmenter({
-      basic: this.ctx.params,
-      states: this.ctx.request.body,
-    });
+    const { username } = this.ctx.session.currentUser;
+    const response = await this.CompanyService.updateCompanyElecmenter(
+      {
+        basic: this.ctx.params,
+        states: this.ctx.request.body,
+      },
+      username
+    );
     this.ctx.body = response;
   }
 

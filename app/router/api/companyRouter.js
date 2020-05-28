@@ -1,18 +1,27 @@
-module.exports = (app) => {
+/*
+ * @Author: eds
+ * @Date: 2020-04-29 14:24:30
+ * @LastEditTime: 2020-05-28 18:57:15
+ * @LastEditors: eds
+ * @Description:
+ * @FilePath: \jkq-permu-wz\app\router\api\companyRouter.js
+ */
+
+module.exports = app => {
   const { router, controller, middleware } = app;
   const {
-    mj: { companyController },
+    mj: { companyController, companyEvidenceController },
   } = controller;
   const checkPrivileges = middleware.checkPrivileges();
   const prefix = "/api/mj";
-
+  //  [companyController]
   router.post(`${prefix}/company`, companyController.getCompanyListByPch);
   router.post(
     `${prefix}/company/export`,
     companyController.exportCompanyListByPch
   );
-  router.post(
-    `${prefix}/company/:pch/:uuid`,
+  router.get(
+    `${prefix}/company/:pch`,
     checkPrivileges,
     companyController.getCompanyInfoByPch
   );
@@ -55,5 +64,11 @@ module.exports = (app) => {
     `${prefix}/company/elecmeter/:pch/:uuid`,
     checkPrivileges,
     companyController.getCompanyElecmenter
+  );
+  // [companyEvidenceController]
+  router.post(
+    `${prefix}/evidence/upload/:pch/:uuid`,
+    checkPrivileges,
+    companyEvidenceController.uploadCompanyEvidence
   );
 };

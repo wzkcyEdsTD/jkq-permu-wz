@@ -6,9 +6,8 @@ import { observer, inject } from "mobx-react";
 import hoc from "components/HOC/pageHeader";
 import CompanyElecForm from "./components/CompanyElecForm";
 import "./CompanyElecmeter.less";
-@inject((stores) => ({
+@inject(stores => ({
   store: stores.companyElecmeterStore,
-  userStore: stores.userStore,
 }))
 @hoc({ name: "共用电表登记 - 街道", className: "page_companyelecmeter" })
 @observer
@@ -28,7 +27,7 @@ export default class CompanyElecmeter extends Component {
           <Input
             placeholder="请输入电表号"
             style={{ width: "180px" }}
-            onChange={(e) => {
+            onChange={e => {
               this.setState({ elecmeter: e.target.value });
             }}
           />
@@ -39,7 +38,7 @@ export default class CompanyElecmeter extends Component {
             placeholder="请输入用电量"
             style={{ width: "180px" }}
             type="number"
-            onChange={(e) => {
+            onChange={e => {
               this.setState({ elec: e.target.value });
             }}
           />{" "}
@@ -58,8 +57,8 @@ export default class CompanyElecmeter extends Component {
   validateElecData(elec, values) {
     const sval = eval(
       Object.keys(values)
-        .filter((v) => v.includes("elec"))
-        .map((v) => parseInt(values[v], 10))
+        .filter(v => v.includes("elec"))
+        .map(v => parseInt(values[v], 10))
         .join("+")
     );
     return elec == sval;
@@ -72,7 +71,7 @@ export default class CompanyElecmeter extends Component {
   @autobind
   fixElecDatatoObj(values) {
     const keys = Object.keys(values);
-    const ids = [...new Set(keys.map((v) => v.split("-")[1]))];
+    const ids = [...new Set(keys.map(v => v.split("-")[1]))];
     const obj = {},
       arr = [];
     for (let i in values) {
@@ -85,12 +84,11 @@ export default class CompanyElecmeter extends Component {
     }
     //  check
     if (
-      [...new Set(Object.keys(obj).map((v) => obj[v].uuid))].length !=
-      ids.length
+      [...new Set(Object.keys(obj).map(v => obj[v].uuid))].length != ids.length
     ) {
       return false;
     }
-    ids.map((v) => {
+    ids.map(v => {
       arr.push(obj[v]);
     });
     return arr;
@@ -104,7 +102,6 @@ export default class CompanyElecmeter extends Component {
   @autobind
   async updateCompanyElecmenter() {
     const { updateCompanyElecmenter } = this.props.store;
-    const { currentUser } = this.props.userStore;
     const { elecmeter, elec } = this.state;
     if (!elecmeter) return message.error("请填写电表号");
     if (!elec) return message.error("请填写总用电量");
@@ -124,12 +121,7 @@ export default class CompanyElecmeter extends Component {
         onOk: async () => {
           try {
             this.setState({ loading: true });
-            await updateCompanyElecmenter(
-              elecmeter,
-              elec,
-              elecDataObj,
-              currentUser
-            );
+            await updateCompanyElecmenter(elecmeter, elec, elecDataObj);
             message.success(`电表号 [${elecmeter}] 公用信息登记成功`);
           } catch (e) {
             message.error(e);
@@ -149,7 +141,7 @@ export default class CompanyElecmeter extends Component {
         <div className="action-container">{this.searchLeft()}</div>
         <CompanyElecForm
           fetchCompanyNameByUuid={fetchCompanyNameByUuid}
-          wrappedComponentRef={(instance) => {
+          wrappedComponentRef={instance => {
             this.companyElecForm = instance;
           }}
         />

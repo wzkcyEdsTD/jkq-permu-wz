@@ -193,8 +193,13 @@ class UserManagement extends Component {
       },
       {
         title: "用户名",
-        width: 100,
+        width: 200,
         dataIndex: "username",
+      },
+      {
+        title: "别名",
+        width: 200,
+        dataIndex: "alias",
       },
       {
         title: "手机号",

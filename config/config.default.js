@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-27 10:16:49
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2020-05-28 16:48:37
+ * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.default.js
  */
@@ -16,7 +16,7 @@ const fs = require("fs");
 /**
  * @param {Egg.EggAppInfo} appInfo app info
  */
-module.exports = (appInfo) => {
+module.exports = appInfo => {
   /**
    * built-in config
    * @type {Egg.EggAppConfig}
@@ -39,10 +39,10 @@ module.exports = (appInfo) => {
   // middleware
   config.middleware = ["parseConfig"];
 
-  // static
+  // static 凭证保存
   config.static = {
-    prefix: "/public/",
-    dir: path.join(appInfo.baseDir, "public"),
+    prefix: "/files/",
+    dir: path.join(appInfo.baseDir, "files"),
   };
 
   //  session
