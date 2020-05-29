@@ -113,7 +113,6 @@ class GroupService extends Service {
       });
       if (group) {
         group = group.toJSON();
-        console.log(menuIdList.length);
         menuIdList &&
           menuIdList.length &&
           (await this.GroupMenuRelation.bulkCreate(

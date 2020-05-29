@@ -453,7 +453,7 @@ export default class CompanyProgress extends Component {
       },
       {
         title: "操作",
-        width: 300,
+        width: 360,
         fixed: "right",
         render: (r, t) => {
           return (
@@ -560,7 +560,7 @@ export default class CompanyProgress extends Component {
         <Modal
           className="modal-handled"
           title={"企业数据审核"}
-          width={1000}
+          width={1200}
           destroyOnClose={true}
           visible={formModalVisiable}
           onCancel={() => this.hideModal(COMPANY_DATA_FORM_HASH)}

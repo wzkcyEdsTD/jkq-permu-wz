@@ -1,7 +1,7 @@
 import { action, observable, computed } from "mobx";
 import shortid from "shortid";
 import CompanyAPI from "api/company";
-import village from "enums/Village";
+import { village } from "enums/Village";
 
 class CompanyUploadStore {
   constructor(ctx, initialState) {

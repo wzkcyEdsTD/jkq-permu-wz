@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-28 16:48:37
+ * @LastEditTime: 2020-05-29 14:56:24
  * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.default.js
@@ -24,7 +24,7 @@ module.exports = appInfo => {
   const config = (exports = {});
   config.salt = appInfo.name + "_salt";
   // use for cookie sign key, should change to your own and keep security
-  config.keys = appInfo.name + "_1556632511662_605";
+  config.keys = appInfo.name;
 
   //  security
   config.security = {

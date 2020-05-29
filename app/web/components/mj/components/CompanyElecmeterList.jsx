@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { observer } from "mobx-react";
 import { List, Row, Col, Typography } from "antd";
 import autobind from "autobind-decorator";
-
+export const COMPANY_ELECMETER_LIST_HASH = Symbol("companyelecmeterlist");
 /**
  * 企业共用电表
  * @class CompanyElecmeterList

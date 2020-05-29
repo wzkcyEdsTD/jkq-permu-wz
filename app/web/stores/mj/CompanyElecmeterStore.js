@@ -1,14 +1,14 @@
 /*
  * @Author: eds
  * @Date: 2020-05-09 11:28:45
- * @LastEditTime: 2020-05-28 15:01:55
+ * @LastEditTime: 2020-05-29 15:24:18
  * @LastEditors: eds
  * @Description: 
  * @FilePath: \jkq-permu-wz\app\web\stores\mj\CompanyElecmeterStore.js
  */ 
 import { action, observable } from "mobx";
 import CompanyAPI from "api/company";
-import village from "enums/Village";
+import { village } from "enums/Village";
 
 class CompanyElecmeterStore {
   constructor(ctx) {

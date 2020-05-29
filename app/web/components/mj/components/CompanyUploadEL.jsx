@@ -16,16 +16,18 @@ import {
   Icon,
   Tooltip,
   Upload,
+  AutoComplete,
 } from "antd";
+const AutoCompleteOption = AutoComplete.Option;
 import _ from "lodash";
 import { toJS } from "mobx";
 import autobind from "autobind-decorator";
 export const COMPANY_DATA_FORM_HASH = Symbol("companydata");
 const COMPANY_LAND_HASH = Symbol("landtag");
 const COMPANY_ELEC_HASH = Symbol("electag");
-const vreg = /^3303710[0-9]{5}/g;
-const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g;
-
+import { villageOption } from "enums/Village";
+const vreg = /^3303710[0-9]{5}/;
+const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/;
 /**
  * 企业信息填报核对
  * @class CompanyDataForm
@@ -53,6 +55,7 @@ class CompanyUploadEL extends Component {
       { title: "用电数据", v: "elec", check: false },
     ],
     fileList: [],
+    autoResult: [],
     scale: 1,
   };
 
@@ -109,6 +112,14 @@ class CompanyUploadEL extends Component {
         ...v,
         check: company.company_mj_data_state[v.v],
         checkable: company.company_mj_data_state[v.v] ? false : true,
+      })),
+      fileList: company.company_evidences.map((v, index) => ({
+        name: `${v.filename}  | 【上传时间】${new Date(
+          v.createdAt
+        ).toLocaleString()}`,
+        status: "done",
+        uid: v.id,
+        url: `http://${window.location.host}${v.fileurl}`,
       })),
     });
   }
@@ -222,10 +233,23 @@ class CompanyUploadEL extends Component {
     {
       title: "统一信用代码/行政区划代码",
       dataIndex: "uuid",
-      width: 200,
+      width: 280,
       render: (t, r) =>
         r.edit ? (
-          <Input className={`uuid_${r.id}`} defaultValue={t} />
+          <AutoComplete
+            className={`uuid_${r.id}`}
+            defaultValue={t}
+            onSearch={value => {
+              const autoResult = villageOption.filter(v => ~v.indexOf(value));
+              this.setState({ autoResult });
+            }}
+          >
+            {this.state.autoResult.map((v, index) => (
+              <AutoCompleteOption key={v} value={v}>
+                {v}
+              </AutoCompleteOption>
+            ))}
+          </AutoComplete>
         ) : r.type ? (
           ""
         ) : (
@@ -295,12 +319,21 @@ class CompanyUploadEL extends Component {
   @autobind
   UploadEvidenceChange(e) {
     const _fileList_ = [...e.fileList];
-    const fileList = _fileList_.map(file => {
-      file.response &&
-        (file.url = `http://${window.location.host}${file.response.msg}`);
-      return file;
+    let fileList = _fileList_.map(v => {
+      if (v.response) {
+        v.url = `http://${window.location.host}${v.response.msg.msg}`;
+        v.name = `${v.name}  | 【上传时间】${new Date().toLocaleString()}`;
+      }
+      return v;
     });
-    this.setState({ fileList });
+    if (e.file.status == "done") {
+      const _single_ = fileList.pop();
+      fileList = [_single_].concat(fileList);
+      fileList.length = fileList.length > 3 ? 3 : fileList.length;
+      this.setState({ fileList });
+    } else {
+      this.setState({ fileList });
+    }
   }
 
   /**
@@ -379,6 +412,21 @@ class CompanyUploadEL extends Component {
       }
     }
   }
+
+  /**
+   * 获取村行政代码
+   * @param {*} id
+   * @returns
+   * @memberof CompanyUploadEL
+   */
+  @autobind
+  getVillageCode(id) {
+    const value = document
+      .getElementsByClassName(`uuid_${id}`)[0]
+      .getElementsByClassName("ant-input")[0].value;
+    return ~value.indexOf("]") ? value.split("]")[1] : value;
+  }
+
   /**
    * 编辑|确认表格记录
    * @param {*} HASH
@@ -395,9 +443,7 @@ class CompanyUploadEL extends Component {
     if (!this.verifyEdit(HASH, edit, isCancel, r)) return;
     const uuids2names =
       HASH == COMPANY_LAND_HASH && !edit && !isCancel
-        ? await this.fetchCompanyNameByUuid([
-            document.getElementsByClassName(`uuid_${r.id}`)[0].value,
-          ])
+        ? await this.fetchCompanyNameByUuid([this.getVillageCode(r.id)])
         : "";
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
@@ -442,18 +488,12 @@ class CompanyUploadEL extends Component {
                       ...r,
                       cname: isCancel
                         ? r.cname
-                        : uuids2names[
-                            document.getElementsByClassName(`uuid_${r.id}`)[0]
-                              .value
-                          ],
+                        : uuids2names[this.getVillageCode(r.id)],
                       area: isCancel
                         ? r.area
                         : document.getElementsByClassName(`area_${r.id}`)[0]
                             .value,
-                      uuid: isCancel
-                        ? r.uuid
-                        : document.getElementsByClassName(`uuid_${r.id}`)[0]
-                            .value,
+                      uuid: isCancel ? r.uuid : this.getVillageCode(r.id),
                       edit,
                     }
                   : v
@@ -497,9 +537,7 @@ class CompanyUploadEL extends Component {
         return true;
       }
       case COMPANY_LAND_HASH: {
-        const uuid = _.trim(
-          document.getElementsByClassName(`uuid_${r.id}`)[0].value
-        );
+        const uuid = _.trim(this.getVillageCode(r.id));
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
         if (!reg.test(uuid) && !vreg.test(uuid)) {
           message.error(`请输入正确的统一信用代码/行政区划代码`);
@@ -579,7 +617,6 @@ class CompanyUploadEL extends Component {
       extraIndex,
       fileList,
     } = this.state;
-
     const landget =
       eval(
         company_mj_lands
@@ -644,6 +681,18 @@ class CompanyUploadEL extends Component {
           />
           <Divider dashed orientation="left" className="land_divider">
             [ 用地用电凭证上传 ]
+            {
+              <Tooltip title={`用地用电凭证以最新一条凭证为准`}>
+                <Icon
+                  type="question-circle"
+                  style={{
+                    fontSize: 18,
+                    marginLeft: 10,
+                    verticalAlign: "middle",
+                  }}
+                />
+              </Tooltip>
+            }
           </Divider>
           <Row>
             <Col span={22} offset={1}>

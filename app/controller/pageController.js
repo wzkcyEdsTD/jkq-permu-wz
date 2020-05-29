@@ -1,3 +1,11 @@
+/*
+ * @Author: eds
+ * @Date: 2020-04-27 08:50:23
+ * @LastEditTime: 2020-05-29 14:57:33
+ * @LastEditors: eds
+ * @Description: 
+ * @FilePath: \jkq-permu-wz\app\controller\pageController.js
+ */ 
 "use strict";
 
 const Controller = require("egg").Controller;
@@ -16,7 +24,6 @@ class PageController extends Controller {
   }
   async index() {
     const { ctx } = this;
-    console.log(ctx.url);
     if (!ctx.session.currentUser) {
       return ctx.redirect(`/login`);
     } else {

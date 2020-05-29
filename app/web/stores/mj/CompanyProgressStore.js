@@ -2,7 +2,7 @@ import { action, observable, computed } from "mobx";
 import CompanyAPI from "api/company";
 import shortid from "shortid";
 import { tableToExcel } from "utils/utils";
-import village from "enums/Village";
+import { village } from "enums/Village";
 
 const initTable = {
   name: "",

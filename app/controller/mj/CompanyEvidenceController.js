@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 16:09:50
- * @LastEditTime: 2020-05-28 19:56:18
+ * @LastEditTime: 2020-05-29 09:39:12
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\controller\mj\CompanyEvidenceController.js
@@ -19,13 +19,14 @@ const doFilesUpload = (ctx, config) => {
   return new Promise(async resolve => {
     const { pch, uuid } = ctx.params;
     const stream = await ctx.getFileStream();
+    const trueName = stream.filename;
     const extName = path.extname(stream.filename).toLocaleLowerCase();
     const fileName = `${pch}_${uuid}_${+new Date()}${extName}`;
     const target = path.join(config.baseDir, `files`, fileName);
     const writeStream = fs.createWriteStream(target);
     stream.pipe(writeStream);
     writeStream.on("finish", () => {
-      resolve({ fileName });
+      resolve({ fileName, trueName });
     });
   });
 };
@@ -43,15 +44,16 @@ class CompanyEvidenceController extends Controller {
    * @memberof CompanyEvidenceController
    */
   async uploadCompanyEvidence() {
-    const { fileName } = await doFilesUpload(this.ctx, this.config);
+    const { fileName, trueName } = await doFilesUpload(this.ctx, this.config);
     const evidenceURL = `/files/${fileName}`;
+    const { username } = this.ctx.session.currentUser;
     const response = await this.CompanyEvidenceService.uploadCompanyEvidence(
       this.ctx.params,
-      fileName,
-      evidenceURL
+      trueName,
+      evidenceURL,
+      username
     );
-    console.log(response);
-    this.ctx.body = this.ServerResponse.createBySuccessMsg(evidenceURL);
+    this.ctx.body = this.ServerResponse.createBySuccessMsg(response);
   }
 }
 

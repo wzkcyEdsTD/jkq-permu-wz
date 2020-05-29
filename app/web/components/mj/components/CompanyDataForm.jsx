@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { observer, inject } from "mobx-react";
+import { observer } from "mobx-react";
 import shortid from "shortid";
 import {
   Form,
@@ -15,9 +15,12 @@ import {
   Col,
   Tooltip,
   Icon,
+  Upload,
+  AutoComplete,
 } from "antd";
+const AutoCompleteOption = AutoComplete.Option;
+const Option = Select.Option;
 import _ from "lodash";
-const { Option } = Select;
 import { toJS } from "mobx";
 const { Item: FormItem } = Form;
 import { checkMobile } from "utils/validation";
@@ -25,12 +28,13 @@ import autobind from "autobind-decorator";
 export const COMPANY_DATA_FORM_HASH = Symbol("companydata");
 const COMPANY_LAND_HASH = Symbol("landtag");
 const COMPANY_ELEC_HASH = Symbol("electag");
+import { villageOption } from "enums/Village";
 const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 10 },
 };
-const vreg = /^3303710[0-9]{5}/g;
-const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/g;
+const vreg = /^3303710[0-9]{5}/;
+const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/;
 
 /**
  * 企业信息填报核对
@@ -43,6 +47,8 @@ class CompanyDataForm extends Component {
     company_mj_lands: [],
     company_mj_elecs: [],
     company_mj_land_rent: [],
+    fileList: [],
+    autoResult: [],
   };
 
   @autobind
@@ -70,6 +76,14 @@ class CompanyDataForm extends Component {
         key: `_t${index}`,
         cname: uuids2names[v.to_object] || "",
         edit: false,
+      })),
+      fileList: company.company_evidences.map((v, index) => ({
+        name: `${v.filename}  | 【上传时间】${new Date(
+          v.createdAt
+        ).toLocaleString()}`,
+        status: "done",
+        uid: v.id,
+        url: `http://${window.location.host}${v.fileurl}`,
       })),
     });
   }
@@ -183,10 +197,23 @@ class CompanyDataForm extends Component {
     {
       title: "统一信用代码/行政区划代码",
       dataIndex: "uuid",
-      width: 180,
+      width: 280,
       render: (t, r) =>
         r.edit ? (
-          <Input className={`uuid_${r.id}`} defaultValue={t} />
+          <AutoComplete
+            className={`uuid_${r.id}`}
+            defaultValue={t}
+            onSearch={value => {
+              const autoResult = villageOption.filter(v => ~v.indexOf(value));
+              this.setState({ autoResult });
+            }}
+          >
+            {this.state.autoResult.map((v, index) => (
+              <AutoCompleteOption key={v} value={v}>
+                {v}
+              </AutoCompleteOption>
+            ))}
+          </AutoComplete>
         ) : r.type ? (
           ""
         ) : (
@@ -249,6 +276,31 @@ class CompanyDataForm extends Component {
     { title: "承租企业名称", dataIndex: "cname", key: "cname" },
     { title: "出租用地面积(平方米)", dataIndex: "area", key: "area" },
   ];
+
+  /**
+   * 传输返回
+   * @param {*} info
+   * @memberof CompanyUploadEL
+   */
+  @autobind
+  UploadEvidenceChange(e) {
+    const _fileList_ = [...e.fileList];
+    let fileList = _fileList_.map(v => {
+      if (v.response) {
+        v.url = `http://${window.location.host}${v.response.msg.msg}`;
+        v.name = `${v.name}  | 【上传时间】${new Date().toLocaleString()}`;
+      }
+      return v;
+    });
+    if (e.file.status == "done") {
+      const _single_ = fileList.pop();
+      fileList = [_single_].concat(fileList);
+      fileList.length = fileList.length > 3 ? 3 : fileList.length;
+      this.setState({ fileList });
+    } else {
+      this.setState({ fileList });
+    }
+  }
 
   /**
    * 获取企业名称
@@ -326,6 +378,21 @@ class CompanyDataForm extends Component {
       }
     }
   }
+
+  /**
+   * 获取村行政代码
+   * @param {*} id
+   * @returns
+   * @memberof CompanyUploadEL
+   */
+  @autobind
+  getVillageCode(id) {
+    const value = document
+      .getElementsByClassName(`uuid_${id}`)[0]
+      .getElementsByClassName("ant-input")[0].value;
+    return ~value.indexOf("]") ? value.split("]")[1] : value;
+  }
+
   /**
    * 编辑|确认表格记录
    * @param {*} HASH
@@ -342,9 +409,7 @@ class CompanyDataForm extends Component {
     if (!this.verifyEdit(HASH, edit, isCancel, r)) return;
     const uuids2names =
       HASH == COMPANY_LAND_HASH && !edit && !isCancel
-        ? await this.fetchCompanyNameByUuid([
-            document.getElementsByClassName(`uuid_${r.id}`)[0].value,
-          ])
+        ? await this.fetchCompanyNameByUuid([this.getVillageCode(r.id)])
         : "";
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
@@ -389,18 +454,12 @@ class CompanyDataForm extends Component {
                       ...r,
                       cname: isCancel
                         ? r.cname
-                        : uuids2names[
-                            document.getElementsByClassName(`uuid_${r.id}`)[0]
-                              .value
-                          ],
+                        : uuids2names[this.getVillageCode(r.id)],
                       area: isCancel
                         ? r.area
                         : document.getElementsByClassName(`area_${r.id}`)[0]
                             .value,
-                      uuid: isCancel
-                        ? r.uuid
-                        : document.getElementsByClassName(`uuid_${r.id}`)[0]
-                            .value,
+                      uuid: isCancel ? r.uuid : this.getVillageCode(r.id),
                       edit,
                     }
                   : v
@@ -444,9 +503,7 @@ class CompanyDataForm extends Component {
         return true;
       }
       case COMPANY_LAND_HASH: {
-        const uuid = _.trim(
-          document.getElementsByClassName(`uuid_${r.id}`)[0].value
-        );
+        const uuid = _.trim(this.getVillageCode(r.id));
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
         if (!reg.test(uuid) && !vreg.test(uuid)) {
           message.error(`请输入正确的统一信用代码/行政区划代码`);
@@ -474,6 +531,7 @@ class CompanyDataForm extends Component {
       company_mj_elecs,
       company_mj_lands,
       company_mj_land_rent,
+      fileList,
     } = this.state;
     const { getFieldDecorator } = form;
     const landget =
@@ -524,6 +582,29 @@ class CompanyDataForm extends Component {
             </Select>
           )}
         </FormItem>
+        <Divider dashed orientation="left" className="land_divider">
+          [ 用地用电凭证上传 ]
+          {
+            <Tooltip title={`用地用电凭证以最新一条凭证为准`}>
+              <Icon
+                type="question-circle"
+                style={{
+                  fontSize: 18,
+                  marginLeft: 10,
+                  verticalAlign: "middle",
+                }}
+              />
+            </Tooltip>
+          }
+        </Divider>
+        <Upload
+          accept="image/gif,image/jpeg,image/jpg,image/png"
+          action={`${window.__API_CONFIG__.fwGateway.baseURL}/mj/evidence/upload/${company.pch}/${company.uuid}`}
+          onChange={this.UploadEvidenceChange}
+          fileList={fileList}
+        >
+          <Button type="primary">上传凭证</Button>
+        </Upload>
         <Divider dashed orientation="left" className="land_divider">
           [ {company.name} ] 用地数据登记
         </Divider>

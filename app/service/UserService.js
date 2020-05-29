@@ -24,7 +24,6 @@ class UserService extends Service {
    * @return {Promise.<boolean>}
    */
   async _checkExistColByField(field, value) {
-    console.log(field, value);
     const data = await this.UserModel.findOne({
       attributes: [field],
       where: { [field]: value },

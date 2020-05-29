@@ -57,7 +57,6 @@ class CompanyElecForm extends PureComponent {
     const { setFieldsValue } = this.props.form;
     const { fetchCompanyNameByUuid } = this.props;
     if (!reg.test(uuid)) return false;
-    console.log(uuid, id);
     const company = await fetchCompanyNameByUuid([uuid]);
     setFieldsValue({ [`name-${id}`]: company[uuid] || "未找到企业信息" });
   }

@@ -12,7 +12,7 @@ const Service = require("egg").Service;
 class CompanyEvidenceService extends Service {
   constructor(ctx) {
     super(ctx);
-    // this.SmsCodeModel = ctx.model.SmsCodeModel;
+    this.CompanyEvidenceModel = ctx.model.CompanyEvidenceModel;
     this.ServerResponse = ctx.response.ServerResponse;
   }
 
@@ -22,12 +22,15 @@ class CompanyEvidenceService extends Service {
    * @param {*} fileName
    * @memberof CompanyService
    */
-  async uploadCompanyEvidence(
-    { type, pch, uuid, extra },
-    fileName,
-    evidenceURL
-  ) {
-    return this.ServerResponse.createBySuccessMsg("新增凭证信息成功");
+  async uploadCompanyEvidence({ pch, uuid }, filename, fileurl, username) {
+    await this.CompanyEvidenceModel.create({
+      uuid,
+      pch,
+      filename,
+      fileurl,
+      operator: username,
+    });
+    return this.ServerResponse.createBySuccessMsg(fileurl);
   }
 }
 

@@ -151,7 +151,6 @@ class MenuTree extends Component {
   @autobind
   unHandleMenuListDom() {
     const { unHandleMenuList } = this.state;
-    console.log(unHandleMenuList);
     return unHandleMenuList.map((v) => {
       const leftIcon = v.anticon ? (
         <span className="uhm-left">
@@ -346,7 +345,6 @@ class MenuTree extends Component {
         ar.splice(i + 1, 0, dragObj);
       }
     }
-    console.log(data);
     this.setState({
       handleMenuTree: data,
     });

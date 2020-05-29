@@ -1,8 +1,62 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 19:23:32
- * @LastEditTime: 2020-05-28 19:23:32
+ * @LastEditTime: 2020-05-29 09:10:48
  * @LastEditors: eds
- * @Description: 
+ * @Description:
  * @FilePath: \jkq-permu-wz\app\model\CompanyEvidenceModel.js
- */ 
+ */
+
+module.exports = app => {
+  const { INTEGER, STRING, BOOLEAN } = app.Sequelize;
+  const CompanyEvidenceModel = app.model.define(
+    "company_evidence",
+    {
+      id: {
+        type: INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
+      } /** 自增id */,
+      pch: {
+        type: STRING(4),
+        allowNull: false,
+      } /** 年份 */,
+      uuid: {
+        type: STRING(18),
+        allowNull: false,
+      } /** 统一社会信用代码 */,
+      filename: {
+        type: STRING,
+        allowNull: false,
+      } /** 文件名称 */,
+      fileurl: {
+        type: STRING,
+        allowNull: false,
+      } /** 文件名称 */,
+      operator: {
+        type: STRING,
+        allowNull: false,
+      } /** 操作人 */,
+      enable: {
+        type: BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      } /** 操作人 */,
+    },
+    {
+      freezeTableName: false,
+      timestamps: true,
+      tableName: "companyevidence",
+    }
+  );
+
+  CompanyEvidenceModel.associate = function () {
+    app.model.CompanyEvidenceModel.belongsTo(app.model.CompanyPchModel, {
+      foreignKey: "uuid",
+      targetKey: "uuid",
+    });
+  };
+
+  return CompanyEvidenceModel;
+};

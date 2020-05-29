@@ -2,7 +2,7 @@
  * 企业年度信息(含年份号)
  * @param {*} app
  */
-module.exports = (app) => {
+module.exports = app => {
   const { INTEGER, STRING, BOOLEAN } = app.Sequelize;
   const CompanyPchModel = app.model.define(
     "company_pch",
@@ -83,6 +83,10 @@ module.exports = (app) => {
       targetKey: "uuid",
     });
     app.model.CompanyPchModel.hasMany(app.model.CompanyMjElecModel, {
+      foreignKey: "uuid",
+      sourceKey: "uuid",
+    });
+    app.model.CompanyPchModel.hasMany(app.model.CompanyEvidenceModel, {
       foreignKey: "uuid",
       sourceKey: "uuid",
     });

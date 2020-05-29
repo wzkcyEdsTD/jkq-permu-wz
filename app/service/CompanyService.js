@@ -15,6 +15,7 @@ class CompanyService extends Service {
     this.CompanyMjElecModel = ctx.model.CompanyMjElecModel;
     this.CompanyMjLandModel = ctx.model.CompanyMjLandModel;
     this.CompanyElecmeterModel = ctx.model.CompanyElecmeterModel;
+    this.CompanyEvidenceModel = ctx.model.CompanyEvidenceModel;
     this.ServerResponse = ctx.response.ServerResponse;
     this.salt = ctx.app.config.salt;
   }
@@ -27,6 +28,7 @@ class CompanyService extends Service {
    */
   async getCompanyListByPch(query) {
     const { street, page, pageSize, pch, name, uuid, isconfirm, scale } = query;
+    const where = { pch: pch || PCH };
     const extra = {};
     (isconfirm || isconfirm == 0) && (extra.isconfirm = isconfirm);
     (scale || scale == 0) && (extra.scale = scale);
@@ -58,9 +60,7 @@ class CompanyService extends Service {
               "sewage",
               "taxtime",
             ],
-            where: {
-              pch: pch || PCH,
-            },
+            where,
             required: false,
           },
           {
@@ -77,21 +77,29 @@ class CompanyService extends Service {
               "land",
               "elec",
             ],
-            where: {
-              pch: pch || PCH,
-            },
+            where,
             required: false,
           },
           {
             model: this.app.model.CompanyMjLandModel,
             attributes: ["id", "type", "area", "linktype", "uuid"],
             order: [["type", "ASC"]],
-            // required: false,
+            where,
+            required: false,
           },
           {
             model: this.app.model.CompanyMjElecModel,
             attributes: ["id", "elecmeter", "elec"],
-            // required: false,
+            where,
+            required: false,
+          },
+          {
+            //  企业凭证
+            model: this.app.model.CompanyEvidenceModel,
+            where,
+            required: false,
+            limit: 3,
+            order: [["id", "DESC"]],
           },
         ],
         order: [
@@ -141,6 +149,7 @@ class CompanyService extends Service {
    */
   async exportCompanyListByPch(query) {
     const { street, pch, name, uuid, isconfirm, scale } = query;
+    const where = { pch: pch || PCH };
     const extra = {};
     isconfirm && (extra.isconfirm = isconfirm);
     scale && (extra.scale = scale);
@@ -172,21 +181,21 @@ class CompanyService extends Service {
               "sewage",
               "taxtime",
             ],
-            where: {
-              pch: pch || PCH,
-            },
+            where,
             required: false,
           },
           {
             model: this.app.model.CompanyMjLandModel,
             attributes: ["id", "type", "area", "linktype", "uuid"],
             order: [["type", "DESC"]],
-            // required: false,
+            where,
+            required: false,
           },
           {
             model: this.app.model.CompanyMjElecModel,
             attributes: ["id", "elecmeter", "elec"],
-            // required: false,
+            where,
+            required: false,
           },
         ],
         order: [["scale", "DESC"]],
@@ -240,6 +249,7 @@ class CompanyService extends Service {
    */
   async getCompanyInfoByPch(params) {
     const { uuid, pch } = params;
+    const where = { pch: pch || PCH };
     const company = await this.CompanyPchModel.findOne({
       where: {
         uuid,
@@ -259,9 +269,7 @@ class CompanyService extends Service {
             "sewage",
             "taxtime",
           ],
-          where: {
-            pch: pch || PCH,
-          },
+          where,
           required: false,
         },
         {
@@ -279,9 +287,7 @@ class CompanyService extends Service {
             "land",
             "elec",
           ],
-          where: {
-            pch: pch || PCH,
-          },
+          where,
           required: false,
         },
         {
@@ -296,13 +302,22 @@ class CompanyService extends Service {
             "to_object",
             "pch",
           ],
-          order: [["type", "DESC"]],
-          // required: false,
+          where,
+          required: false,
         },
         {
           //  企业用电指标
           model: this.app.model.CompanyMjElecModel,
-          // required: false,
+          where,
+          required: false,
+        },
+        {
+          //  企业凭证
+          model: this.app.model.CompanyEvidenceModel,
+          where,
+          required: false,
+          limit: 3,
+          order: [["id", "DESC"]],
         },
       ],
       order: [
