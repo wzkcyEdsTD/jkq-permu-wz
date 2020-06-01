@@ -1,11 +1,11 @@
 /*
  * @Author: eds
  * @Date: 2020-05-27 10:00:34
- * @LastEditTime: 2020-05-28 09:36:40
+ * @LastEditTime: 2020-06-01 09:44:56
  * @LastEditors: eds
- * @Description: 
+ * @Description:
  * @FilePath: \jkq-permu-wz\config\config.prod.js
- */ 
+ */
 
 const ip = require("ip");
 const EasyWebpack = require("easywebpack-react");
@@ -13,10 +13,6 @@ const Op = require("sequelize").Op;
 
 module.exports = () => {
   const exports = {};
-
-  exports.static = {
-    maxAge: 0, // maxAge 缓存，默认 1 年
-  };
 
   //  sequelize
   exports.sequelize = {
@@ -47,8 +43,8 @@ module.exports = () => {
 
   const localIP = ip.address();
   const domainWhiteList = [];
-  [7001, 9000, 9001, 9002].forEach((port) => {
-    domainWhiteList.push(`http://localhost:${port}`);
+  [7001, 9000, 9001, 9002].forEach(port => {
+    domainWhiteList.push(`http://60.190.114.252:${port}`);
     domainWhiteList.push(`http://127.0.0.1:${port}`);
     domainWhiteList.push(`http://${localIP}:${port}`);
   });
@@ -59,7 +55,8 @@ module.exports = () => {
   exports.externalAPI = {
     fwGateway: {
       //  接口入口地址
-      baseURL: "http://112.17.19.110:7001/api",
+      baseURL: "http://60.190.114.252:7001/api",
+      localURL: "http://127.0.0.1:7001/api",  //localURL 防止服务器访问不到出口IP
     },
     oGateway: {
       //  短信机接口地址

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-29 14:56:24
+ * @LastEditTime: 2020-06-01 09:49:26
  * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.default.js
@@ -41,8 +41,13 @@ module.exports = appInfo => {
 
   // static 凭证保存
   config.static = {
-    prefix: "/files/",
-    dir: path.join(appInfo.baseDir, "files"),
+    prefix: "/public/",
+    dir: [
+      path.join(appInfo.baseDir, "public"),
+      path.join(appInfo.baseDir, "files"),
+    ],
+    maxAge: 31536000, // in prod env, 0 in other envs
+    buffer: true, // in prod env, false in other envs
   };
 
   //  session

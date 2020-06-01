@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 19:09:50
- * @LastEditTime: 2020-05-28 19:18:27
+ * @LastEditTime: 2020-05-29 17:33:47
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\service\CompanyEvidenceService.js
@@ -18,7 +18,7 @@ class CompanyEvidenceService extends Service {
 
   /**
    * 插入上传记录
-   * @param {*} { type, pch, uuid, extra }
+   * @param {*} { pch, uuid }
    * @param {*} fileName
    * @memberof CompanyService
    */

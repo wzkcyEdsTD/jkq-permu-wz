@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-05-27 14:07:47
+ * @LastEditTime: 2020-06-01 09:38:42
  * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.local.js
@@ -12,10 +12,6 @@ const Op = require("sequelize").Op;
 
 module.exports = () => {
   const exports = {};
-
-  exports.static = {
-    maxAge: 0, // maxAge 缓存，默认 1 年
-  };
 
   //  sequelize
   exports.sequelize = {
@@ -56,7 +52,8 @@ module.exports = () => {
   exports.externalAPI = {
     fwGateway: {
       //  接口入口地址
-      baseURL: "http://192.168.0.139:7001/api",
+      baseURL: "http://192.168.0.163:7001/api",
+      localURL: "http://127.0.0.1:7001/api",
     },
     oGateway: {
       //  短信机接口地址

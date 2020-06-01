@@ -6,9 +6,10 @@ import BusinessError from "./error/business_error";
 
 export default class BaseAPI {
   constructor(config) {
-    const { baseURL, defaultOptions } = config;
+    const IS_NODE = typeof window === "undefined";
+    const { baseURL, localURL, defaultOptions } = config;
     const httpclient = axios.create({
-      baseURL,
+      baseURL: IS_NODE ? localURL : baseURL,
       ...defaultOptions,
       /*transformResponse: [
         function(data) {
