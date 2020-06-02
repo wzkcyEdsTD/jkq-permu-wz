@@ -150,7 +150,7 @@ export default class Config extends Component {
     }
   }
   // 项目id 更新时
-  componentWillReceiveProps(prev) {
+  UNSAFE_componentWillReceiveProps(prev) {
     const { dataSource } = this.props;
     if (!prev.projectId) {
       return;

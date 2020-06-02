@@ -8,7 +8,6 @@ import {
   Table,
   Button,
   Tag,
-  message,
   Statistic,
   Row,
   Col,
@@ -17,6 +16,7 @@ import {
   Tooltip,
   Upload,
   AutoComplete,
+  message,
 } from "antd";
 const AutoCompleteOption = AutoComplete.Option;
 import _ from "lodash";
@@ -320,7 +320,7 @@ class CompanyUploadEL extends Component {
   UploadEvidenceChange(e) {
     const _fileList_ = [...e.fileList];
     let fileList = _fileList_.map(v => {
-      if (v.response) {
+      if (v.response && e.file.uid == v.uid && e.file.status == "done") {
         v.url = `http://${window.location.host}${v.response.msg.msg}`;
         v.name = `${v.name}  | 【上传时间】${new Date().toLocaleString()}`;
       }
@@ -427,6 +427,11 @@ class CompanyUploadEL extends Component {
     return ~value.indexOf("]") ? value.split("]")[1] : value;
   }
 
+  @autobind
+  getElecMeter(id) {
+    return document.getElementsByClassName(`elecmeter_${id}`)[0].value;
+  }
+
   /**
    * 编辑|确认表格记录
    * @param {*} HASH
@@ -440,10 +445,15 @@ class CompanyUploadEL extends Component {
   async editConfirmRecord(HASH, edit, isCancel, r, event) {
     const { company_mj_elecs, company_mj_lands } = this.state;
     console.log(`[${isCancel ? "cancel" : edit ? "edit" : "confirm"}]`, HASH);
-    if (!this.verifyEdit(HASH, edit, isCancel, r)) return;
+    const _uuid_ = !edit
+      ? HASH == COMPANY_LAND_HASH
+        ? this.getVillageCode(r.id)
+        : this.getElecMeter(r.id)
+      : undefined;
+    if (!this.verifyEdit(HASH, edit, isCancel, r, _uuid_)) return;
     const uuids2names =
       HASH == COMPANY_LAND_HASH && !edit && !isCancel
-        ? await this.fetchCompanyNameByUuid([this.getVillageCode(r.id)])
+        ? await this.fetchCompanyNameByUuid([_uuid_])
         : "";
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
@@ -486,14 +496,12 @@ class CompanyUploadEL extends Component {
                 v.id == r.id
                   ? {
                       ...r,
-                      cname: isCancel
-                        ? r.cname
-                        : uuids2names[this.getVillageCode(r.id)],
+                      cname: isCancel ? r.cname : uuids2names[_uuid_],
                       area: isCancel
                         ? r.area
                         : document.getElementsByClassName(`area_${r.id}`)[0]
                             .value,
-                      uuid: isCancel ? r.uuid : this.getVillageCode(r.id),
+                      uuid: isCancel ? r.uuid : _uuid_,
                       edit,
                     }
                   : v
@@ -512,17 +520,19 @@ class CompanyUploadEL extends Component {
    * @memberof CompanyDataForm
    */
   @autobind
-  verifyEdit(HASH, edit, isCancel, r) {
+  verifyEdit(HASH, edit, isCancel, r, _uuid_) {
     const { company_mj_elecs, company_mj_lands } = this.state;
     //  若为请求编辑或取消编辑
     if (edit || isCancel) return true;
     //  若为编辑结束
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
-        const elecmeter = document.getElementsByClassName(
-          `elecmeter_${r.id}`
-        )[0].value;
+        const elecmeter = _uuid_;
         const elec = document.getElementsByClassName(`elec_${r.id}`)[0].value;
+        if (!elecmeter) {
+          message.error(`请输入电表号`);
+          return false;
+        }
         if (
           ~company_mj_elecs.map(v => v.elecmeter).indexOf(elecmeter) &&
           company_mj_elecs.filter(v => v.elecmeter == elecmeter)[0].id != r.id
@@ -537,7 +547,7 @@ class CompanyUploadEL extends Component {
         return true;
       }
       case COMPANY_LAND_HASH: {
-        const uuid = _.trim(this.getVillageCode(r.id));
+        const uuid = _.trim(_uuid_);
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
         if (!reg.test(uuid) && !vreg.test(uuid)) {
           message.error(`请输入正确的统一信用代码/行政区划代码`);
@@ -586,6 +596,10 @@ class CompanyUploadEL extends Component {
       company_mj_elecs,
       company_mj_lands,
     } = this.state;
+    if (~company_mj_lands.map(v => v.uuid).indexOf(""))
+      return message.error(
+        "【租赁用地】企业统一信用代码/行政区划代码不可为空!"
+      );
     const states = {};
     [...basicIndex, ...extraIndex].map(v => {
       states[v.v] = v.check;
@@ -617,6 +631,7 @@ class CompanyUploadEL extends Component {
       extraIndex,
       fileList,
     } = this.state;
+    const elecd = eval(company_mj_elecs.map(d => d.elec).join("+")) || 0;
     const landget =
       eval(
         company_mj_lands
@@ -722,6 +737,7 @@ class CompanyUploadEL extends Component {
                   dataSource={toJS(company_mj_lands)}
                   columns={this.landColumns}
                   pagination={false}
+                  bordered
                   rowClassName={r => (r.type ? "_self" : "_other")}
                   rowKey={r => r.key}
                   defaultExpandedRowKeys={["t0"]}
@@ -731,6 +747,7 @@ class CompanyUploadEL extends Component {
                         title={() => "企业用地出租信息"}
                         rowKey={r => r.key}
                         size="small"
+                        bordered={false}
                         columns={this.landRentColumns}
                         pagination={false}
                         dataSource={company_mj_land_rent}
@@ -741,7 +758,7 @@ class CompanyUploadEL extends Component {
               ) : undefined}
               <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
                 <Col span={3} offset={4}>
-                  <Statistic title="自由用地(㎡)" value={company.landself} />
+                  <Statistic title="自有用地(㎡)" value={company.landself} />
                 </Col>
                 <Col span={1} className="char">
                   +
@@ -802,12 +819,13 @@ class CompanyUploadEL extends Component {
               <Table
                 dataSource={toJS(company_mj_elecs)}
                 columns={this.elecColumns}
+                bordered
                 rowKey={r => r.id}
                 pagination={false}
               />
               <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
                 <Col span={3} offset={10}>
-                  <Statistic title="总用电量(千瓦时)" value={company.elecd} />
+                  <Statistic title="总用电量(千瓦时)" value={elecd} />
                 </Col>
                 <Col span={2} className="charCheck">
                   <Tag

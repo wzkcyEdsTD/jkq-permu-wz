@@ -4,13 +4,13 @@ import React, { Component } from "react";
 import autobind from "autobind-decorator";
 import {
   Layout,
+  Button,
   Menu,
   Avatar,
   Modal,
   Dropdown,
   Icon,
   Breadcrumb,
-  Button,
   message,
 } from "antd";
 import { renderRoutes } from "react-router-config";
@@ -82,7 +82,7 @@ class MainContainer extends Component {
     goByDefault && history.push(MENUS[0].children[0].key);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { pathname } = nextProps.location;
     const defaultSelectedKeys = pathname;
     const defaultOpenKeys = this.getFatherPoint(defaultSelectedKeys);

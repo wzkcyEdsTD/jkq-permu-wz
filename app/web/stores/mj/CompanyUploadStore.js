@@ -51,6 +51,9 @@ class CompanyUploadStore {
       (data.company_mj_lands = [
         { type: 1, area: 0, uuid, to_object: uuid, id: shortid.generate() },
       ].concat(data.company_mj_lands));
+    data.company_mj_lands = data.company_mj_lands.map(d => {
+      return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
+    });
     data.elecd = elecd;
     data.landself = landself;
     data.landget = landget;
@@ -58,7 +61,7 @@ class CompanyUploadStore {
     data.landd = [landself + landget - landr > 0, landself + landget - landr];
     data.visible = data.link && data.linkphone;
     this._company = data;
-    return data.visible;
+    return data;
   };
 
   /**

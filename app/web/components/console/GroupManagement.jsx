@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import autobind from "autobind-decorator";
-import { Button, Switch, Table, Modal, Tag, message } from "antd";
+import { Table, Modal, Tag, Button, message } from "antd";
 import { observer, inject } from "mobx-react";
-import { toJS, decorate } from "mobx";
-import moment from "moment";
+import { toJS } from "mobx";
 
 import GroupForm, {
   GROUP_FORM_MODE_ADD,
@@ -12,7 +11,7 @@ import GroupForm, {
 import hoc from "components/HOC/pageHeader";
 
 @hoc({ name: "用户组管理", className: "page_groupManagement" })
-@inject((stores) => ({
+@inject(stores => ({
   store: stores.groupStore,
 }))
 @observer
@@ -55,7 +54,7 @@ class GroupManagement extends Component {
       this.setState({ savingLoad: true });
       try {
         values.menuIdList = values.menuIdList
-          ? values.menuIdList.split("@").map((v) => {
+          ? values.menuIdList.split("@").map(v => {
               return +v;
             })
           : [];
@@ -181,7 +180,7 @@ class GroupManagement extends Component {
         <Table
           dataSource={toJS(groupList)}
           columns={this.getColumnsGroup()}
-          rowKey={(r) => r.id}
+          rowKey={r => r.id}
           pagination={{
             total: pageRequest.total,
             pageSize: pageRequest.pageSize,
@@ -190,7 +189,7 @@ class GroupManagement extends Component {
               pageRequest.pageSize = pageSize;
               this.refreshGroupTableData();
             },
-            onChange: (current) => {
+            onChange: current => {
               pageRequest.page = current;
               this.refreshGroupTableData();
             },
@@ -227,7 +226,7 @@ class GroupManagement extends Component {
             group={editedGroup}
             mode={groupFormMode}
             menus={menus}
-            wrappedComponentRef={(instance) => {
+            wrappedComponentRef={instance => {
               this.groupForm = instance;
             }}
           />

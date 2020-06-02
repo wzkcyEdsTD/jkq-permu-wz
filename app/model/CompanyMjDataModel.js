@@ -1,3 +1,11 @@
+/*
+ * @Author: eds
+ * @Date: 2020-04-27 18:37:41
+ * @LastEditTime: 2020-06-02 19:24:08
+ * @LastEditors: eds
+ * @Description: 
+ * @FilePath: \jkq-permu-wz\app\model\CompanyMjDataModel.js
+ */ 
 /**
  * 企业指标信息(含年份号)
  * @param {*} app

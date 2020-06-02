@@ -1,10 +1,10 @@
 /*
  * @Author: eds
  * @Date: 2020-04-23 11:27:48
- * @LastEditTime: 2020-05-27 17:40:44
+ * @LastEditTime: 2020-06-02 15:58:25
  * @LastEditors: eds
  * @Description:
- * @FilePath: \jkq-permu-wz\app\controller\SmsController.js
+ * @FilePath: \jkq-permu-wz\app\controller\smsController.js
  */
 const Controller = require("egg").Controller;
 const soap = require("soap");
@@ -91,7 +91,7 @@ class SmsController extends Controller {
         });
         if (!company.getData())
           return (this.ctx.body = this.ServerResponse.createByErrorMsg(
-            "该企业不在本年度亩均论英雄考核范围内"
+            "该企业不在本年度亩均论英雄考核范围内,请联系街道"
           ));
         //  uuid in users by username
         const user = await this.UserService.getUserByUsername(params.username);

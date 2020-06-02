@@ -1,8 +1,17 @@
+/*
+ * @Author: eds
+ * @Date: 2020-04-27 18:37:41
+ * @LastEditTime: 2020-06-02 19:23:27
+ * @LastEditors: eds
+ * @Description:
+ * @FilePath: \jkq-permu-wz\app\model\CompanyMjLandModel.js
+ */
+
 /**
  * 企业用电信息(含年份号)
  * @param {*} app
  */
-module.exports = (app) => {
+module.exports = app => {
   const { INTEGER, STRING, FLOAT } = app.Sequelize;
   const CompanyMjLandModel = app.model.define(
     "company_mj_land",
@@ -21,6 +30,7 @@ module.exports = (app) => {
         type: STRING(18),
         allowNull: false,
         primaryKey: true,
+        defaultValue: "unknown",
       } /** 统一社会信用代码 */,
       type: {
         type: INTEGER,
@@ -40,10 +50,6 @@ module.exports = (app) => {
         allowNull: false,
         primaryKey: true,
       } /** 出租关联对象([1]统一社会信用代码[0]街道@村) */,
-      prove: {
-        type: STRING,
-        allowNull: true,
-      } /** 证明文件地址 */,
     },
     {
       freezeTableName: false,

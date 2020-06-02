@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import autobind from "autobind-decorator";
-import { Button, Switch, Table, Modal, Tag, message, Input } from "antd";
+import { Table, Modal, Tag, Input, Button, message } from "antd";
 import { observer, inject } from "mobx-react";
-import { toJS, decorate } from "mobx";
-import moment from "moment";
+import { toJS } from "mobx";
 
 import UserForm, {
   USER_FORM_MODE_ADD,
@@ -12,7 +11,7 @@ import UserForm, {
 import PasswordForm from "./components/PasswordForm";
 import hoc from "components/HOC/pageHeader";
 
-@inject((stores) => ({
+@inject(stores => ({
   store: stores.userStore,
 }))
 @hoc({ name: "用户管理", className: "page_userManagement" })
@@ -43,7 +42,7 @@ class UserManagement extends Component {
           <Input
             placeholder="输入用户名"
             style={{ width: "200px" }}
-            onChange={(e) => {
+            onChange={e => {
               tableParams.searchParams.search_username = e.target.value;
             }}
             onPressEnter={this.refreshUserTableData}
@@ -175,7 +174,7 @@ class UserManagement extends Component {
         title: "激活",
         dataIndex: "isActive",
         width: 80,
-        render: (r) => (
+        render: r => (
           <span>
             <i
               style={{
@@ -216,7 +215,7 @@ class UserManagement extends Component {
       {
         title: "用户组",
         dataIndex: "groups",
-        render: (t) => {
+        render: t => {
           return t.map((v, index) => {
             return (
               <Tag color={v.name == "超级管理员" ? "red" : "cyan"} key={index}>
@@ -229,7 +228,7 @@ class UserManagement extends Component {
       {
         title: "工作岗位",
         // dataIndex: "jobs",
-        render: (t) => {
+        render: t => {
           return "";
         },
       },
@@ -300,7 +299,7 @@ class UserManagement extends Component {
         <Table
           dataSource={toJS(userList)}
           columns={this.getColumnsUser()}
-          rowKey={(r) => r.id}
+          rowKey={r => r.id}
           pagination={{
             total: pageRequest.total,
             pageSize: pageRequest.pageSize,
@@ -309,7 +308,7 @@ class UserManagement extends Component {
               pageRequest.pageSize = pageSize;
               this.refreshUserTableData();
             },
-            onChange: (current) => {
+            onChange: current => {
               pageRequest.page = current;
               this.refreshUserTableData();
             },
@@ -346,7 +345,7 @@ class UserManagement extends Component {
             groups={groups}
             jobs={jobs}
             department={department}
-            wrappedComponentRef={(instance) => {
+            wrappedComponentRef={instance => {
               this.userForm = instance;
             }}
           />
@@ -374,7 +373,7 @@ class UserManagement extends Component {
         >
           <PasswordForm
             user={editedUser}
-            wrappedComponentRef={(instance) => {
+            wrappedComponentRef={instance => {
               this.passwordForm = instance;
             }}
           />

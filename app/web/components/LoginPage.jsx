@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { observer, inject } from "mobx-react";
 import { Layout } from "antd";
-const { Header, Footer, Content } = Layout;
 import bgHomeImage from "../images/bg.png";
 import WrappedNormalLoginForm from "./login/NormalLoginForm";
 import WrappedNormalRegisteForm from "./login/NormalRegisteForm";
@@ -29,10 +28,10 @@ class LoginPage extends Component {
         style={{ height: "100%", overflow: "hidden" }}
         className="login-page"
       >
-        <Header>
+        <Layout.Header>
           <div className="logo" />
-        </Header>
-        <Content>
+        </Layout.Header>
+        <Layout.Content>
           <img src={bgHomeImage} alt="" />
           <div className="login-form">
             {isLogin ? (
@@ -44,11 +43,10 @@ class LoginPage extends Component {
               {isLogin ? "还没有账号,去注册" : "已有账号,去登陆"} ->
             </a>
           </div>
-        </Content>
-        <Footer>
-          Copyright © wzkcy All Rights Reserved 浙ICP备 xxxxxxx号
-          浙公网安备xxxxxxxxx号
-        </Footer>
+        </Layout.Content>
+        <Layout.Footer>
+          Copyright © wzkcy All Rights Reserved
+        </Layout.Footer>
       </Layout>
     );
   }

@@ -122,7 +122,7 @@ const clientRender = () => {
 
 const serverRender = async locals => {
   const { ctx, apiConfig } = locals.state;
-  const { url, service } = ctx;
+  const { url } = ctx;
   const stores = createStores(ctx);
   const branch = matchRoutes(routes, url);
   const promises = branch.map(({ route }) => {

@@ -1,23 +1,22 @@
-import React, { Component } from 'react';
-import autobind from 'autobind-decorator';
-import { Button, Switch, Table, Modal, Tag, message, Icon, Tabs } from 'antd';
+import React, { Component } from "react";
+import autobind from "autobind-decorator";
+import { Table, Modal, Tag, Icon, Tabs, Button, message } from "antd";
 const TabPane = Tabs.TabPane;
-import { observer, inject } from 'mobx-react';
-import { toJS, decorate } from 'mobx';
-import moment from 'moment';
-import MenuTree from './components/MenuTree';
-import './MenuManagement.less';
+import { observer, inject } from "mobx-react";
+import { toJS } from "mobx";
+import MenuTree from "./components/MenuTree";
+import "./MenuManagement.less";
 
 import MenuForm, {
   MENU_FORM_MODE_ADD,
-  MENU_FORM_MODE_UPDATE
-} from './components/MenuForm';
-import hoc from 'components/HOC/pageHeader';
+  MENU_FORM_MODE_UPDATE,
+} from "./components/MenuForm";
+import hoc from "components/HOC/pageHeader";
 
 @inject(stores => ({
-  store: stores.menuStore
+  store: stores.menuStore,
 }))
-@hoc({ name: '菜单管理', className: 'page_menuManagement' })
+@hoc({ name: "菜单管理", className: "page_menuManagement" })
 @observer
 class MenuManagement extends Component {
   state = {
@@ -27,7 +26,7 @@ class MenuManagement extends Component {
     groups: null,
     savingLoad: false,
     editedMenu: null,
-    treeTabAvailable: false
+    treeTabAvailable: false,
   };
 
   componentDidMount() {
@@ -61,7 +60,7 @@ class MenuManagement extends Component {
         await store.saveMenu(values);
         this.hideMenuFormModal();
         message.success(
-          `${menuFormMode === MENU_FORM_MODE_ADD ? '添加' : '更新'}菜单【${
+          `${menuFormMode === MENU_FORM_MODE_ADD ? "添加" : "更新"}菜单【${
             values.label
           }】成功`
         );
@@ -83,7 +82,7 @@ class MenuManagement extends Component {
       this.setState({
         menuFormModalVisiable: true,
         menuFormMode: MENU_FORM_MODE_UPDATE,
-        editedMenu: menu
+        editedMenu: menu,
       });
     } else {
       this.setState({ menuFormModalVisiable: true });
@@ -95,7 +94,7 @@ class MenuManagement extends Component {
     this.setState({
       menuFormModalVisiable: false,
       menuFormMode: MENU_FORM_MODE_ADD,
-      editedMenu: null
+      editedMenu: null,
     });
   }
 
@@ -103,45 +102,45 @@ class MenuManagement extends Component {
     const { sortedInfo } = this.props.store.tableParams;
     const cols = [
       {
-        title: '编号',
-        dataIndex: 'id',
-        sortOrder: sortedInfo.columnKey === 'id' && sortedInfo.order,
-        sorter: (a, b) => {}
+        title: "编号",
+        dataIndex: "id",
+        sortOrder: sortedInfo.columnKey === "id" && sortedInfo.order,
+        sorter: (a, b) => {},
       },
       {
-        title: '菜单名称',
-        dataIndex: 'label',
-        sortOrder: sortedInfo.columnKey === 'label' && sortedInfo.order,
-        sorter: (a, b) => {}
+        title: "菜单名称",
+        dataIndex: "label",
+        sortOrder: sortedInfo.columnKey === "label" && sortedInfo.order,
+        sorter: (a, b) => {},
       },
       {
-        title: '已授权用户组',
-        dataIndex: 'groups',
+        title: "已授权用户组",
+        dataIndex: "groups",
         render: t => {
           return t.map((v, index) => {
             return (
-              <Tag color={v.name == '超级管理员' ? 'red' : 'cyan'} key={index}>
+              <Tag color={v.name == "超级管理员" ? "red" : "cyan"} key={index}>
                 {v.name}
               </Tag>
             );
           });
-        }
+        },
       },
       {
-        title: '链接地址',
-        dataIndex: 'p_link',
-        sortOrder: sortedInfo.columnKey === 'p_link' && sortedInfo.order,
-        sorter: (a, b) => {}
+        title: "链接地址",
+        dataIndex: "p_link",
+        sortOrder: sortedInfo.columnKey === "p_link" && sortedInfo.order,
+        sorter: (a, b) => {},
       },
       {
-        title: '图标',
-        dataIndex: 'anticon',
+        title: "图标",
+        dataIndex: "anticon",
         render: t => {
           return <Icon type={t} />;
-        }
+        },
       },
       {
-        title: '操作',
+        title: "操作",
         render: (t, r) => {
           return (
             <div className="operator">
@@ -154,8 +153,8 @@ class MenuManagement extends Component {
               </Button>
             </div>
           );
-        }
-      }
+        },
+      },
     ];
     return cols;
   }
@@ -169,7 +168,7 @@ class MenuManagement extends Component {
     } finally {
       this.setState({
         loading: false,
-        treeTabAvailable: true
+        treeTabAvailable: true,
       });
     }
   }
@@ -182,7 +181,7 @@ class MenuManagement extends Component {
       savingLoad,
       loading,
       groups,
-      treeTabAvailable
+      treeTabAvailable,
     } = this.state;
 
     const { menuList, pageRequest, tableParams } = this.props.store;
@@ -219,8 +218,8 @@ class MenuManagement extends Component {
                   this.refreshMenuTableData();
                 },
                 showTotal: () => {
-                  return '共 ' + pageRequest.total + ' 条数据';
-                }
+                  return "共 " + pageRequest.total + " 条数据";
+                },
               }}
               onChange={(pagination, filters, sorter) => {
                 tableParams.sortedInfo = sorter;
@@ -231,7 +230,7 @@ class MenuManagement extends Component {
             <Modal
               className="modal-menu"
               title={`${
-                menuFormMode === MENU_FORM_MODE_ADD ? '新增' : '编辑'
+                menuFormMode === MENU_FORM_MODE_ADD ? "新增" : "编辑"
               }菜单`}
               width={700}
               destroyOnClose={true}
@@ -248,7 +247,7 @@ class MenuManagement extends Component {
                   onClick={this.onMenuSave}
                 >
                   保存
-                </Button>
+                </Button>,
               ]}
             >
               <MenuForm

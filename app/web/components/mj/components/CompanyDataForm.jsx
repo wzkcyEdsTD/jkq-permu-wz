@@ -6,10 +6,8 @@ import {
   Input,
   Divider,
   Table,
-  Button,
   Tag,
   Select,
-  message,
   Statistic,
   Row,
   Col,
@@ -17,6 +15,8 @@ import {
   Icon,
   Upload,
   AutoComplete,
+  Button,
+  message,
 } from "antd";
 const AutoCompleteOption = AutoComplete.Option;
 const Option = Select.Option;
@@ -33,7 +33,7 @@ const formItemLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 10 },
 };
-const vreg = /^3303710[0-9]{5}/;
+const vreg = /^3303710[0-9]{5}$/;
 const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/;
 
 /**
@@ -286,7 +286,7 @@ class CompanyDataForm extends Component {
   UploadEvidenceChange(e) {
     const _fileList_ = [...e.fileList];
     let fileList = _fileList_.map(v => {
-      if (v.response) {
+      if (v.response && e.file.uid == v.uid && e.file.status == "done") {
         v.url = `http://${window.location.host}${v.response.msg.msg}`;
         v.name = `${v.name}  | 【上传时间】${new Date().toLocaleString()}`;
       }
@@ -393,6 +393,11 @@ class CompanyDataForm extends Component {
     return ~value.indexOf("]") ? value.split("]")[1] : value;
   }
 
+  @autobind
+  getElecMeter(id) {
+    return document.getElementsByClassName(`elecmeter_${id}`)[0].value;
+  }
+
   /**
    * 编辑|确认表格记录
    * @param {*} HASH
@@ -406,10 +411,16 @@ class CompanyDataForm extends Component {
   async editConfirmRecord(HASH, edit, isCancel, r, event) {
     const { company_mj_elecs, company_mj_lands } = this.state;
     console.log(`[${isCancel ? "cancel" : edit ? "edit" : "confirm"}]`, HASH);
-    if (!this.verifyEdit(HASH, edit, isCancel, r)) return;
+    const _uuid_ = !edit
+      ? HASH == COMPANY_LAND_HASH
+        ? this.getVillageCode(r.id)
+        : this.getElecMeter(r.id)
+      : undefined;
+    console.log(_uuid_);
+    if (!this.verifyEdit(HASH, edit, isCancel, r, _uuid_)) return;
     const uuids2names =
       HASH == COMPANY_LAND_HASH && !edit && !isCancel
-        ? await this.fetchCompanyNameByUuid([this.getVillageCode(r.id)])
+        ? await this.fetchCompanyNameByUuid([_uuid_])
         : "";
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
@@ -452,14 +463,12 @@ class CompanyDataForm extends Component {
                 v.id == r.id
                   ? {
                       ...r,
-                      cname: isCancel
-                        ? r.cname
-                        : uuids2names[this.getVillageCode(r.id)],
+                      cname: isCancel ? r.cname : uuids2names[_uuid_],
                       area: isCancel
                         ? r.area
                         : document.getElementsByClassName(`area_${r.id}`)[0]
                             .value,
-                      uuid: isCancel ? r.uuid : this.getVillageCode(r.id),
+                      uuid: isCancel ? r.uuid : _uuid_,
                       edit,
                     }
                   : v
@@ -478,17 +487,19 @@ class CompanyDataForm extends Component {
    * @memberof CompanyDataForm
    */
   @autobind
-  verifyEdit(HASH, edit, isCancel, r) {
+  verifyEdit(HASH, edit, isCancel, r, _uuid_) {
     const { company_mj_elecs, company_mj_lands } = this.state;
     //  若为请求编辑或取消编辑
     if (edit || isCancel) return true;
     //  若为编辑结束
     switch (HASH) {
       case COMPANY_ELEC_HASH: {
-        const elecmeter = document.getElementsByClassName(
-          `elecmeter_${r.id}`
-        )[0].value;
+        const elecmeter = _uuid_;
         const elec = document.getElementsByClassName(`elec_${r.id}`)[0].value;
+        if (!elecmeter) {
+          message.error(`请输入电表号`);
+          return false;
+        }
         if (
           ~company_mj_elecs.map(v => v.elecmeter).indexOf(elecmeter) &&
           company_mj_elecs.filter(v => v.elecmeter == elecmeter)[0].id != r.id
@@ -503,8 +514,9 @@ class CompanyDataForm extends Component {
         return true;
       }
       case COMPANY_LAND_HASH: {
-        const uuid = _.trim(this.getVillageCode(r.id));
+        const uuid = _.trim(_uuid_);
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
+        console.log(uuid);
         if (!reg.test(uuid) && !vreg.test(uuid)) {
           message.error(`请输入正确的统一信用代码/行政区划代码`);
           return false;
@@ -619,6 +631,7 @@ class CompanyDataForm extends Component {
             dataSource={toJS(company_mj_lands)}
             columns={this.landColumns}
             pagination={false}
+            bordered
             rowClassName={r => (r.type ? "_self" : "_other")}
             rowKey={r => r.key}
             defaultExpandedRowKeys={["t0"]}
@@ -628,6 +641,7 @@ class CompanyDataForm extends Component {
                   title={() => "企业用地出租信息"}
                   rowKey={r => r.key}
                   size="small"
+                  bordered
                   columns={this.landRentColumns}
                   pagination={false}
                   dataSource={company_mj_land_rent}
@@ -638,7 +652,7 @@ class CompanyDataForm extends Component {
         ) : undefined}
         <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
           <Col span={3} offset={4}>
-            <Statistic title="自由用地(㎡)" value={company.landself} />
+            <Statistic title="自有用地(㎡)" value={company.landself} />
           </Col>
           <Col span={1} className="char">
             +
@@ -674,6 +688,7 @@ class CompanyDataForm extends Component {
         <Table
           dataSource={toJS(company_mj_elecs)}
           columns={this.elecColumns}
+          bordered
           rowKey={r => r.id}
           pagination={false}
         />

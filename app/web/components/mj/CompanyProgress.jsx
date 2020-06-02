@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import autobind from "autobind-decorator";
-import { Button, Table, Modal, Input, Select, message, Tag } from "antd";
+import { Table, Modal, Input, Select, Tag, Button, message } from "antd";
 const { Option } = Select;
 import { observer, inject } from "mobx-react";
 import { toJS } from "mobx";
@@ -14,9 +14,9 @@ import CompanyElecmeterList, {
   COMPANY_ELECMETER_LIST_HASH,
 } from "./components/CompanyElecmeterList";
 import hoc from "components/HOC/pageHeader";
-import "./CompanyData.less";
+import "./CompanyProgress.less";
 
-@inject((stores) => ({
+@inject(stores => ({
   store: stores.companyProgressStore,
   userStore: stores.userStore,
 }))
@@ -37,6 +37,7 @@ export default class CompanyProgress extends Component {
       { key: 2, title: "注销" },
       { key: 3, title: "迁出" },
       { key: 4, title: "迁入保护" },
+      { key: 5, title: "纳税小于3万" }, 
     ],
     confirmOption: [
       { key: 2, title: "全部" },
@@ -175,6 +176,7 @@ export default class CompanyProgress extends Component {
   updateCompanyInfoByPch() {
     const { form } = this.companyDataForm.props;
     const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
+    if(~company_mj_lands.map(v => v.uuid).indexOf('')) return message.error("【租赁用地】企业统一信用代码/行政区划代码不可为空!");
     const { updateCompanyInfoByPch } = this.props.store;
     form.validateFieldsAndScroll(async (err, values) => {
       if (err) return;
@@ -231,11 +233,11 @@ export default class CompanyProgress extends Component {
           <Select
             defaultValue={_query.pch}
             style={{ width: "100px" }}
-            onChange={(val) => {
+            onChange={val => {
               _query.pch = val;
             }}
           >
-            {pchOption.map((item) => (
+            {pchOption.map(item => (
               <Option value={item.key} key={item.key}>
                 {item.title}
               </Option>
@@ -247,7 +249,7 @@ export default class CompanyProgress extends Component {
           <Input
             placeholder="输入企业名称"
             style={{ width: "180px" }}
-            onChange={(e) => {
+            onChange={e => {
               _query.name = e.target.value;
             }}
           />
@@ -257,7 +259,7 @@ export default class CompanyProgress extends Component {
           <Input
             placeholder="输入统一社会信用代码"
             style={{ width: "180px" }}
-            onChange={(e) => {
+            onChange={e => {
               _query.uuid = e.target.value;
             }}
           />
@@ -267,11 +269,11 @@ export default class CompanyProgress extends Component {
           <Select
             defaultValue={_query.isconfirm}
             style={{ width: "100px" }}
-            onChange={(val) => {
+            onChange={val => {
               _query.isconfirm = val == 2 ? undefined : val;
             }}
           >
-            {confirmOption.map((item) => (
+            {confirmOption.map(item => (
               <Option value={item.key} key={item.key}>
                 {item.title}
               </Option>
@@ -283,11 +285,11 @@ export default class CompanyProgress extends Component {
           <Select
             defaultValue={_query.scale}
             style={{ width: "100px" }}
-            onChange={(val) => {
+            onChange={val => {
               _query.scale = val == 2 ? undefined : val;
             }}
           >
-            {[{ key: 2, title: "全部" }, ...scaleOption].map((item) => (
+            {[{ key: 2, title: "全部" }, ...scaleOption].map(item => (
               <Option value={item.key} key={item.key}>
                 {item.title}
               </Option>
@@ -352,7 +354,7 @@ export default class CompanyProgress extends Component {
       },
       {
         title: "联系人号码",
-        width: 110,
+        width: 120,
         dataIndex: "linkphone",
         fixed: "left",
       },
@@ -361,7 +363,7 @@ export default class CompanyProgress extends Component {
         dataIndex: "scale",
         fixed: "left",
         width: 60,
-        render: (t) => (t ? "规上" : "规下"),
+        render: t => (t ? "规上" : "规下"),
       },
       {
         title: "企业地址",
@@ -370,16 +372,16 @@ export default class CompanyProgress extends Component {
       },
       {
         title: "法人联系方式",
-        width: 110,
+        width: 120,
         dataIndex: "legalphone",
       },
       {
         title: "企业状态",
         width: 100,
         dataIndex: "state",
-        render: (t) => (
+        render: t => (
           <Tag color={t == 0 ? "cyan" : "red"}>
-            {statusOption.filter((item) => item.key == t)[0].title}
+            {statusOption.filter(item => item.key == t)[0].title}
           </Tag>
         ),
       },
@@ -453,28 +455,25 @@ export default class CompanyProgress extends Component {
       },
       {
         title: "操作",
-        width: 360,
+        width: 280,
         fixed: "right",
         render: (r, t) => {
           return (
             <div className="operator">
               <Button
                 type="primary"
-                icon="edit"
                 onClick={() => this.openModal(COMPANY_INDEX_FORM_HASH, t)}
               >
                 数据指标
               </Button>
               <Button
                 type="primary"
-                icon="check-circle"
                 onClick={() => this.openModal(COMPANY_DATA_FORM_HASH, t)}
               >
                 用地用电
               </Button>
               <Button
                 type="primary"
-                icon="tool"
                 onClick={() => this.openModal(COMPANY_ELECMETER_LIST_HASH, t)}
               >
                 公用电表
@@ -483,7 +482,7 @@ export default class CompanyProgress extends Component {
           );
         },
       },
-    ].map((v) => {
+    ].map(v => {
       return { ...v, key: v.dataIndex };
     });
   }
@@ -505,7 +504,7 @@ export default class CompanyProgress extends Component {
         <Table
           dataSource={toJS(list)}
           columns={this.columns()}
-          rowKey={(r) => r.uuid}
+          rowKey={r => r.uuid}
           scroll={{ x: 1500 }}
           pagination={{
             current: _pageQuery.page,
@@ -517,7 +516,7 @@ export default class CompanyProgress extends Component {
               _pageQuery.page = 1;
               this.fetchList();
             },
-            onChange: (current) => {
+            onChange: current => {
               _pageQuery.page = current;
               this.fetchList();
             },
@@ -552,7 +551,7 @@ export default class CompanyProgress extends Component {
         >
           <CompanyIndexForm
             company={edit || {}}
-            wrappedComponentRef={(instance) => {
+            wrappedComponentRef={instance => {
               this.companyIndexForm = instance;
             }}
           />
@@ -585,7 +584,7 @@ export default class CompanyProgress extends Component {
             company={edit || {}}
             status={statusOption}
             fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
-            wrappedComponentRef={(instance) => {
+            wrappedComponentRef={instance => {
               this.companyDataForm = instance;
             }}
           />

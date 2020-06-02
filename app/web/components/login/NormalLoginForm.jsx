@@ -4,7 +4,7 @@ import { Form, Icon, Input, Button, message } from "antd";
 import autobind from "autobind-decorator";
 const FormItem = Form.Item;
 
-@inject((stores) => ({
+@inject(stores => ({
   store: stores.userStore,
 }))
 @observer

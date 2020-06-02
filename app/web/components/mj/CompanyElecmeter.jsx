@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import autobind from "autobind-decorator";
 import _ from "lodash";
-import { message, Modal, Form, Input, Button } from "antd";
+import { Modal, Input, Button, message } from "antd";
 import { observer, inject } from "mobx-react";
 import hoc from "components/HOC/pageHeader";
 import CompanyElecForm from "./components/CompanyElecForm";

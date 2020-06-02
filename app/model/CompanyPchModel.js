@@ -59,7 +59,7 @@ module.exports = app => {
         type: INTEGER,
         allowNull: false,
         defaultValue: 0,
-      } /** 企业状态([0]正常[1]非本街道[2]注销[3]迁出[4]迁入保护) */,
+      } /** 企业状态([0]正常[1]非本街道[2]注销[3]迁出[4]迁入保护[5]垃圾企业) */,
       isconfirm: {
         type: INTEGER,
         allowNull: false,

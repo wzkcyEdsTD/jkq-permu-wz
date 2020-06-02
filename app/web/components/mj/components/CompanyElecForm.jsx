@@ -1,5 +1,5 @@
 import React, { PureComponent } from "react";
-import { Form, Button, Input, Row, Col, Divider } from "antd";
+import { Form, Input, Row, Col, Divider, Button } from "antd";
 import shortid from "shortid";
 import autobind from "autobind-decorator";
 import { checkMobile, checkUuid, positiveNumber } from "utils/validation";
@@ -43,9 +43,9 @@ class CompanyElecForm extends PureComponent {
    * @param {String} 标识
    * @memberof CompanyElecForm
    */
-  removeCompany = (id) => {
+  removeCompany = id => {
     const { elecList } = this.state;
-    this.setState({ elecList: elecList.filter((v) => v.id != id) });
+    this.setState({ elecList: elecList.filter(v => v.id != id) });
   };
 
   /**
@@ -82,13 +82,13 @@ class CompanyElecForm extends PureComponent {
                 ],
               })(
                 <Input
-                  onBlur={(e) => {
+                  onBlur={e => {
                     this.fetchCompanyNameByUuid(
                       e.currentTarget.value,
                       single_elec.id
                     );
                   }}
-                  onChange={(e) => {
+                  onChange={e => {
                     this.fetchCompanyNameByUuid(
                       e.currentTarget.value,
                       single_elec.id
@@ -135,7 +135,7 @@ class CompanyElecForm extends PureComponent {
             </Form.Item>
           </Col>
           <Col span={2}>
-            <Button onClick={(e) => this.removeCompany(single_elec.id)}>
+            <Button onClick={e => this.removeCompany(single_elec.id)}>
               删除
             </Button>
           </Col>

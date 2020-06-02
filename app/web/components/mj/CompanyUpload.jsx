@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import autobind from "autobind-decorator";
-import { Tabs, message, Modal, Spin, notification } from "antd";
+import { Tabs, Modal, Spin, notification, Button, message } from "antd";
 const TabPane = Tabs.TabPane;
 import { observer, inject } from "mobx-react";
 import hoc from "components/HOC/pageHeader";
@@ -30,12 +30,25 @@ export default class CompanyUpload extends Component {
   async fetchCompanyOption() {
     this.setState({ loading: true });
     const { getCompanyInfoByPch } = this.props.store;
-    const visible = await getCompanyInfoByPch();
+    const { visible, state } = await getCompanyInfoByPch();
+    const nkey = +new Date();
     !visible &&
       visible !== undefined &&
       notification.warning({
         message: `请完善企业信息`,
         description: "企业用户完善企业信息后,即可查看、核对企业数据",
+      });
+    notification.config({ duration: 30 });
+    state != 0 &&
+      notification.error({
+        message: "企业状态异常",
+        description: "企业状态异常,无法进行企业数据核对操作!",
+        key: nkey,
+        btn: (
+          <Button type="primary" onClick={() => notification.close(nkey)}>
+            确认
+          </Button>
+        ),
       });
     this.setState({ loading: false });
   }
@@ -109,7 +122,11 @@ export default class CompanyUpload extends Component {
       <div>
         <Spin spinning={loading}>
           <Tabs defaultActiveKey={company.visible ? "1" : "2"}>
-            <TabPane tab="企业数据核对" key="1" disabled={!company.visible}>
+            <TabPane
+              tab="企业数据核对"
+              key="1"
+              disabled={!company.visible || company.state != 0}
+            >
               <CompanyUploadEl
                 company={company || {}}
                 fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}

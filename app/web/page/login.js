@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-27 08:50:23
- * @LastEditTime: 2020-05-27 16:17:52
+ * @LastEditTime: 2020-06-02 09:23:16
  * @LastEditors: eds
  * @Description: 
  * @FilePath: \jkq-permu-wz\app\web\page\login.js
@@ -57,7 +57,7 @@ const clientRender = () => {
 
 const serverRender = async (locals) => {
   const { ctx, apiConfig } = locals.state;
-  const { url, service } = ctx;
+  const { url } = ctx;
   const stores = createStores(ctx);
   const branch = matchRoutes(routes, url);
   const promises = branch.map(({ route }) => {

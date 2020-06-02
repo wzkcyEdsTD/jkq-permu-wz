@@ -1,22 +1,22 @@
-import React, { Component } from 'react';
-import autobind from 'autobind-decorator';
-import { inject, observer } from 'mobx-react';
-import { Form, Input, Select, Icon, Divider } from 'antd';
+import React, { Component } from "react";
+import autobind from "autobind-decorator";
+import { inject, observer } from "mobx-react";
+import { Form, Select, Icon, Input, Divider } from "antd";
 const Option = Select.Option;
 const { Item: FormItem } = Form;
-export const MENU_FORM_MODE_ADD = 'add';
-export const MENU_FORM_MODE_UPDATE = 'update';
-import icons from 'enums/Icon';
+export const MENU_FORM_MODE_ADD = "add";
+export const MENU_FORM_MODE_UPDATE = "update";
+import icons from "enums/Icon";
 
 const formItemLayout = {
   labelCol: { span: 6 },
-  wrapperCol: { span: 14 }
+  wrapperCol: { span: 14 },
 };
 
 @observer
 class UserForm extends Component {
   state = {
-    anticon: null
+    anticon: null,
   };
   componentDidMount() {
     const { menu } = this.props;
@@ -37,24 +37,24 @@ class UserForm extends Component {
     const defaultItemProps = {
       ...formItemLayout,
       colon: false,
-      hasFeedback: false
+      hasFeedback: false,
     };
     const isUpdate = mode === MENU_FORM_MODE_UPDATE;
 
-    getFieldDecorator('id', { initialValue: menu ? menu.id : '' });
-    getFieldDecorator('anticon', { initialValue: menu ? menu.anticon : '' });
+    getFieldDecorator("id", { initialValue: menu ? menu.id : "" });
+    getFieldDecorator("anticon", { initialValue: menu ? menu.anticon : "" });
 
     return (
       <Form className="form-menu">
         <FormItem {...defaultItemProps} label="菜单名">
-          {getFieldDecorator('label', {
-            initialValue: menu ? menu.label : '',
+          {getFieldDecorator("label", {
+            initialValue: menu ? menu.label : "",
             rules: [
               {
                 required: true,
-                message: '请输入菜单名'
-              }
-            ]
+                message: "请输入菜单名",
+              },
+            ],
           })(
             <Input
               placeholder="输入菜单名"
@@ -64,18 +64,18 @@ class UserForm extends Component {
           )}
         </FormItem>
         <FormItem {...defaultItemProps} label="链接">
-          {getFieldDecorator('p_link', {
-            initialValue: menu ? menu.p_link : '',
+          {getFieldDecorator("p_link", {
+            initialValue: menu ? menu.p_link : "",
             rules: [
               {
                 required: true,
-                message: '请输入链接'
-              }
-            ]
+                message: "请输入链接",
+              },
+            ],
           })(<Input placeholder="输入链接" />)}
         </FormItem>
         <FormItem {...defaultItemProps} label="图标">
-          {getFieldDecorator('anticon')(
+          {getFieldDecorator("anticon")(
             <div className="menu-icon-form">
               <div>
                 <Icon type={anticon} />
@@ -99,7 +99,7 @@ class UserForm extends Component {
         </FormItem>
 
         <FormItem {...defaultItemProps} label="用户组">
-          {getFieldDecorator('group', {
+          {getFieldDecorator("group", {
             initialValue:
               menu && menu.groups
                 ? menu.groups.map(v => {
@@ -109,9 +109,9 @@ class UserForm extends Component {
             rules: [
               {
                 required: true,
-                message: '请选择用户组'
-              }
-            ]
+                message: "请选择用户组",
+              },
+            ],
           })(
             <Select
               mode="multiple"

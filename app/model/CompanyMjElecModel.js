@@ -1,3 +1,11 @@
+/*
+ * @Author: eds
+ * @Date: 2020-04-27 18:37:41
+ * @LastEditTime: 2020-06-02 19:24:37
+ * @LastEditors: eds
+ * @Description: 
+ * @FilePath: \jkq-permu-wz\app\model\CompanyMjElecModel.js
+ */ 
 /**
  * 企业用电信息(含年份号)
  * @param {*} app
@@ -32,10 +40,6 @@ module.exports = (app) => {
         allowNull: false,
         defaultValue: 0,
       } /** 年度用电量(千瓦时) */,
-      prove: {
-        type: STRING,
-        allowNull: true,
-      } /** 证明文件地址 */,
     },
     {
       freezeTableName: false,

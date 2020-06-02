@@ -1,3 +1,11 @@
+/*
+ * @Author: eds
+ * @Date: 2020-05-11 10:59:52
+ * @LastEditTime: 2020-06-02 19:23:39
+ * @LastEditors: eds
+ * @Description: 
+ * @FilePath: \jkq-permu-wz\app\model\CompanyElecmeterModel.js
+ */ 
 /**
  * [Log] 共用电表登记记录
  * @param {*} app

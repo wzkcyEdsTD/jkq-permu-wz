@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 19:23:32
- * @LastEditTime: 2020-05-29 09:10:48
+ * @LastEditTime: 2020-06-02 19:23:51
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\model\CompanyEvidenceModel.js
@@ -33,7 +33,7 @@ module.exports = app => {
       fileurl: {
         type: STRING,
         allowNull: false,
-      } /** 文件名称 */,
+      } /** 文件路径 */,
       operator: {
         type: STRING,
         allowNull: false,
@@ -42,7 +42,7 @@ module.exports = app => {
         type: BOOLEAN,
         allowNull: false,
         defaultValue: true,
-      } /** 操作人 */,
+      } /** 是否生效[1]生效[0]失效 */,
     },
     {
       freezeTableName: false,

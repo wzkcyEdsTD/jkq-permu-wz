@@ -45,7 +45,7 @@ class CompanyService extends Service {
             $like: `%${street || ""}%`,
           },
           pch: pch || PCH,
-          ...extra,
+          ...extra
         },
         include: [
           {
@@ -83,7 +83,11 @@ class CompanyService extends Service {
           {
             model: this.app.model.CompanyMjLandModel,
             attributes: ["id", "type", "area", "linktype", "uuid"],
-            order: [["type", "ASC"]],
+            limit: 20,
+            order: [
+              ["type", "DESC"],
+              ["area", "DESC"],
+            ],
             where,
             required: false,
           },
@@ -91,6 +95,8 @@ class CompanyService extends Service {
             model: this.app.model.CompanyMjElecModel,
             attributes: ["id", "elecmeter", "elec"],
             where,
+            limit: 10,
+            order: [["elec", "DESC"]],
             required: false,
           },
           {
@@ -104,9 +110,9 @@ class CompanyService extends Service {
         ],
         order: [
           ["scale", "DESC"],
-          [this.app.model.CompanyMjLandModel, "type", "DESC"],
-          [this.app.model.CompanyMjLandModel, "area", "DESC"],
-          [this.app.model.CompanyMjElecModel, "elec", "DESC"],
+          // [this.app.model.CompanyMjLandModel, "type", "DESC"],
+          // [this.app.model.CompanyMjLandModel, "area", "DESC"],
+          // [this.app.model.CompanyMjElecModel, "elec", "DESC"],
         ],
         limit: Number(pageSize || 10),
         offset: Number(page - 1 || 0) * Number(pageSize || 10),
@@ -137,6 +143,7 @@ class CompanyService extends Service {
         list: rows,
       });
     } catch (error) {
+      console.log(error);
       return this.ServerResponse.createByErrorMsg("获取企业列表失败");
     }
   }
@@ -151,8 +158,8 @@ class CompanyService extends Service {
     const { street, pch, name, uuid, isconfirm, scale } = query;
     const where = { pch: pch || PCH };
     const extra = {};
-    isconfirm && (extra.isconfirm = isconfirm);
-    scale && (extra.scale = scale);
+    (isconfirm || isconfirm == 0) && (extra.isconfirm = isconfirm);
+    (scale || scale == 0) && (extra.scale = scale);
     try {
       const rows = await this.CompanyPchModel.findAll({
         where: {
