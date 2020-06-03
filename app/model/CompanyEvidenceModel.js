@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 19:23:32
- * @LastEditTime: 2020-06-02 19:23:51
+ * @LastEditTime: 2020-06-03 14:50:13
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\model\CompanyEvidenceModel.js
@@ -47,6 +47,7 @@ module.exports = app => {
     {
       freezeTableName: false,
       timestamps: true,
+      updatedAt: false,
       tableName: "companyevidence",
     }
   );

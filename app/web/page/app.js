@@ -32,8 +32,9 @@ import CompanyElecmeter from "components/mj/CompanyElecmeter";
 import CompanyElecmeterStore from "stores/mj/CompanyElecmeterStore";
 
 //  亩均评价日志
-import CompanyLELog from "components/mjLog/CompanyLELog";
 import CompanyLogStore from "stores/mjLog/CompanyLogStore";
+import CompanyLELog from "components/mjLog/CompanyLELog";
+import LoginLog from "components/mjLog/LoginLog";
 
 const createStores = (ctx, state, userinfoState) => ({
   userStore: new UserStore(ctx, state, userinfoState),
@@ -81,9 +82,14 @@ const routes = [
         path: "/home/companyElecmeter",
         component: CompanyElecmeter,
       },
+      //  company log
       {
         path: "/home/companyELLog",
         component: CompanyLELog,
+      },
+      {
+        path: "/home/loginLog",
+        component: LoginLog,
       },
     ],
   },

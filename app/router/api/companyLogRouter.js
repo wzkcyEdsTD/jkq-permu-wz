@@ -18,4 +18,5 @@ module.exports = app => {
     `${prefix}/companyle`,
     companyLogController.getCompanyEvidenceList
   );
+  router.post(`${prefix}/loginlog`, companyLogController.getLoginLogList);
 };

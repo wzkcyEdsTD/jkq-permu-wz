@@ -7,6 +7,7 @@ class UserService extends Service {
   constructor(ctx) {
     super(ctx);
     this.UserModel = ctx.model.UserModel;
+    this.LoginLogModel = ctx.model.LoginLogModel;
     this.JobModel = ctx.model.JobModel;
     this.DepartmentModel = ctx.model.DepartmentModel;
     this.PassportModel = ctx.model.PassportModel;
@@ -96,7 +97,7 @@ class UserService extends Service {
       return this.ServerResponse.createByErrorMsg("账号被禁用");
     }
     const userInfo = user.toJSON();
-
+    const loginLog = await this.LoginLogModel.create({ username });
     return this.ServerResponse.createBySuccessMsgAndData("登录成功", userInfo);
   }
 

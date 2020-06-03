@@ -35,7 +35,7 @@ module.exports = app => {
         allowNull: true,
       } /** 详细地址 */,
       legal: {
-        type: STRING(10),
+        type: STRING(255),
         allowNull: true,
       } /** 企业法人代表 */,
       legalphone: {
@@ -43,11 +43,11 @@ module.exports = app => {
         allowNull: true,
       } /** 企业法人代表电话 */,
       link: {
-        type: STRING(10),
+        type: STRING(255),
         allowNull: true,
       } /** 企业联系人 */,
       linkphone: {
-        type: STRING(11),
+        type: STRING(255),
         allowNull: true,
       } /** 企业联系人电话 */,
       scale: {

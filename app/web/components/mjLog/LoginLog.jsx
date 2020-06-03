@@ -1,35 +1,39 @@
 import React, { Component } from "react";
 import autobind from "autobind-decorator";
 import { toJS } from "mobx";
-import { Table } from "antd";
+import { Table, Tag } from "antd";
 import { observer, inject } from "mobx-react";
 import hoc from "components/HOC/pageHeader";
 
 @inject(stores => ({
   store: stores.companyLogStore,
 }))
-@hoc({ name: "用地用电凭证上传日志", className: "page_companylelog" })
+@hoc({ name: "登录日志", className: "page_loginlog" })
 @observer
-export default class CompanyLELog extends Component {
+export default class LoginLog extends Component {
   state = {
     loading: false,
   };
 
   columns = [
     { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
-    { title: "企业信用代码", dataIndex: "uuid", key: "uuid" },
-    { title: "文件名称", dataIndex: "filename", key: "filename" },
+    { title: "用户名", dataIndex: "username", key: "username" },
+    { title: "别名", dataIndex: "alias", key: "alias" },
     {
-      title: "文件路径",
-      dataIndex: "fileurl",
-      key: "fileurl",
-      render: (t, r) => (
-        <a href={`${window.location.host}${t}`}>{r.filename}</a>
-      ),
+      title: "用户组",
+      dataIndex: "groups",
+      render: t => {
+        return t.map((v, index) => {
+          return (
+            <Tag color={v.name == "超级管理员" ? "red" : "cyan"} key={index}>
+              {v.name}
+            </Tag>
+          );
+        });
+      },
     },
-    { title: "操作人", dataIndex: "operator", key: "operator" },
     {
-      title: "记录时间",
+      title: "登录时间",
       dataIndex: "createdAt",
       key: "createdAt",
       render: t => new Date(t).toLocaleString(),
@@ -41,15 +45,15 @@ export default class CompanyLELog extends Component {
   }
 
   /**
-   * 获取企业凭证日志
+   * 登录日志列表
    * @memberof CompanyLELog
    */
   @autobind
   async fetchList() {
-    const { getCompanyEvidenceList } = this.props.store;
+    const { getLoginLogList } = this.props.store;
     this.setState({ loading: true });
     try {
-      await getCompanyEvidenceList();
+      await getLoginLogList();
     } finally {
       this.setState({ loading: false });
     }
@@ -57,14 +61,14 @@ export default class CompanyLELog extends Component {
 
   render() {
     const { loading } = this.state;
-    const { leList, _pageQuery } = this.props.store;
+    const { loginLogList, _pageQuery } = this.props.store;
 
     return (
       <div>
         <Table
-          dataSource={toJS(leList)}
+          dataSource={toJS(loginLogList)}
           columns={this.columns}
-          rowKey={r => r.uuid}
+          rowKey={r => r.id}
           pagination={{
             current: _pageQuery.page,
             total: _pageQuery.total,
