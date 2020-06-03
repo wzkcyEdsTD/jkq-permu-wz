@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-06-03 14:25:27
- * @LastEditTime: 2020-06-03 15:14:42
+ * @LastEditTime: 2020-06-03 15:41:54
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\model\LoginLogModel.js
@@ -22,6 +22,10 @@ module.exports = app => {
         type: STRING(),
         allowNull: false,
       } /** 用户名 */,
+      ip: {
+        type: STRING(),
+        allowNull: false,
+      } /** ip地址 */,
     },
     {
       freezeTableName: false,

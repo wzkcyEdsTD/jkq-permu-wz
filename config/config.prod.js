@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-27 10:00:34
- * @LastEditTime: 2020-06-01 09:44:56
+ * @LastEditTime: 2020-06-03 15:38:25
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\config\config.prod.js
@@ -55,6 +55,7 @@ module.exports = () => {
   exports.externalAPI = {
     fwGateway: {
       //  接口入口地址
+      hostURL: "http://60.190.114.252:7001",
       baseURL: "http://60.190.114.252:7001/api",
       localURL: "http://127.0.0.1:7001/api",  //localURL 防止服务器访问不到出口IP
     },

@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-23 11:27:48
- * @LastEditTime: 2020-06-02 16:39:24
+ * @LastEditTime: 2020-06-03 16:47:03
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\web\utils\utils.js
@@ -38,9 +38,6 @@ const headerHash = {
   rde: "研发经费(万)",
   staff: "年平均员工(人)",
   sewage: "排污量(吨)",
-  isconfirm: "指标全部确认",
-  createdAt: "数据创建时间",
-  updatedAt: "数据更新事件",
 };
 
 //  表头排序
@@ -54,32 +51,41 @@ export function tableToExcel(
   jsonData,
   worksheet = `亩均论英雄企业列表_${+new Date()}`
 ) {
-  const excelContent = `<tr>${Object.keys(headerHash)
-    .map(v => `<td>${headerHash[v] || ``}</td>`)
-    .join(``)}</tr>
+  const str = `${Object.keys(headerHash)
+    .map(v => headerHash[v] || "")
+    .join(`,`)}
     ${jsonData
       .map(
         v =>
-          `<tr>${Object.keys(headerHash)
-            .map(d => `<td style="mso-number-format:'\@';">${v[d] || ``}</td>`)
-            .join(``)}</tr>`
+          `${Object.keys(headerHash)
+            .map(
+              d =>
+                `${v[d] || ""}${~["uuid", "legalphone"].indexOf(d) ? "\t" : ""}`
+            )
+            .join(`,`)}`
       )
-      .join(``)}`;
-  const uri = "data:application/vnd.ms-excel;base64,";
-  const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office" 
-  xmlns:x="urn:schemas-microsoft-com:office:excel" 
-  xmlns="http://www.w3.org/TR/REC-html40">
-  <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
-    <x:Name>${worksheet}</x:Name>
-    <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-    </x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
-    </head><body><table>${excelContent}</table></body></html>`;
-  //下载模板
-  // window.location.href = ;
-  const link = document.createElement("a");
-  link.href = uri + encodeURIComponent(base64(template));
-  //对下载的文件命名
-  link.download = `${worksheet}.xls`;
+      .join(`\n`)}`;
+  console.log(str);
+  // const uri = "data:application/vnd.ms-excel;base64,";
+  // const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+  // xmlns:x="urn:schemas-microsoft-com:office:excel"
+  // xmlns="http://www.w3.org/TR/REC-html40">
+  // <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+  //   <x:Name>${worksheet}</x:Name>
+  //   <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
+  //   </x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+  //   </head><body><table>${excelContent}</table></body></html>`;
+  // const link = document.createElement("a");
+  // link.href = uri + encodeURIComponent(base64(template));
+  // link.download = `${worksheet}.xls`;
+  // document.body.appendChild(link);
+  // link.click();
+  // document.body.removeChild(link);
+  var link = document.createElement("a");
+  var csvContent = "data:text/csv;charset=utf-8,\uFEFF" + str;
+  var encodedUri = csvContent;
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `${worksheet}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

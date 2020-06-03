@@ -42,6 +42,7 @@ export default class CompanyProgress extends Component {
       { key: 3, title: "迁出" },
       { key: 4, title: "迁入保护" },
       { key: 5, title: "纳税小于3万" },
+      { key: 6, title: " 税收及收入无法匹配" },
     ],
     confirmOption: [
       { key: 2, title: "全部" },
@@ -236,7 +237,13 @@ export default class CompanyProgress extends Component {
   @autobind
   searchLeft() {
     const { _query, _pageQuery } = this.props.store;
-    const { confirmOption, scaleOption, pchOption } = this.state;
+    const {
+      confirmOption,
+      scaleOption,
+      pchOption,
+      loading,
+      downLoading,
+    } = this.state;
     return (
       <span className="action-left-search">
         <span className="action-left-search-single">
@@ -310,6 +317,7 @@ export default class CompanyProgress extends Component {
         <Button
           type="primary"
           icon="search"
+          loading={loading}
           onClick={() => {
             _pageQuery.page = 1;
             this.fetchList();
@@ -320,6 +328,7 @@ export default class CompanyProgress extends Component {
         <Button
           type="primary"
           icon="cloud-upload"
+          loading={downLoading}
           onClick={this.exportCompanyListByPch}
         >
           数据导出

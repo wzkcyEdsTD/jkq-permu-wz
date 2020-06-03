@@ -24,7 +24,9 @@ export default class CompanyLELog extends Component {
       dataIndex: "fileurl",
       key: "fileurl",
       render: (t, r) => (
-        <a href={`${window.location.host}${t}`}>{r.filename}</a>
+        <a target="_blank" href={`http://${window.location.host}${t}`}>
+          {r.filename}
+        </a>
       ),
     },
     { title: "操作人", dataIndex: "operator", key: "operator" },

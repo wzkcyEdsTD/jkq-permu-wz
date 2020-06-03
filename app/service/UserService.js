@@ -70,7 +70,7 @@ class UserService extends Service {
     return this.ServerResponse.createByErrorMsg("参数错误");
   }
 
-  async login(username, password) {
+  async login(username, password, ip) {
     // 用户名存在报错
     const validResponse = await this.checkLogValid(USERNAME, username);
     if (!validResponse.isSuccess()) return validResponse;
@@ -97,7 +97,7 @@ class UserService extends Service {
       return this.ServerResponse.createByErrorMsg("账号被禁用");
     }
     const userInfo = user.toJSON();
-    const loginLog = await this.LoginLogModel.create({ username });
+    const loginLog = await this.LoginLogModel.create({ username, ip });
     return this.ServerResponse.createBySuccessMsgAndData("登录成功", userInfo);
   }
 

@@ -19,6 +19,7 @@ export default class LoginLog extends Component {
     { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
     { title: "用户名", dataIndex: "username", key: "username" },
     { title: "别名", dataIndex: "alias", key: "alias" },
+    { title: "IP地址", dataIndex: "ip", key: "ip" },
     {
       title: "用户组",
       dataIndex: "groups",

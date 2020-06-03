@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-06-01 09:49:26
+ * @LastEditTime: 2020-06-03 15:45:23
  * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.default.js
@@ -36,6 +36,9 @@ module.exports = appInfo => {
     },
   };
 
+  //  前置代理
+  config.proxy = true;
+
   // middleware
   config.middleware = ["parseConfig"];
 
@@ -53,7 +56,7 @@ module.exports = appInfo => {
   //  session
   config.session = {
     key: "wzkcy_id",
-    maxAge: 24 * 3600 * 1000, // 1 day
+    maxAge: 12 * 3600 * 1000, // 1 day
     httpOnly: true,
     encrypt: true,
     // renew: true,

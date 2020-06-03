@@ -108,7 +108,7 @@ class CompanyProgressStore {
       obj.company_mj_lands = obj.company_mj_lands.map(d => {
         return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
       });
-      obj.disableConfirm = !obj.isconfirm;  //  确认按钮
+      obj.disableConfirm = !obj.isconfirm; //  确认按钮
       obj.elecd = elecd;
       obj.landself = landself;
       obj.landget = landget;
@@ -130,7 +130,15 @@ class CompanyProgressStore {
       street: name == "街道" ? username : "",
     });
     const scaleArr = ["规下", "规上"];
-    const stateArr = ["正常", "非本街道", "注销", "迁出", "迁入保护"];
+    const stateArr = [
+      "正常",
+      "非本街道",
+      "注销",
+      "迁出",
+      "迁入保护",
+      "纳税小于3万",
+      "税收及收入无法匹配"
+    ];
     const list = data.map((v, index) => {
       const elecd = eval(v.company_mj_elecs.map(d => d.elec).join("+")) || 0;
       const landd = eval(v.company_mj_lands.map(d => d.area).join("+")) || 0;
@@ -140,7 +148,7 @@ class CompanyProgressStore {
       Object.keys(v).map(n =>
         typeof v[n] == "object" && v[n] != null ? undefined : (obj[n] = v[n])
       );
-      obj.company_mj_lands = obj.company_mj_lands.map(d => {
+      obj.company_mj_lands = v.company_mj_lands.map(d => {
         return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
       });
       obj.id = index + 1;

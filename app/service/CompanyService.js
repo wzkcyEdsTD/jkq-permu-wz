@@ -45,7 +45,7 @@ class CompanyService extends Service {
             $like: `%${street || ""}%`,
           },
           pch: pch || PCH,
-          ...extra
+          ...extra,
         },
         include: [
           {
@@ -162,6 +162,20 @@ class CompanyService extends Service {
     (scale || scale == 0) && (extra.scale = scale);
     try {
       const rows = await this.CompanyPchModel.findAll({
+        attributes: [
+          "id",
+          "pch",
+          "name",
+          "uuid",
+          "street",
+          "link",
+          "linkphone",
+          'legal',
+          'legalphone',
+          'state',
+          'scale',
+          'isconfirm'
+        ],
         where: {
           name: {
             $like: `%${name || ""}%`,

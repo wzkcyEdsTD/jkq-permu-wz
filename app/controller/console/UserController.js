@@ -14,7 +14,11 @@ class UserController extends Controller {
   // 登录
   async login() {
     const { username, password } = this.ctx.request.body;
-    const response = await this.UserService.login(username, password);
+    const response = await this.UserService.login(
+      username,
+      password,
+      this.ctx.request.ip
+    );
     if (response.isSuccess() && response.data) {
       this.ctx.session.currentUser = response.getData();
     }
@@ -112,7 +116,7 @@ class UserController extends Controller {
         "isActive",
         "username",
         "phone",
-        "alias"
+        "alias",
       ]),
     };
 
@@ -136,7 +140,13 @@ class UserController extends Controller {
     };
     const user = {
       id: ctx.params.userId,
-      ..._.pick(ctx.request.body, ["department", "group", "job","alias", "isActive"]),
+      ..._.pick(ctx.request.body, [
+        "department",
+        "group",
+        "job",
+        "alias",
+        "isActive",
+      ]),
     };
     ctx.validate(rules, user);
 

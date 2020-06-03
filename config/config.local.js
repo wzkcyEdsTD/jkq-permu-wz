@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-06-01 09:38:42
+ * @LastEditTime: 2020-06-03 15:38:09
  * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.local.js
@@ -52,6 +52,7 @@ module.exports = () => {
   exports.externalAPI = {
     fwGateway: {
       //  接口入口地址
+      hostURL: "http://192.168.0.163:7001",
       baseURL: "http://192.168.0.163:7001/api",
       localURL: "http://127.0.0.1:7001/api",
     },
