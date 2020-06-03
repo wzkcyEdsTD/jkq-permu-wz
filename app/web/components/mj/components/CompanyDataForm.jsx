@@ -280,7 +280,7 @@ class CompanyDataForm extends Component {
   /**
    * 传输返回
    * @param {*} info
-   * @memberof CompanyUploadEL
+   * @memberof CompanyUploadLE
    */
   @autobind
   UploadEvidenceChange(e) {
@@ -383,7 +383,7 @@ class CompanyDataForm extends Component {
    * 获取村行政代码
    * @param {*} id
    * @returns
-   * @memberof CompanyUploadEL
+   * @memberof CompanyUploadLE
    */
   @autobind
   getVillageCode(id) {

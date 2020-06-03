@@ -34,7 +34,7 @@ const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/;
  * @extends {Component}
  */
 @observer
-class CompanyUploadEL extends Component {
+class CompanyUploadLE extends Component {
   state = {
     savingLoad: false,
     company_mj_lands: [],
@@ -72,7 +72,7 @@ class CompanyUploadEL extends Component {
   /**
    * 公司赋值
    * @returns
-   * @memberof CompanyUploadEL
+   * @memberof CompanyUploadLE
    */
   @autobind
   async doProps() {
@@ -314,7 +314,7 @@ class CompanyUploadEL extends Component {
   /**
    * 传输返回
    * @param {*} info
-   * @memberof CompanyUploadEL
+   * @memberof CompanyUploadLE
    */
   @autobind
   UploadEvidenceChange(e) {
@@ -417,7 +417,7 @@ class CompanyUploadEL extends Component {
    * 获取村行政代码
    * @param {*} id
    * @returns
-   * @memberof CompanyUploadEL
+   * @memberof CompanyUploadLE
    */
   @autobind
   getVillageCode(id) {
@@ -573,7 +573,7 @@ class CompanyUploadEL extends Component {
    * 状态确认
    * @param {*} index
    * @param {*} isb [true] basic [false] land&elec
-   * @memberof CompanyUploadEL
+   * @memberof CompanyUploadLE
    */
   @autobind
   checkIcon(index, isb) {
@@ -585,7 +585,7 @@ class CompanyUploadEL extends Component {
 
   /**
    * 更新企业指标状态
-   * @memberof CompanyUploadEL
+   * @memberof CompanyUploadLE
    */
   @autobind
   async updateCompanyDataState() {
@@ -869,4 +869,4 @@ class CompanyUploadEL extends Component {
   }
 }
 
-export default Form.create()(CompanyUploadEL);
+export default Form.create()(CompanyUploadLE);

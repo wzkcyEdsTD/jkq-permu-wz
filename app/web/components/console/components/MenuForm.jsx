@@ -59,7 +59,7 @@ class UserForm extends Component {
             <Input
               placeholder="输入菜单名"
               autoComplete="off"
-              readOnly={isUpdate}
+              // readOnly={isUpdate}
             />
           )}
         </FormItem>

@@ -1,6 +1,4 @@
 import React, { Component, PureComponent } from "react";
-import { toJS } from "mobx";
-import { observer, inject } from "mobx-react";
 
 function getDisplayName(component) {
   return component.displayName || component.name || "Component";
@@ -14,6 +12,9 @@ export default obj => WrappedComponent =>
       console.log(`[OPEN]: ${getDisplayName(WrappedComponent)}`);
     }
 
+    /**
+     * 周期结束,销毁存储数据
+     */
     componentWillUnmount() {
       const { store } = this.props;
       store && store.reset && store.reset();
@@ -21,7 +22,6 @@ export default obj => WrappedComponent =>
     }
 
     render() {
-      const { history, name } = this.props;
       return (
         <div className={obj.className}>
           {obj.name && <div className="title">{obj.name}</div>}

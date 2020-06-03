@@ -4,7 +4,7 @@ import { Tabs, Modal, Spin, notification, Button, message } from "antd";
 const TabPane = Tabs.TabPane;
 import { observer, inject } from "mobx-react";
 import hoc from "components/HOC/pageHeader";
-import CompanyUploadEl from "./components/CompanyUploadEL";
+import CompanyUploadLe from "./components/CompanyUploadLE";
 import CompanyUploadBasic from "./components/CompanyUploadBasic";
 import "./CompanyUpload.less";
 
@@ -127,7 +127,7 @@ export default class CompanyUpload extends Component {
               key="1"
               disabled={!company.visible || company.state != 0}
             >
-              <CompanyUploadEl
+              <CompanyUploadLe
                 company={company || {}}
                 fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
                 updateCompanyDataState={this.updateCompanyDataState}

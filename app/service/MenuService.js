@@ -24,7 +24,7 @@ class MenuService extends Service {
               attributes: ["group_menus", "menu_groups"],
             },
             where: {
-              id: group.group.map((v) => {
+              id: group.group.map(v => {
                 return v.id;
               }),
             },
@@ -80,10 +80,7 @@ class MenuService extends Service {
         },
       ],
       distinct: true,
-      order: [
-        sort.columnKey ? [sort.columnKey, sort.order] : ["id", "ASC"],
-        [this.app.model.GroupModel, "id", "ASC"],
-      ],
+      order: [sort.columnKey ? [sort.columnKey, sort.order] : ["id", "ASC"]],
       limit: Number(pageSize || 0),
       offset: Number(page - 1 || 0) * Number(pageSize || 0),
     });
@@ -91,7 +88,7 @@ class MenuService extends Service {
     if (rows.length < 1) {
       this.ServerResponse.createBySuccessMsg("无数据");
     }
-    rows.forEach((row) => row && row.toJSON());
+    rows.forEach(row => row && row.toJSON());
 
     return this.ServerResponse.createBySuccessData({
       page: {
@@ -140,7 +137,7 @@ class MenuService extends Service {
         where: { menu_groups: id },
       });
       await this.GroupMenuRelation.bulkCreate(
-        group.map((v) => {
+        group.map(v => {
           return { group_menus: v, menu_groups: id };
         })
       );
@@ -176,7 +173,7 @@ class MenuService extends Service {
       if (menu) {
         menu = menu.toJSON();
         await this.GroupMenuRelation.bulkCreate(
-          group.map((v) => {
+          group.map(v => {
             return { group_menus: v, menu_groups: menu.id };
           })
         );

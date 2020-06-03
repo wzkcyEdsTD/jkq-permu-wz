@@ -23,7 +23,7 @@ module.exports = app => {
         primaryKey: true,
       } /** 统一社会信用代码 */,
       name: {
-        type: STRING(50),
+        type: STRING(255),
         allowNull: false,
       } /** 企业名称 */,
       street: {
@@ -39,7 +39,7 @@ module.exports = app => {
         allowNull: true,
       } /** 企业法人代表 */,
       legalphone: {
-        type: STRING(11),
+        type: STRING(255),
         allowNull: true,
       } /** 企业法人代表电话 */,
       link: {
