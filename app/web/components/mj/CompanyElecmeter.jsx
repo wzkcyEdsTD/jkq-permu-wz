@@ -145,13 +145,15 @@ export default class CompanyElecmeter extends Component {
             this.companyElecForm = instance;
           }}
         />
-        <Button
-          loading={loading}
-          type="primary"
-          onClick={this.updateCompanyElecmenter}
-        >
-          提交
-        </Button>
+        <div>
+          <Button
+            loading={loading}
+            type="primary"
+            onClick={this.updateCompanyElecmenter}
+          >
+            提交
+          </Button>
+        </div>
       </div>
     );
   }

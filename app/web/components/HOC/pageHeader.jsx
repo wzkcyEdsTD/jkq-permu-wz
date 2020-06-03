@@ -1,9 +1,9 @@
-import React, { Component, PureComponent } from 'react';
-import { toJS } from 'mobx';
-import { observer, inject } from 'mobx-react';
+import React, { Component, PureComponent } from "react";
+import { toJS } from "mobx";
+import { observer, inject } from "mobx-react";
 
 function getDisplayName(component) {
-  return component.displayName || component.name || 'Component';
+  return component.displayName || component.name || "Component";
 }
 
 export default obj => WrappedComponent =>
@@ -25,7 +25,12 @@ export default obj => WrappedComponent =>
       return (
         <div className={obj.className}>
           {obj.name && <div className="title">{obj.name}</div>}
-          <div className="main-content">
+          <div
+            className={[
+              "main-content",
+              obj.ftable ? "main-content-ftable" : "",
+            ].join(" ")}
+          >
             <WrappedComponent {...this.props} />
           </div>
         </div>

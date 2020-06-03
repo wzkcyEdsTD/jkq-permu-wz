@@ -17,7 +17,11 @@ import "./CompanyData.less";
   store: stores.companyDataStore,
   userStore: stores.userStore,
 }))
-@hoc({ name: "企业数据审核 - 街道", className: "page_companydata" })
+@hoc({
+  name: "企业数据审核 - 街道",
+  className: "page_companydata",
+  ftable: true,
+})
 @observer
 export default class CompanyData extends Component {
   state = {
@@ -48,9 +52,13 @@ export default class CompanyData extends Component {
       { key: 2019, title: "2019年度" },
       { key: 2018, title: "2018年度" },
     ],
+    scrolly: 0,
   };
 
   async componentDidMount() {
+    this.setState({
+      scrolly: document.getElementById("flex-ant-table").offsetHeight - 120,
+    });
     await this.fetchList();
   }
 
@@ -137,7 +145,10 @@ export default class CompanyData extends Component {
     const { form } = this.companyDataForm.props;
     const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
     const { updateCompanyInfoByPch } = this.props.store;
-    if(~company_mj_lands.map(v => v.uuid).indexOf('')) return message.error("【租赁用地】企业统一信用代码/行政区划代码不可为空!");
+    if (~company_mj_lands.map(v => v.uuid).indexOf(""))
+      return message.error(
+        "【租赁用地】企业统一信用代码/行政区划代码不可为空!"
+      );
     form.validateFieldsAndScroll(async (err, values) => {
       if (err) return;
       this.setState({ savingLoad: true });
@@ -454,36 +465,44 @@ export default class CompanyData extends Component {
       passportModalVisiable,
       edit,
       statusOption,
+      scrolly,
     } = this.state;
     const { list, _pageQuery } = this.props.store;
     return (
       <div>
         <div className="action-container">{this.searchLeft()}</div>
-        <Table
-          dataSource={toJS(list)}
-          columns={this.columns()}
-          rowKey={r => r.uuid}
-          scroll={{ x: 1500 }}
-          pagination={{
-            current: _pageQuery.page,
-            total: _pageQuery.count,
-            pageSize: _pageQuery.pageSize,
-            showSizeChanger: true,
-            onShowSizeChange: (current, pageSize) => {
-              _pageQuery.pageSize = pageSize;
-              _pageQuery.page = 1;
-              this.fetchList();
-            },
-            onChange: current => {
-              _pageQuery.page = current;
-              this.fetchList();
-            },
-            showTotal: () => {
-              return "共 " + _pageQuery.count + " 条数据";
-            },
-          }}
-          loading={loading}
-        />
+        <div id="flex-ant-table">
+          {scrolly ? (
+            <Table
+              dataSource={toJS(list)}
+              columns={this.columns()}
+              rowKey={r => r.uuid}
+              scroll={{
+                x: 2300,
+                y: scrolly,
+              }}
+              pagination={{
+                current: _pageQuery.page,
+                total: _pageQuery.count,
+                pageSize: _pageQuery.pageSize,
+                showSizeChanger: true,
+                onShowSizeChange: (current, pageSize) => {
+                  _pageQuery.pageSize = pageSize;
+                  _pageQuery.page = 1;
+                  this.fetchList();
+                },
+                onChange: current => {
+                  _pageQuery.page = current;
+                  this.fetchList();
+                },
+                showTotal: () => {
+                  return "共 " + _pageQuery.count + " 条数据";
+                },
+              }}
+              loading={loading}
+            />
+          ) : undefined}
+        </div>
         <Modal
           className="modal-handled"
           title={"企业数据审核"}

@@ -20,7 +20,11 @@ import "./CompanyProgress.less";
   store: stores.companyProgressStore,
   userStore: stores.userStore,
 }))
-@hoc({ name: "企业数据确认进度 - 管理员", className: "page_companyprogress" })
+@hoc({
+  name: "企业数据确认进度 - 管理员",
+  className: "page_companyprogress",
+  ftable: true,
+})
 @observer
 export default class CompanyProgress extends Component {
   state = {
@@ -37,7 +41,7 @@ export default class CompanyProgress extends Component {
       { key: 2, title: "注销" },
       { key: 3, title: "迁出" },
       { key: 4, title: "迁入保护" },
-      { key: 5, title: "纳税小于3万" }, 
+      { key: 5, title: "纳税小于3万" },
     ],
     confirmOption: [
       { key: 2, title: "全部" },
@@ -52,9 +56,13 @@ export default class CompanyProgress extends Component {
       { key: 2019, title: "2019年度" },
       { key: 2018, title: "2018年度" },
     ],
+    scrolly: 0,
   };
 
   async componentDidMount() {
+    this.setState({
+      scrolly: document.getElementById("flex-ant-table").offsetHeight - 120,
+    });
     await this.fetchList();
   }
 
@@ -176,7 +184,10 @@ export default class CompanyProgress extends Component {
   updateCompanyInfoByPch() {
     const { form } = this.companyDataForm.props;
     const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
-    if(~company_mj_lands.map(v => v.uuid).indexOf('')) return message.error("【租赁用地】企业统一信用代码/行政区划代码不可为空!");
+    if (~company_mj_lands.map(v => v.uuid).indexOf(""))
+      return message.error(
+        "【租赁用地】企业统一信用代码/行政区划代码不可为空!"
+      );
     const { updateCompanyInfoByPch } = this.props.store;
     form.validateFieldsAndScroll(async (err, values) => {
       if (err) return;
@@ -496,36 +507,41 @@ export default class CompanyProgress extends Component {
       indexModalVisiable,
       edit,
       statusOption,
+      scrolly,
     } = this.state;
     const { list, _pageQuery } = this.props.store;
     return (
       <div>
         <div className="action-container">{this.searchLeft()}</div>
-        <Table
-          dataSource={toJS(list)}
-          columns={this.columns()}
-          rowKey={r => r.uuid}
-          scroll={{ x: 1500 }}
-          pagination={{
-            current: _pageQuery.page,
-            total: _pageQuery.count,
-            pageSize: _pageQuery.pageSize,
-            showSizeChanger: true,
-            onShowSizeChange: (current, pageSize) => {
-              _pageQuery.pageSize = pageSize;
-              _pageQuery.page = 1;
-              this.fetchList();
-            },
-            onChange: current => {
-              _pageQuery.page = current;
-              this.fetchList();
-            },
-            showTotal: () => {
-              return "共 " + _pageQuery.count + " 条数据";
-            },
-          }}
-          loading={loading}
-        />
+        <div id="flex-ant-table">
+          {scrolly ? (
+            <Table
+              dataSource={toJS(list)}
+              columns={this.columns()}
+              rowKey={r => r.uuid}
+              scroll={{ x: 2300, y: scrolly }}
+              pagination={{
+                current: _pageQuery.page,
+                total: _pageQuery.count,
+                pageSize: _pageQuery.pageSize,
+                showSizeChanger: true,
+                onShowSizeChange: (current, pageSize) => {
+                  _pageQuery.pageSize = pageSize;
+                  _pageQuery.page = 1;
+                  this.fetchList();
+                },
+                onChange: current => {
+                  _pageQuery.page = current;
+                  this.fetchList();
+                },
+                showTotal: () => {
+                  return "共 " + _pageQuery.count + " 条数据";
+                },
+              }}
+              loading={loading}
+            />
+          ) : undefined}
+        </div>
         <Modal
           className="index-modal"
           title="企业指标更新"
