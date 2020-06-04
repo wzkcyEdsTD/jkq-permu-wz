@@ -38,7 +38,6 @@ class CompanyUploadLE extends Component {
   state = {
     savingLoad: false,
     company_mj_lands: [],
-    company_mj_elecs: [],
     company_mj_land_rent: [],
     basicIndex: [
       { title: "实缴税金(万)", v: "tax", value: 0, check: false },
@@ -90,10 +89,6 @@ class CompanyUploadLE extends Component {
         ...v,
         key: `t${index}`,
         cname: uuids2names[v.uuid] || "",
-        edit: false,
-      })),
-      company_mj_elecs: company.company_mj_elecs.map(v => ({
-        ...v,
         edit: false,
       })),
       company_mj_land_rent: company.company_mj_land_rent.map((v, index) => ({
@@ -355,29 +350,16 @@ class CompanyUploadLE extends Component {
    */
   @autobind
   addRecord(HASH) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     console.log("[addRecord]", HASH);
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        this.setState({
-          company_mj_elecs: company_mj_elecs.concat([
-            {
-              elecmeter: "",
-              elec: 0,
-              id: shortid.generate(),
-              edit: true,
-            },
-          ]),
-        });
-        break;
-      }
       case COMPANY_LAND_HASH: {
         this.setState({
           company_mj_lands: company_mj_lands.concat([
             {
               type: 0,
               area: 0,
-              uuid: 0,
+              uuid: "",
               id: shortid.generate(),
               edit: true,
             },
@@ -395,15 +377,9 @@ class CompanyUploadLE extends Component {
    */
   @autobind
   removeRecord(HASH, r) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     console.log("[removeRecord]", HASH);
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        this.setState({
-          company_mj_elecs: company_mj_elecs.filter(v => v.id != r.id),
-        });
-        break;
-      }
       case COMPANY_LAND_HASH: {
         this.setState({
           company_mj_lands: company_mj_lands.filter(v => v.id != r.id),
@@ -443,7 +419,7 @@ class CompanyUploadLE extends Component {
    */
   @autobind
   async editConfirmRecord(HASH, edit, isCancel, r, event) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     console.log(`[${isCancel ? "cancel" : edit ? "edit" : "confirm"}]`, HASH);
     const _uuid_ = !edit
       ? HASH == COMPANY_LAND_HASH
@@ -456,34 +432,6 @@ class CompanyUploadLE extends Component {
         ? await this.fetchCompanyNameByUuid([_uuid_])
         : "";
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        edit
-          ? this.setState({
-              company_mj_elecs: company_mj_elecs.map(v =>
-                v.id == r.id ? { ...v, edit } : v
-              ),
-            })
-          : this.setState({
-              company_mj_elecs: company_mj_elecs.map(v =>
-                v.id == r.id
-                  ? {
-                      ...r,
-                      elecmeter: isCancel
-                        ? r.elecmeter
-                        : document.getElementsByClassName(
-                            `elecmeter_${r.id}`
-                          )[0].value,
-                      elec: isCancel
-                        ? r.elec
-                        : document.getElementsByClassName(`elec_${r.id}`)[0]
-                            .value,
-                      edit,
-                    }
-                  : v
-              ),
-            });
-        break;
-      }
       case COMPANY_LAND_HASH: {
         edit
           ? this.setState({
@@ -521,31 +469,11 @@ class CompanyUploadLE extends Component {
    */
   @autobind
   verifyEdit(HASH, edit, isCancel, r, _uuid_) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     //  若为请求编辑或取消编辑
     if (edit || isCancel) return true;
     //  若为编辑结束
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        const elecmeter = _uuid_;
-        const elec = document.getElementsByClassName(`elec_${r.id}`)[0].value;
-        if (!elecmeter) {
-          message.error(`请输入电表号`);
-          return false;
-        }
-        if (
-          ~company_mj_elecs.map(v => v.elecmeter).indexOf(elecmeter) &&
-          company_mj_elecs.filter(v => v.elecmeter == elecmeter)[0].id != r.id
-        ) {
-          message.error(`该企业已存在 [${elecmeter}] 电表数据`);
-          return false;
-        }
-        if (elec <= 0) {
-          message.error(`请输入正确的用电数据`);
-          return false;
-        }
-        return true;
-      }
       case COMPANY_LAND_HASH: {
         const uuid = _.trim(_uuid_);
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
@@ -590,12 +518,7 @@ class CompanyUploadLE extends Component {
   @autobind
   async updateCompanyDataState() {
     const { company, updateCompanyDataState } = this.props;
-    const {
-      basicIndex,
-      extraIndex,
-      company_mj_elecs,
-      company_mj_lands,
-    } = this.state;
+    const { basicIndex, extraIndex, company_mj_lands } = this.state;
     if (~company_mj_lands.map(v => v.uuid).indexOf(""))
       return message.error(
         "【租赁用地】企业统一信用代码/行政区划代码不可为空!"
@@ -611,7 +534,6 @@ class CompanyUploadLE extends Component {
         pch: company.pch,
         name: company.name,
         states,
-        company_mj_elecs,
         company_mj_lands,
       });
     } finally {
@@ -623,15 +545,12 @@ class CompanyUploadLE extends Component {
     const { company } = this.props;
     const {
       savingLoad,
-      company_mj_elecs,
       company_mj_lands,
       company_mj_land_rent,
       scale,
-      basicIndex,
       extraIndex,
       fileList,
     } = this.state;
-    const elecd = eval(company_mj_elecs.map(d => d.elec).join("+")) || 0;
     const landget =
       eval(
         company_mj_lands
@@ -648,7 +567,8 @@ class CompanyUploadLE extends Component {
           }`}
         </div>
         <Form className="form-companyUploadBasic">
-          <Divider dashed orientation="left" className="basic_divider">
+          {/* 先隐藏,用地用电数据收集完成后显示 */}
+          {/* <Divider dashed orientation="left" className="basic_divider">
             [ 指标数据确认 ]
             {
               <Tooltip title={`如有疑问请联系 [${company.street}] 工作人员`}>
@@ -693,7 +613,7 @@ class CompanyUploadLE extends Component {
                 />
               </List.Item>
             )}
-          />
+          /> */}
           <Divider dashed orientation="left" className="land_divider">
             [ 用地用电凭证上传 ]
             {
@@ -711,6 +631,9 @@ class CompanyUploadLE extends Component {
           </Divider>
           <Row>
             <Col span={22} offset={1}>
+              <Button type="primary" style={{ marginRight: 10 }}>
+                凭证模板下载
+              </Button>
               <Upload
                 accept="image/gif,image/jpeg,image/jpg,image/png"
                 action={`${window.__API_CONFIG__.fwGateway.baseURL}/mj/evidence/upload/${company.pch}/${company.uuid}`}
@@ -797,52 +720,6 @@ class CompanyUploadLE extends Component {
                     {!extraIndex[0].checkable
                       ? "已确认"
                       : extraIndex[0].check
-                      ? "确认"
-                      : "未确认"}
-                  </Tag>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-
-          <Divider dashed orientation="left" className="elec_divider">
-            [ 用电数据确认 ]
-          </Divider>
-          <Row>
-            <Col span={22} offset={1}>
-              <Button
-                type="primary"
-                onClick={() => this.addRecord(COMPANY_ELEC_HASH)}
-              >
-                新增用电数据
-              </Button>
-              <Table
-                dataSource={toJS(company_mj_elecs)}
-                columns={this.elecColumns}
-                bordered
-                rowKey={r => r.id}
-                pagination={false}
-              />
-              <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
-                <Col span={3} offset={10}>
-                  <Statistic title="总用电量(千瓦时)" value={elecd} />
-                </Col>
-                <Col span={2} className="charCheck">
-                  <Tag
-                    color={
-                      !extraIndex[1].checkable
-                        ? ""
-                        : extraIndex[1].check
-                        ? "green"
-                        : "red"
-                    }
-                    onClick={e =>
-                      extraIndex[1].checkable && this.checkIcon(1, false)
-                    }
-                  >
-                    {!extraIndex[1].checkable
-                      ? "已确认"
-                      : extraIndex[1].check
                       ? "确认"
                       : "未确认"}
                   </Tag>

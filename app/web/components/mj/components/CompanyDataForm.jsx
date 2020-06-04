@@ -45,7 +45,6 @@ const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/;
 class CompanyDataForm extends Component {
   state = {
     company_mj_lands: [],
-    company_mj_elecs: [],
     company_mj_land_rent: [],
     fileList: [],
     autoResult: [],
@@ -65,10 +64,6 @@ class CompanyDataForm extends Component {
         ...v,
         key: `t${index}`,
         cname: uuids2names[v.uuid] || "",
-        edit: false,
-      })),
-      company_mj_elecs: company.company_mj_elecs.map(v => ({
-        ...v,
         edit: false,
       })),
       company_mj_land_rent: company.company_mj_land_rent.map((v, index) => ({
@@ -321,29 +316,16 @@ class CompanyDataForm extends Component {
    */
   @autobind
   addRecord(HASH) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     console.log("[addRecord]", HASH);
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        this.setState({
-          company_mj_elecs: company_mj_elecs.concat([
-            {
-              elecmeter: "",
-              elec: 0,
-              id: shortid.generate(),
-              edit: true,
-            },
-          ]),
-        });
-        break;
-      }
       case COMPANY_LAND_HASH: {
         this.setState({
           company_mj_lands: company_mj_lands.concat([
             {
               type: 0,
               area: 0,
-              uuid: 0,
+              uuid: '',
               id: shortid.generate(),
               edit: true,
             },
@@ -361,15 +343,9 @@ class CompanyDataForm extends Component {
    */
   @autobind
   removeRecord(HASH, r) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     console.log("[removeRecord]", HASH);
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        this.setState({
-          company_mj_elecs: company_mj_elecs.filter(v => v.id != r.id),
-        });
-        break;
-      }
       case COMPANY_LAND_HASH: {
         this.setState({
           company_mj_lands: company_mj_lands.filter(v => v.id != r.id),
@@ -409,7 +385,7 @@ class CompanyDataForm extends Component {
    */
   @autobind
   async editConfirmRecord(HASH, edit, isCancel, r, event) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     console.log(`[${isCancel ? "cancel" : edit ? "edit" : "confirm"}]`, HASH);
     const _uuid_ = !edit
       ? HASH == COMPANY_LAND_HASH
@@ -423,34 +399,6 @@ class CompanyDataForm extends Component {
         ? await this.fetchCompanyNameByUuid([_uuid_])
         : "";
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        edit
-          ? this.setState({
-              company_mj_elecs: company_mj_elecs.map(v =>
-                v.id == r.id ? { ...v, edit } : v
-              ),
-            })
-          : this.setState({
-              company_mj_elecs: company_mj_elecs.map(v =>
-                v.id == r.id
-                  ? {
-                      ...r,
-                      elecmeter: isCancel
-                        ? r.elecmeter
-                        : document.getElementsByClassName(
-                            `elecmeter_${r.id}`
-                          )[0].value,
-                      elec: isCancel
-                        ? r.elec
-                        : document.getElementsByClassName(`elec_${r.id}`)[0]
-                            .value,
-                      edit,
-                    }
-                  : v
-              ),
-            });
-        break;
-      }
       case COMPANY_LAND_HASH: {
         edit
           ? this.setState({
@@ -488,31 +436,11 @@ class CompanyDataForm extends Component {
    */
   @autobind
   verifyEdit(HASH, edit, isCancel, r, _uuid_) {
-    const { company_mj_elecs, company_mj_lands } = this.state;
+    const { company_mj_lands } = this.state;
     //  若为请求编辑或取消编辑
     if (edit || isCancel) return true;
     //  若为编辑结束
     switch (HASH) {
-      case COMPANY_ELEC_HASH: {
-        const elecmeter = _uuid_;
-        const elec = document.getElementsByClassName(`elec_${r.id}`)[0].value;
-        if (!elecmeter) {
-          message.error(`请输入电表号`);
-          return false;
-        }
-        if (
-          ~company_mj_elecs.map(v => v.elecmeter).indexOf(elecmeter) &&
-          company_mj_elecs.filter(v => v.elecmeter == elecmeter)[0].id != r.id
-        ) {
-          message.error(`该企业已存在 [${elecmeter}] 电表数据`);
-          return false;
-        }
-        if (elec <= 0) {
-          message.error(`请输入正确的用电数据`);
-          return false;
-        }
-        return true;
-      }
       case COMPANY_LAND_HASH: {
         const uuid = _.trim(_uuid_);
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
@@ -540,7 +468,6 @@ class CompanyDataForm extends Component {
   render() {
     const { form, company, status } = this.props;
     const {
-      company_mj_elecs,
       company_mj_lands,
       company_mj_land_rent,
       fileList,
@@ -553,7 +480,6 @@ class CompanyDataForm extends Component {
           .map(d => d.area)
           .join("+")
       ) || 0;
-    const elecd = eval(company_mj_elecs.map(d => d.elec).join("+")) || 0;
     // getFieldDecorator("id", { initialValue: company.id });
     return (
       <Form className="form-companyUploadBasic">
@@ -674,27 +600,6 @@ class CompanyDataForm extends Component {
               title="实际用地(㎡)"
               value={company.landself + landget - company.landr}
             />
-          </Col>
-        </Row>
-        <Divider dashed orientation="left" className="elec_divider">
-          [ {company.name} ] 用电数据登记
-        </Divider>
-        <Button
-          type="primary"
-          onClick={() => this.addRecord(COMPANY_ELEC_HASH)}
-        >
-          新增用电数据
-        </Button>
-        <Table
-          dataSource={toJS(company_mj_elecs)}
-          columns={this.elecColumns}
-          bordered
-          rowKey={r => r.id}
-          pagination={false}
-        />
-        <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
-          <Col span={4} offset={10}>
-            <Statistic title="总用电量(千瓦时)" value={elecd} />
           </Col>
         </Row>
       </Form>

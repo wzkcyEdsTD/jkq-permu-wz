@@ -30,7 +30,6 @@ class CompanyUploadStore {
   getCompanyInfoByPch = async pch => {
     const data = await this.companyAPI.getCompanyInfoByPch(pch || this.PCH);
     const { uuid } = data;
-    const elecd = eval(data.company_mj_elecs.map(d => d.elec).join("+"));
     const landself =
       eval(
         data.company_mj_lands
@@ -54,7 +53,6 @@ class CompanyUploadStore {
     data.company_mj_lands = data.company_mj_lands.map(d => {
       return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
     });
-    data.elecd = elecd;
     data.landself = landself;
     data.landget = landget;
     data.landr = landr;

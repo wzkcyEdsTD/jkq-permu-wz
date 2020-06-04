@@ -170,11 +170,11 @@ class CompanyService extends Service {
           "street",
           "link",
           "linkphone",
-          'legal',
-          'legalphone',
-          'state',
-          'scale',
-          'isconfirm'
+          "legal",
+          "legalphone",
+          "state",
+          "scale",
+          "isconfirm",
         ],
         where: {
           name: {
@@ -294,7 +294,7 @@ class CompanyService extends Service {
           required: false,
         },
         {
-          //  企业指标数据
+          //  企业指标数据状态
           model: this.app.model.CompanyMjDataStateModel,
           attributes: [
             "tax",
@@ -327,12 +327,6 @@ class CompanyService extends Service {
           required: false,
         },
         {
-          //  企业用电指标
-          model: this.app.model.CompanyMjElecModel,
-          where,
-          required: false,
-        },
-        {
           //  企业凭证
           model: this.app.model.CompanyEvidenceModel,
           where,
@@ -344,7 +338,6 @@ class CompanyService extends Service {
       order: [
         [this.app.model.CompanyMjLandModel, "type", "DESC"],
         [this.app.model.CompanyMjLandModel, "area", "DESC"],
-        [this.app.model.CompanyMjElecModel, "elec", "DESC"],
       ],
     });
     if (!company) {
