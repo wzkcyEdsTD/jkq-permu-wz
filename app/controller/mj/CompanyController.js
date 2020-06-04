@@ -98,15 +98,10 @@ class CompanyController extends Controller {
    * @memberof CompanyController
    */
   async updateCompanyDataState() {
-    const {
-      states,
-      company_mj_elecs,
-      company_mj_lands,
-    } = this.ctx.request.body;
+    const { states, company_mj_lands } = this.ctx.request.body;
     const response = await this.CompanyService.updateCompanyDataState({
       basic: this.ctx.params,
       states,
-      elec: company_mj_elecs,
       land: company_mj_lands,
     });
     this.ctx.body = response;

@@ -40,6 +40,11 @@ class CompanyUploadBasic extends Component {
             initialValue: company.name,
           })(<Input disabled />)}
         </FormItem>
+        <FormItem {...formItemLayout} label="所属街道">
+          {getFieldDecorator("street", {
+            initialValue: company.street,
+          })(<Input disabled />)}
+        </FormItem>
         <FormItem {...formItemLayout} label="企业信用代码">
           {getFieldDecorator("uuid", {
             initialValue: company.uuid,

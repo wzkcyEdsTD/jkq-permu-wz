@@ -92,14 +92,6 @@ class CompanyService extends Service {
             required: false,
           },
           {
-            model: this.app.model.CompanyMjElecModel,
-            attributes: ["id", "elecmeter", "elec"],
-            where,
-            limit: 10,
-            order: [["elec", "DESC"]],
-            required: false,
-          },
-          {
             //  企业凭证
             model: this.app.model.CompanyEvidenceModel,
             where,
@@ -209,12 +201,6 @@ class CompanyService extends Service {
             model: this.app.model.CompanyMjLandModel,
             attributes: ["id", "type", "area", "linktype", "uuid"],
             order: [["type", "DESC"]],
-            where,
-            required: false,
-          },
-          {
-            model: this.app.model.CompanyMjElecModel,
-            attributes: ["id", "elecmeter", "elec"],
             where,
             required: false,
           },
@@ -413,11 +399,11 @@ class CompanyService extends Service {
 
   /**
    * 更新企业信息
-   * @param {*} { pch, uuid, basic, elec, land }
+   * @param {*} { pch, uuid, basic, land }
    * @returns {ServerResponse}
    * @memberof CompanyService
    */
-  async updateCompanyInfoByPch({ pch, uuid, basic, elec, land }) {
+  async updateCompanyInfoByPch({ pch, uuid, basic, land }) {
     const { address, legalphone, state } = basic;
     await this.CompanyPchModel.update(
       {
@@ -428,9 +414,6 @@ class CompanyService extends Service {
       { where: { uuid, pch } }
     );
     await this.destoryCompanyExtra(basic);
-    await Promise.all(
-      elec.map(async i => await this.addCompanyExtra(i, 1, basic))
-    );
     await Promise.all(
       land.map(async i => await this.addCompanyExtra(i, 0, basic))
     );
@@ -518,7 +501,7 @@ class CompanyService extends Service {
    * @param {*} { basic, states }
    * @memberof CompanyService
    */
-  async updateCompanyDataState({ basic, states, elec, land }) {
+  async updateCompanyDataState({ basic, states, land }) {
     await this.CompanyMjDataStateModel.destroy({ where: basic });
     await this.CompanyMjDataStateModel.create({ ...basic, ...states });
     await this.CompanyPchModel.update(
@@ -534,9 +517,6 @@ class CompanyService extends Service {
       { where: basic }
     );
     await this.destoryCompanyExtra(basic);
-    await Promise.all(
-      elec.map(async i => await this.addCompanyExtra(i, 1, basic))
-    );
     await Promise.all(
       land.map(async i => await this.addCompanyExtra(i, 0, basic))
     );

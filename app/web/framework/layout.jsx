@@ -21,6 +21,7 @@ export default class Layout extends Component {
           <meta name="keywords" content={this.props.keywords} />
           <meta name="description" content={this.props.description} />
           <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+          <script src="http://cdn.bootcss.com/babel-polyfill/7.0.0-alpha.9/polyfill.min.js"></script>
           {/* eslint-disable react/no-danger */}
           <script
             dangerouslySetInnerHTML={{

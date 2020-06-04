@@ -23,14 +23,13 @@ export default class CompanyAPI extends BaseFwAPI {
   }
   /**
    * 更新企业信息
-   * @param {*} { basic, elec, land }
+   * @param {*} { basic, land }
    * @returns
    * @memberof CompanyAPI
    */
-  updateCompanyInfoByPch({ basic, elec, land }) {
+  updateCompanyInfoByPch({ basic, land }) {
     return this.put(`/mj/company/${basic.pch}/${basic.uuid}`, {
       basic,
-      elec,
       land,
     });
   }
@@ -70,16 +69,9 @@ export default class CompanyAPI extends BaseFwAPI {
    * @returns
    * @memberof CompanyAPI
    */
-  updateCompanyDataState({
-    uuid,
-    pch,
-    states,
-    company_mj_elecs,
-    company_mj_lands,
-  }) {
+  updateCompanyDataState({ uuid, pch, states, company_mj_lands }) {
     return this.put(`mj/company/state/${pch}/${uuid}`, {
       states,
-      company_mj_elecs,
       company_mj_lands,
     });
   }

@@ -79,7 +79,6 @@ class CompanyProgressStore {
     const { list, page } = await this.companyAPI.getCompanyListByPch(params);
     this._list = list.map(v => {
       const { uuid } = v;
-      const elecd = eval(v.company_mj_elecs.map(d => d.elec).join("+"));
       const landself =
         eval(
           v.company_mj_lands
@@ -109,7 +108,7 @@ class CompanyProgressStore {
         return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
       });
       obj.disableConfirm = !obj.isconfirm; //  确认按钮
-      obj.elecd = elecd;
+      obj.elecd = 0;
       obj.landself = landself;
       obj.landget = landget;
       obj.landr = landr;
@@ -137,10 +136,9 @@ class CompanyProgressStore {
       "迁出",
       "迁入保护",
       "纳税小于3万",
-      "税收及收入无法匹配"
+      "税收及收入无法匹配",
     ];
     const list = data.map((v, index) => {
-      const elecd = eval(v.company_mj_elecs.map(d => d.elec).join("+")) || 0;
       const landd = eval(v.company_mj_lands.map(d => d.area).join("+")) || 0;
       const landr =
         eval(v.company_mj_land_rent.map(d => d.area).join("+")) || 0;
@@ -152,7 +150,7 @@ class CompanyProgressStore {
         return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
       });
       obj.id = index + 1;
-      obj.elecd = elecd;
+      obj.elecd = 0;
       obj.landd = landd - landr;
       obj.scale = scaleArr[obj.scale];
       obj.state = stateArr[obj.state];
@@ -167,10 +165,9 @@ class CompanyProgressStore {
    * @memberof CompanyDataStore
    */
   @action
-  updateCompanyInfoByPch = async (basic, elec, land) => {
+  updateCompanyInfoByPch = async (basic, land) => {
     await this.companyAPI.updateCompanyInfoByPch({
       basic: { ...basic, pch: this.PCH },
-      elec,
       land,
     });
   };

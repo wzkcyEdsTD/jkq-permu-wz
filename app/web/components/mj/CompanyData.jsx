@@ -144,7 +144,7 @@ export default class CompanyData extends Component {
   @autobind
   updateCompanyInfoByPch() {
     const { form } = this.companyDataForm.props;
-    const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
+    const { company_mj_lands } = this.companyDataForm.state;
     const { updateCompanyInfoByPch } = this.props.store;
     if (~company_mj_lands.map(v => v.uuid).indexOf(""))
       return message.error(
@@ -154,11 +154,7 @@ export default class CompanyData extends Component {
       if (err) return;
       this.setState({ savingLoad: true });
       try {
-        await updateCompanyInfoByPch(
-          values,
-          company_mj_elecs,
-          company_mj_lands
-        );
+        await updateCompanyInfoByPch(values, company_mj_lands);
         this.hideModal(COMPANY_DATA_FORM_HASH);
         message.info(`[${values.name}] 企业信息更新成功`);
         this.fetchList();

@@ -184,7 +184,7 @@ export default class CompanyProgress extends Component {
   @autobind
   updateCompanyInfoByPch() {
     const { form } = this.companyDataForm.props;
-    const { company_mj_elecs, company_mj_lands } = this.companyDataForm.state;
+    const { company_mj_lands } = this.companyDataForm.state;
     if (~company_mj_lands.map(v => v.uuid).indexOf(""))
       return message.error(
         "【租赁用地】企业统一信用代码/行政区划代码不可为空!"
@@ -194,11 +194,7 @@ export default class CompanyProgress extends Component {
       if (err) return;
       this.setState({ savingLoad: true });
       try {
-        await updateCompanyInfoByPch(
-          values,
-          company_mj_elecs,
-          company_mj_lands
-        );
+        await updateCompanyInfoByPch(values, company_mj_lands);
         this.hideModal(COMPANY_DATA_FORM_HASH);
         message.info(`[${values.name}] 企业信息更新成功`);
         this.fetchList();

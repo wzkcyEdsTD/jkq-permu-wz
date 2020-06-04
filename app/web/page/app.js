@@ -3,7 +3,6 @@ import "styles/pages/home.less";
 import { ConfigProvider } from "antd";
 import zh_CN from "antd/lib/locale-provider/zh_CN";
 import "moment/locale/zh-cn";
-import 'babel-polyfill';
 
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
