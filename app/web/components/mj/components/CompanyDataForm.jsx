@@ -83,12 +83,32 @@ class CompanyDataForm extends Component {
     });
   }
 
-  elecColumns = [
+  landColumns = [
+    { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
     {
-      title: "序号",
-      dataIndex: "id",
-      width: 80,
-      render: (t, r, index) => ++index,
+      title: "用地类别",
+      dataIndex: "type",
+      render: (t, r) => (
+        <Tag color={t ? "geekblue" : "green"}>
+          {t ? "自有用地" : "租赁用地"}
+        </Tag>
+      ),
+    },
+    {
+      title: "用地面积(亩)",
+      dataIndex: "area",
+      width: 180,
+      render: (t, r) =>
+        r.edit ? (
+          <Input
+            className={`area_${r.id}`}
+            defaultValue={t}
+            type="number"
+            placeholder="输入用地面积"
+          />
+        ) : (
+          t
+        ),
     },
     {
       title: (
@@ -106,86 +126,33 @@ class CompanyDataForm extends Component {
       ),
       dataIndex: "elecmeter",
       render: (t, r) =>
-        r.edit ? <Input className={`elecmeter_${r.id}`} defaultValue={t} /> : t,
+        r.edit ? (
+          <Input
+            className={`elecmeter_${r.id}`}
+            defaultValue={t}
+            placeholder="输入电表号"
+          />
+        ) : (
+          t
+        ),
     },
     {
-      title: "年度用电表(千瓦时)",
+      title: "用电量(千瓦时)",
       dataIndex: "elec",
       render: (t, r) =>
         r.edit ? (
-          <Input defaultValue={t} className={`elec_${r.id}`} type="number" />
+          <Input
+            defaultValue={t}
+            className={`elec_${r.id}`}
+            type="number"
+            placeholder="输入用电量"
+          />
         ) : (
           t
         ),
     },
     {
-      title: "操作",
-      width: 180,
-      dataIndex: "action",
-      render: (t, r) => (
-        <span>
-          {r.edit ? (
-            <span>
-              <Button
-                type="primary"
-                onClick={e =>
-                  this.editConfirmRecord(COMPANY_ELEC_HASH, false, false, r, e)
-                }
-              >
-                确认
-              </Button>
-              <Button
-                onClick={() =>
-                  this.editConfirmRecord(COMPANY_ELEC_HASH, false, true, r)
-                }
-              >
-                取消
-              </Button>
-            </span>
-          ) : (
-            <Button
-              onClick={() =>
-                this.editConfirmRecord(COMPANY_ELEC_HASH, true, false, r)
-              }
-            >
-              编辑
-            </Button>
-          )}
-          <a
-            style={{ marginLeft: 10 }}
-            onClick={() => this.removeRecord(COMPANY_ELEC_HASH, r)}
-          >
-            删除
-          </a>
-        </span>
-      ),
-    },
-  ];
-
-  landColumns = [
-    { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
-    {
-      title: "用地类别",
-      dataIndex: "type",
-      render: (t, r) => (
-        <Tag color={t ? "geekblue" : "green"}>
-          {t ? "自有用地" : "租赁用地"}
-        </Tag>
-      ),
-    },
-    {
-      title: "用地面积(平方米)",
-      dataIndex: "area",
-      width: 180,
-      render: (t, r) =>
-        r.edit ? (
-          <Input className={`area_${r.id}`} defaultValue={t} type="number" />
-        ) : (
-          t
-        ),
-    },
-    {
-      title: "出租对象信息",
+      title: "出租对象",
       dataIndex: "cname",
       render: (t, r) => (r.type ? "" : t),
     },
@@ -202,6 +169,7 @@ class CompanyDataForm extends Component {
               const autoResult = villageOption.filter(v => ~v.indexOf(value));
               this.setState({ autoResult });
             }}
+            placeholder="输入统一信用代码/行政区划代码"
           >
             {this.state.autoResult.map((v, index) => (
               <AutoCompleteOption key={v} value={v}>
@@ -209,8 +177,6 @@ class CompanyDataForm extends Component {
               </AutoCompleteOption>
             ))}
           </AutoComplete>
-        ) : r.type ? (
-          ""
         ) : (
           t
         ),
@@ -221,9 +187,7 @@ class CompanyDataForm extends Component {
       dataIndex: "action",
       render: (t, r) => (
         <span>
-          {r.type ? (
-            ""
-          ) : r.edit ? (
+          {r.edit ? (
             <span>
               <Button
                 type="primary"
@@ -250,9 +214,7 @@ class CompanyDataForm extends Component {
               编辑
             </Button>
           )}
-          {r.type ? (
-            ""
-          ) : (
+          {r.type ? undefined : (
             <a
               style={{ marginLeft: 10 }}
               onClick={() => this.removeRecord(COMPANY_LAND_HASH, r)}
@@ -266,10 +228,12 @@ class CompanyDataForm extends Component {
   ];
 
   landRentColumns = [
-    // { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
+    { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
     { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
     { title: "承租企业名称", dataIndex: "cname", key: "cname" },
-    { title: "出租用地面积(平方米)", dataIndex: "area", key: "area" },
+    { title: "出租用地面积(亩)", dataIndex: "area", key: "area" },
+    { title: "企业电表号", dataIndex: "elecmeter", key: "elecmeter" },
+    { title: "用电量(千瓦时)", dataIndex: "elec", key: "elec" },
   ];
 
   /**
@@ -325,7 +289,9 @@ class CompanyDataForm extends Component {
             {
               type: 0,
               area: 0,
-              uuid: '',
+              elecmeter: "",
+              elec: 0,
+              uuid: "",
               id: shortid.generate(),
               edit: true,
             },
@@ -416,6 +382,15 @@ class CompanyDataForm extends Component {
                         ? r.area
                         : document.getElementsByClassName(`area_${r.id}`)[0]
                             .value,
+                      elecmeter: isCancel
+                        ? r.elecmeter
+                        : document.getElementsByClassName(
+                            `elecmeter_${r.id}`
+                          )[0].value,
+                      elec: isCancel
+                        ? r.elec
+                        : document.getElementsByClassName(`elec_${r.id}`)[0]
+                            .value,
                       uuid: isCancel ? r.uuid : _uuid_,
                       edit,
                     }
@@ -444,7 +419,7 @@ class CompanyDataForm extends Component {
       case COMPANY_LAND_HASH: {
         const uuid = _.trim(_uuid_);
         const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
-        console.log(uuid);
+        const elec = document.getElementsByClassName(`elec_${r.id}`)[0].value;
         if (!reg.test(uuid) && !vreg.test(uuid)) {
           message.error(`请输入正确的统一信用代码/行政区划代码`);
           return false;
@@ -456,8 +431,12 @@ class CompanyDataForm extends Component {
           message.error(`该企业已存在 [${uuid}] 出租企业数据`);
           return false;
         }
-        if (area <= 0) {
+        if (area < 0) {
           message.error(`请输入正确的用地数据`);
+          return false;
+        }
+        if (elec < 0) {
+          message.error(`请输入正确的用电数据`);
           return false;
         }
         return true;
@@ -465,21 +444,77 @@ class CompanyDataForm extends Component {
     }
   }
 
+  /**
+   * 下载凭证模板
+   * @memberof CompanyUploadLE
+   */
+  downLoadEvidence() {
+    window.open(
+      `http://${window.location.host}/public/excel/企业用地用电租赁关系凭证.xlsx`
+    );
+  }
+
+  /**
+   * 获取统计界面
+   * @param {*} hash
+   * @returns
+   * @memberof CompanyUploadLE
+   */
+  getstastic(hash) {
+    const { company } = this.props;
+    const { extraIndex, company_mj_lands } = this.state;
+    const isLand = hash == COMPANY_LAND_HASH;
+    const index = isLand ? 0 : 1;
+    let self = 0,
+      get = 0;
+    company_mj_lands.map(d => {
+      self += d.type == 1 ? parseFloat(isLand ? d.area : d.elec) : 0;
+      get += d.type != 1 ? parseFloat(isLand ? d.area : d.elec) : 0;
+    });
+    const rent = isLand ? company.landr : company.elecr;
+    return (
+      <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
+        <Col span={3} offset={4}>
+          <Statistic
+            title={isLand ? "自有用地(亩)" : "自有用电(千瓦时)"}
+            value={self}
+          />
+        </Col>
+        <Col span={1} className="char">
+          +
+        </Col>
+        <Col span={3}>
+          <Statistic
+            title={isLand ? "租赁用地(亩)" : "租赁用电(千瓦时)"}
+            value={get}
+          />
+        </Col>
+        <Col span={1} className="char">
+          -
+        </Col>
+        <Col span={3}>
+          <Statistic
+            title={isLand ? "出租用地(亩)" : "出租用电(千瓦时)"}
+            value={rent}
+          />
+        </Col>
+        <Col span={1} className="char">
+          =
+        </Col>
+        <Col span={3}>
+          <Statistic
+            title={isLand ? "实际用地(亩)" : "实际用电(千瓦时)"}
+            value={self + get - rent}
+          />
+        </Col>
+      </Row>
+    );
+  }
+
   render() {
     const { form, company, status } = this.props;
-    const {
-      company_mj_lands,
-      company_mj_land_rent,
-      fileList,
-    } = this.state;
+    const { company_mj_lands, company_mj_land_rent, fileList } = this.state;
     const { getFieldDecorator } = form;
-    const landget =
-      eval(
-        company_mj_lands
-          .filter(d => d.type != 1)
-          .map(d => d.area)
-          .join("+")
-      ) || 0;
     // getFieldDecorator("id", { initialValue: company.id });
     return (
       <Form className="form-companyUploadBasic">
@@ -535,6 +570,13 @@ class CompanyDataForm extends Component {
             </Tooltip>
           }
         </Divider>
+        <Button
+          type="primary"
+          style={{ marginRight: 10 }}
+          onClick={this.downLoadEvidence}
+        >
+          凭证模板下载
+        </Button>
         <Upload
           accept="image/gif,image/jpeg,image/jpg,image/png"
           action={`${window.__API_CONFIG__.fwGateway.baseURL}/mj/evidence/upload/${company.pch}/${company.uuid}`}
@@ -544,13 +586,13 @@ class CompanyDataForm extends Component {
           <Button type="primary">上传凭证</Button>
         </Upload>
         <Divider dashed orientation="left" className="land_divider">
-          [ {company.name} ] 用地数据登记
+          [ {company.name} ] 用地用电数据登记
         </Divider>
         <Button
           type="primary"
           onClick={() => this.addRecord(COMPANY_LAND_HASH)}
         >
-          新增用地数据
+          新增用地/用电数据
         </Button>
         {company_mj_lands.length ? (
           <Table
@@ -576,32 +618,8 @@ class CompanyDataForm extends Component {
             }}
           />
         ) : undefined}
-        <Row gutter={24} style={{ marginTop: 10, marginBottom: 8 }}>
-          <Col span={3} offset={4}>
-            <Statistic title="自有用地(㎡)" value={company.landself} />
-          </Col>
-          <Col span={1} className="char">
-            +
-          </Col>
-          <Col span={3}>
-            <Statistic title="租赁用地(㎡)" value={landget} />
-          </Col>
-          <Col span={1} className="char">
-            -
-          </Col>
-          <Col span={3}>
-            <Statistic title="出租用地(㎡)" value={company.landr} />
-          </Col>
-          <Col span={1} className="char">
-            =
-          </Col>
-          <Col span={3}>
-            <Statistic
-              title="实际用地(㎡)"
-              value={company.landself + landget - company.landr}
-            />
-          </Col>
-        </Row>
+        {this.getstastic(COMPANY_LAND_HASH)}
+        {this.getstastic(COMPANY_ELEC_HASH)}
       </Form>
     );
   }

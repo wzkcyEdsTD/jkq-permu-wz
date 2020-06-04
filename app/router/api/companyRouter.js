@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-29 14:24:30
- * @LastEditTime: 2020-05-29 14:59:29
+ * @LastEditTime: 2020-06-04 17:06:46
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\router\api\companyRouter.js
@@ -24,6 +24,10 @@ module.exports = app => {
   router.put(
     `${prefix}/company/:pch/:uuid`,
     companyController.updateCompanyInfoByPch
+  );
+  router.put(
+    `${prefix}/company/civil/:pch/:uuid`,
+    companyController.updateCivilState
   );
   router.put(
     `${prefix}/company/:username`,

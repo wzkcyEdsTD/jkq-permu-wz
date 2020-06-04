@@ -44,6 +44,17 @@ export default class CompanyAPI extends BaseFwAPI {
   }
 
   /**
+   * 确认民用房信息
+   * @param {*} uuid
+   * @param {*} pch
+   * @returns
+   * @memberof CompanyAPI
+   */
+  updateCivilState(uuid, pch) {
+    return this.put(`/mj/company/civil/${pch}/${uuid}`);
+  }
+
+  /**
    * 获取企业名称
    * @param {*} uuids
    * @returns

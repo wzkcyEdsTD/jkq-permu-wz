@@ -79,41 +79,55 @@ class CompanyProgressStore {
     const { list, page } = await this.companyAPI.getCompanyListByPch(params);
     this._list = list.map(v => {
       const { uuid } = v;
-      const landself =
-        eval(
-          v.company_mj_lands
-            .filter(d => d.type == 1)
-            .map(d => d.area)
-            .join("+")
-        ) || 0;
-      const landget =
-        eval(
-          v.company_mj_lands
-            .filter(d => d.type != 1)
-            .map(d => d.area)
-            .join("+")
-        ) || 0;
-      const landr =
-        eval(v.company_mj_land_rent.map(d => d.area).join("+")) || 0;
+      let landself = 0,
+        elecself = 0,
+        landget = 0,
+        elecget = 0,
+        landr = 0,
+        elecr = 0;
+      v.company_mj_lands.map(d => {
+        landself += d.type == 1 ? d.area : 0;
+        elecself += d.type == 1 ? d.elec : 0;
+        landget += d.type != 1 ? d.area : 0;
+        elecget += d.type != 1 ? d.elec : 0;
+      });
+      v.company_mj_land_rent.map(d => {
+        landr += d.area;
+        elecr += e.elec;
+      });
       const obj = { ...v, ...v.company_mj_datum };
       !obj.company_mj_lands.filter(v => v.type == 1).length &&
         (obj.company_mj_lands = [
-          { type: 1, area: 0, uuid, to_object: uuid, id: shortid.generate() },
+          {
+            type: 1,
+            area: 0,
+            uuid,
+            to_object: uuid,
+            elecmeter: "",
+            elec: 0,
+            id: shortid.generate(),
+          },
         ].concat(obj.company_mj_lands));
       //  经济指标状态
       Object.keys(v.company_mj_data_state).map(d => {
         obj[`${d}_state`] = v.company_mj_data_state[d];
       });
       obj.company_mj_lands = obj.company_mj_lands.map(d => {
+        if (d.uuid == "330371000000") obj.iscivil = true;
         return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
       });
-      obj.disableConfirm = !obj.isconfirm; //  确认按钮
-      obj.elecd = 0;
-      obj.landself = landself;
-      obj.landget = landget;
-      obj.landr = landr;
-      obj.landd = [landself + landget - landr > 0, landself + landget - landr];
-      return obj;
+      return {
+        ...obj,
+        landself,
+        landget,
+        landr,
+        landd: [landself + landget - landr > 0, landself + landget - landr],
+        elecself,
+        elecget,
+        elecr,
+        elecd: [elecself + elecget - elecr > 0, elecself + elecget - elecr],
+        disableConfirm: !obj.isconfirm,
+      };
     });
     this._pageQuery = { ...this._pageQuery, ...page };
   };
@@ -139,9 +153,18 @@ class CompanyProgressStore {
       "税收及收入无法匹配",
     ];
     const list = data.map((v, index) => {
-      const landd = eval(v.company_mj_lands.map(d => d.area).join("+")) || 0;
-      const landr =
-        eval(v.company_mj_land_rent.map(d => d.area).join("+")) || 0;
+      let landd = 0,
+        elecd = 0,
+        landr = 0,
+        elecr = 0;
+      v.company_mj_lands.map(v => {
+        landd += v.area;
+        elecd += v.elec;
+      });
+      v.company_mj_land_rent.map(v => {
+        landr += v.area;
+        elecr += v.elec;
+      });
       const obj = { ...v.company_mj_datum };
       Object.keys(v).map(n =>
         typeof v[n] == "object" && v[n] != null ? undefined : (obj[n] = v[n])
@@ -150,7 +173,7 @@ class CompanyProgressStore {
         return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
       });
       obj.id = index + 1;
-      obj.elecd = 0;
+      obj.elecd = elecd - elecr;
       obj.landd = landd - landr;
       obj.scale = scaleArr[obj.scale];
       obj.state = stateArr[obj.state];

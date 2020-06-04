@@ -59,6 +59,17 @@ class CompanyController extends Controller {
   }
 
   /**
+   * 确认民用房信息
+   * @memberof CompanyController
+   */
+  async updateCivilState() {
+    const response = await this.CompanyService.updateCivilState({
+      ...this.ctx.params,
+    });
+    this.ctx.body = response;
+  }
+
+  /**
    * 更新企业密码
    * @memberof CompanyController
    */

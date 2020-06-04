@@ -402,7 +402,7 @@ export default class CompanyProgress extends Component {
         ),
       },
       {
-        title: "用地数据(平方米)",
+        title: "用地数据(亩)",
         dataIndex: "landd",
         width: 80,
         render: (r, t) => (

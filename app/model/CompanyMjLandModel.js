@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-27 18:37:41
- * @LastEditTime: 2020-06-02 19:23:27
+ * @LastEditTime: 2020-06-04 18:25:49
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\model\CompanyMjLandModel.js
@@ -50,6 +50,17 @@ module.exports = app => {
         allowNull: false,
         primaryKey: true,
       } /** 出租关联对象([1]统一社会信用代码[0]街道@村) */,
+      elecmeter: {
+        type: STRING,
+        allowNull: true,
+        primaryKey: true,
+        defaultValue: "",
+      } /** 企业电表号 */,
+      elec: {
+        type: FLOAT,
+        allowNull: true,
+        defaultValue: 0,
+      } /** 年度用电量(千瓦时) */,
     },
     {
       freezeTableName: false,

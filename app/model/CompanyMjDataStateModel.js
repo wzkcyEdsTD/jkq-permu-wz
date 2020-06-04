@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-27 18:37:41
- * @LastEditTime: 2020-06-02 19:24:28
+ * @LastEditTime: 2020-06-04 16:27:16
  * @LastEditors: eds
  * @Description: 
  * @FilePath: \jkq-permu-wz\app\model\CompanyMjDataStateModel.js
@@ -82,6 +82,11 @@ module.exports = (app) => {
         allowNull: false,
         defaultValue: false,
       } /** 用电确认 */,
+      civil: {
+        type: BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      } /** 民用房确认 */,
     },
     {
       freezeTableName: false,

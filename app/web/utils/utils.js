@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-23 11:27:48
- * @LastEditTime: 2020-06-03 16:47:03
+ * @LastEditTime: 2020-06-04 19:47:22
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\web\utils\utils.js
@@ -30,7 +30,7 @@ const headerHash = {
   address: "企业地址",
   state: "企业状态",
   elecd: "企业用电数据（千瓦时）",
-  landd: "企业用地数据（平方米）",
+  landd: "企业用地数据（亩）",
   tax: "实缴税金(万)",
   revenue: "主营业收入(万)",
   industrial: "工业增加值(万)",
@@ -65,7 +65,6 @@ export function tableToExcel(
             .join(`,`)}`
       )
       .join(`\n`)}`;
-  console.log(str);
   // const uri = "data:application/vnd.ms-excel;base64,";
   // const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
   // xmlns:x="urn:schemas-microsoft-com:office:excel"

@@ -76,13 +76,22 @@ class CompanyService extends Service {
               "taxtime",
               "land",
               "elec",
+              "civil",
             ],
             where,
             required: false,
           },
           {
             model: this.app.model.CompanyMjLandModel,
-            attributes: ["id", "type", "area", "linktype", "uuid"],
+            attributes: [
+              "id",
+              "type",
+              "area",
+              "linktype",
+              "uuid",
+              "elecmeter",
+              "elec",
+            ],
             limit: 20,
             order: [
               ["type", "DESC"],
@@ -199,7 +208,15 @@ class CompanyService extends Service {
           },
           {
             model: this.app.model.CompanyMjLandModel,
-            attributes: ["id", "type", "area", "linktype", "uuid"],
+            attributes: [
+              "id",
+              "type",
+              "area",
+              "linktype",
+              "uuid",
+              "elecmeter",
+              "elec",
+            ],
             order: [["type", "DESC"]],
             where,
             required: false,
@@ -307,6 +324,8 @@ class CompanyService extends Service {
             "linktype",
             "uuid",
             "to_object",
+            "elecmeter",
+            "elec",
             "pch",
           ],
           where,
@@ -365,6 +384,7 @@ class CompanyService extends Service {
    * @memberof CompanyService
    */
   async addCompanyExtra(item, type, { uuid, pch }) {
+    console.log(item);
     //  shortid验证是否为已存在数据
     await (type
       ? this.CompanyMjElecModel.create({
@@ -378,6 +398,8 @@ class CompanyService extends Service {
           uuid: item.uuid,
           type: item.type,
           linktype: item.linktype || 1,
+          elec: item.elec,
+          elecmeter: item.elecmeter,
           to_object: uuid,
           pch,
         }));
@@ -418,6 +440,20 @@ class CompanyService extends Service {
       land.map(async i => await this.addCompanyExtra(i, 0, basic))
     );
     return this.ServerResponse.createBySuccessMsg("修改企业信息成功");
+  }
+
+  /**
+   * 确认民用房信息
+   * @param {*} { uuid, pch, civil = true }
+   * @returns
+   * @memberof CompanyService
+   */
+  async updateCivilState({ uuid, pch, civil = true }) {
+    await this.CompanyMjDataStateModel.update(
+      { civil: true },
+      { where: { uuid, pch } }
+    );
+    return this.ServerResponse.createBySuccessMsg("确认民用房信息成功");
   }
 
   /**

@@ -165,6 +165,30 @@ export default class CompanyData extends Component {
   }
 
   /**
+   * 民用房确认提交
+   * @memberof CompanyData
+   */
+  @autobind
+  async updateCivilState(uuid) {
+    const { updateCivilState } = this.props.store;
+    Modal.confirm({
+      title: "确认该企业民用房信息?",
+      okText: "确定",
+      cancelText: "取消",
+      onOk: async () => {
+        try {
+          await updateCivilState(uuid);
+          message.success(`民用房信息确认成功!`);
+          await this.fetchList();
+        } catch (e) {
+          message.error(e);
+        } finally {
+        }
+      },
+    });
+  }
+
+  /**
    * 更新企业登录密码
    * @memberof CompanyData
    */
@@ -312,7 +336,8 @@ export default class CompanyData extends Component {
         fixed: "left",
         render: (t, r) => (
           <span>
-            {t} {!r.disableConfirm ? <Tag color="green">已确认</Tag> : ""}
+            {t} {!r.disableConfirm ? <Tag color="green">已确认</Tag> : ""}{" "}
+            {r.iscivil ? <Tag color="orange">民用房</Tag> : ""}
           </span>
         ),
       },
@@ -353,7 +378,7 @@ export default class CompanyData extends Component {
       },
       {
         title: "企业状态",
-        width: 100,
+        width: 170,
         dataIndex: "state",
         render: t => (
           <Tag color={t == 0 ? "cyan" : "red"}>
@@ -362,7 +387,7 @@ export default class CompanyData extends Component {
         ),
       },
       {
-        title: "用地数据(平方米)",
+        title: "用地数据(亩)",
         dataIndex: "landd",
         width: 80,
         render: (r, t) => (
@@ -431,25 +456,30 @@ export default class CompanyData extends Component {
       },
       {
         title: "操作",
-        width: 200,
+        width: 280,
         fixed: "right",
-        render: (r, t) => {
+        render: (t, r) => {
           return (
             <div className="operator">
               <Button
                 type="primary"
                 icon="edit"
-                onClick={() => this.openModal(COMPANY_DATA_FORM_HASH, t)}
+                onClick={() => this.openModal(COMPANY_DATA_FORM_HASH, r)}
               >
                 编辑
               </Button>
-              {/* <Button type="primary" icon="check-circle" disabled>
-                锁定
-              </Button> */}
+              {r.iscivil ? (
+                <Button
+                  type="primary"
+                  disabled={r.civil_state}
+                  onClick={() => this.updateCivilState(r.uuid)}
+                >
+                  民用房确认
+                </Button>
+              ) : undefined}
               <Button
                 type="primary"
-                icon="tool"
-                onClick={() => this.openModal(COMPANY_PASSPORT_FORM_HASH, t)}
+                onClick={() => this.openModal(COMPANY_PASSPORT_FORM_HASH, r)}
               >
                 密码修改
               </Button>

@@ -30,35 +30,49 @@ class CompanyUploadStore {
   getCompanyInfoByPch = async pch => {
     const data = await this.companyAPI.getCompanyInfoByPch(pch || this.PCH);
     const { uuid } = data;
-    const landself =
-      eval(
-        data.company_mj_lands
-          .filter(d => d.type == 1)
-          .map(d => d.area)
-          .join("+")
-      ) || 0;
-    const landget =
-      eval(
-        data.company_mj_lands
-          .filter(d => d.type != 1)
-          .map(d => d.area)
-          .join("+")
-      ) || 0;
-    const landr =
-      eval(data.company_mj_land_rent.map(d => d.area).join("+")) || 0;
+    let landself = 0,
+      elecself = 0,
+      landget = 0,
+      elecget = 0,
+      landr = 0,
+      elecr = 0;
+    data.company_mj_lands.map(d => {
+      landself += d.type == 1 ? d.area : 0;
+      elecself += d.type == 1 ? d.elec : 0;
+      landget += d.type != 1 ? d.area : 0;
+      elecget += d.type != 1 ? d.elec : 0;
+    });
+    data.company_mj_land_rent.map(d => {
+      landr += d.area;
+      elecr += e.elec;
+    });
     !data.company_mj_lands.filter(data => data.type == 1).length &&
       (data.company_mj_lands = [
-        { type: 1, area: 0, uuid, to_object: uuid, id: shortid.generate() },
+        {
+          type: 1,
+          area: 0,
+          uuid,
+          to_object: uuid,
+          elecmeter: "",
+          elec: 0,
+          id: shortid.generate(),
+        },
       ].concat(data.company_mj_lands));
     data.company_mj_lands = data.company_mj_lands.map(d => {
       return { ...d, uuid: d.uuid == "unknown" ? "" : d.uuid };
     });
-    data.landself = landself;
-    data.landget = landget;
-    data.landr = landr;
-    data.landd = [landself + landget - landr > 0, landself + landget - landr];
-    data.visible = data.link && data.linkphone;
-    this._company = data;
+    this._company = {
+      ...data,
+      landself,
+      landget,
+      landr,
+      landd: [landself + landget - landr > 0, landself + landget - landr],
+      elecself,
+      elecget,
+      elecr,
+      elecd: [elecself + elecget - elecr > 0, elecself + elecget - elecr],
+      visible: data.link && data.linkphone,
+    };
     return data;
   };
 
