@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-27 08:50:15
- * @LastEditTime: 2020-06-03 15:45:23
+ * @LastEditTime: 2020-06-05 14:16:46
  * @LastEditors: eds
  * @Description: In User Settings Edit
  * @FilePath: \jkq-permu-wz\config\config.default.js
@@ -36,6 +36,10 @@ module.exports = appInfo => {
     },
   };
 
+  config.cors = {
+    credentials: true,
+  };
+
   //  前置代理
   config.proxy = true;
 
@@ -57,7 +61,8 @@ module.exports = appInfo => {
   config.session = {
     key: "wzkcy_id",
     maxAge: 12 * 3600 * 1000, // 1 day
-    httpOnly: true,
+    httpOnly: false,
+    signed: false,
     encrypt: true,
     // renew: true,
   };

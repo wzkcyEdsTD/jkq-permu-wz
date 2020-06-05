@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-27 10:00:34
- * @LastEditTime: 2020-06-03 15:38:25
+ * @LastEditTime: 2020-06-05 14:20:47
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\config\config.prod.js
@@ -45,6 +45,7 @@ module.exports = () => {
   const domainWhiteList = [];
   [7001, 9000, 9001, 9002].forEach(port => {
     domainWhiteList.push(`http://60.190.114.252:${port}`);
+    domainWhiteList.push(`http://192.168.39.41:${port}`);
     domainWhiteList.push(`http://127.0.0.1:${port}`);
     domainWhiteList.push(`http://${localIP}:${port}`);
   });
@@ -56,7 +57,7 @@ module.exports = () => {
     fwGateway: {
       //  接口入口地址
       hostURL: "http://60.190.114.252:7001",
-      baseURL: "http://60.190.114.252:7001/api",
+      baseURL: "/api",
       localURL: "http://127.0.0.1:7001/api",  //localURL 防止服务器访问不到出口IP
     },
     oGateway: {

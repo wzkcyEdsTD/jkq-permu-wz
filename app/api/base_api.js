@@ -1,5 +1,13 @@
+/*
+ * @Author: eds
+ * @Date: 2020-04-27 08:50:23
+ * @LastEditTime: 2020-06-05 14:18:12
+ * @LastEditors: eds
+ * @Description: 
+ * @FilePath: \jkq-permu-wz\app\api\base_api.js
+ */ 
 import axios from "axios";
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 import { message } from "antd";
 import HTTPError from "./error/http_error";
 import BusinessError from "./error/business_error";
@@ -11,28 +19,6 @@ export default class BaseAPI {
     const httpclient = axios.create({
       baseURL: IS_NODE ? localURL : baseURL,
       ...defaultOptions,
-      /*transformResponse: [
-        function(data) {
-          // 对 data 进行Long类型处理
-          if (data) {
-            data = JSON.parse(
-              data.replace(/"\w+":\d{14,}/g, match => {
-                return `${match.replace(/:/i, ':"')}"`;
-              })
-            );
-          }
-          return data;
-        }
-      ]*/
-      /*transformRequest: [
-        function(data, instance) {
-          return instance['Content-Type'] == 'application/x-www-form-urlencoded'
-            ? data
-            : JSON.stringify(data).replace(/"\w+":"\d{14,}"/g, match => {
-                return match.replace(/:"/i, ':').replace(/"$/gi, '');
-              });
-        }
-      ]*/
     });
     this.httpclient = httpclient;
     this.config = config;
