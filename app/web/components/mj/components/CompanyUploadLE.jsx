@@ -223,7 +223,7 @@ class CompanyUploadLE extends Component {
       dataIndex: "action",
       render: (t, r) => (
         <span>
-          {r.edit ? (
+          {r.type ? undefined : r.edit ? (
             <span>
               <Button
                 type="primary"

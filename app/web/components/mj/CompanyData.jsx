@@ -387,7 +387,28 @@ export default class CompanyData extends Component {
         ),
       },
       {
-        title: "用地数据(亩)",
+        title: "自有用地(亩)",
+        dataIndex: "landself",
+        width: 80
+      },
+      {
+        title: "出租用地(亩)",
+        dataIndex: "landr",
+        width: 80,
+        render: (r, t) => (
+          <span className={t.land_state ? "d" : "nd"}>{r}</span>
+        ),
+      },
+      {
+        title: "租赁用地(亩)",
+        dataIndex: "landget",
+        width: 80,
+        render: (r, t) => (
+          <span className={t.land_state ? "d" : "nd"}>{r}</span>
+        ),
+      },
+      {
+        title: "实际用地(亩)",
         dataIndex: "landd",
         width: 80,
         render: (r, t) => (

@@ -152,17 +152,21 @@ class CompanyDataStore {
       "税收及收入无法匹配",
     ];
     const list = data.map((v, index) => {
-      let landd = 0,
-        elecd = 0,
+      let landself = 0,
+        elecself = 0,
+        landget = 0,
+        elecget = 0,
         landr = 0,
         elecr = 0;
-      v.company_mj_lands.map(v => {
-        landd += v.area;
-        elecd += v.elec;
+      v.company_mj_lands.map(d => {
+        landself += d.type == 1 ? d.area : 0;
+        elecself += d.type == 1 ? d.elec : 0;
+        landget += d.type != 1 ? d.area : 0;
+        elecget += d.type != 1 ? d.elec : 0;
       });
-      v.company_mj_land_rent.map(v => {
-        landr += v.area;
-        elecr += v.elec;
+      v.company_mj_land_rent.map(d => {
+        landr += d.area;
+        elecr += e.elec;
       });
       const obj = { ...v.company_mj_datum };
       Object.keys(v).map(n =>
