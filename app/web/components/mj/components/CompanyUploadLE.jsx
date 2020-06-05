@@ -148,8 +148,8 @@ class CompanyUploadLE extends Component {
     },
     {
       title: (
-        <Tooltip title={"若无电表号则填写统一信用代码"}>
-          企业电表号
+        <Tooltip title={"多个用电户号用'逗号'隔开"}>
+          企业用电户号
           <Icon
             type="question-circle"
             style={{
@@ -268,7 +268,7 @@ class CompanyUploadLE extends Component {
     { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
     { title: "承租企业名称", dataIndex: "cname", key: "cname" },
     { title: "出租用地面积(亩)", dataIndex: "area", key: "area" },
-    { title: "企业电表号", dataIndex: "elecmeter", key: "elecmeter" },
+    { title: "企业用电户号", dataIndex: "elecmeter", key: "elecmeter" },
     { title: "用电量(千瓦时)", dataIndex: "elec", key: "elec" },
   ];
 

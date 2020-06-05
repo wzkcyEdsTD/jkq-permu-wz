@@ -175,6 +175,7 @@ class CompanyService extends Service {
           "legalphone",
           "state",
           "scale",
+          "address",
           "isconfirm",
         ],
         where: {

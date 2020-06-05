@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-23 11:27:48
- * @LastEditTime: 2020-06-04 19:47:22
+ * @LastEditTime: 2020-06-05 10:22:38
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\web\utils\utils.js
@@ -51,6 +51,7 @@ export function tableToExcel(
   jsonData,
   worksheet = `亩均论英雄企业列表_${+new Date()}`
 ) {
+  console.log(jsonData)
   const str = `${Object.keys(headerHash)
     .map(v => headerHash[v] || "")
     .join(`,`)}
@@ -65,6 +66,7 @@ export function tableToExcel(
             .join(`,`)}`
       )
       .join(`\n`)}`;
+  console.log(str)
   // const uri = "data:application/vnd.ms-excel;base64,";
   // const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
   // xmlns:x="urn:schemas-microsoft-com:office:excel"
