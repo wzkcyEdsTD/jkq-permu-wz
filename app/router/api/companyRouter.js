@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-29 14:24:30
- * @LastEditTime: 2020-06-04 17:06:46
+ * @LastEditTime: 2020-06-06 17:08:14
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\router\api\companyRouter.js
@@ -60,7 +60,10 @@ module.exports = app => {
   // [companyEvidenceController]
   router.post(
     `${prefix}/evidence/upload/:pch/:uuid`,
-    doLog,
     companyEvidenceController.uploadCompanyEvidence
+  );
+  router.post(
+    `${prefix}/evidence/export/:pch/:uuid`,
+    companyEvidenceController.formFillCompanyEvidence
   );
 };

@@ -66,11 +66,11 @@ class CompanyUploadStore {
       landself,
       landget,
       landr,
-      landd: [landself + landget - landr > 0, landself + landget - landr],
+      landd: landself + landget - landr,
       elecself,
       elecget,
       elecr,
-      elecd: [elecself + elecget - elecr > 0, elecself + elecget - elecr],
+      elecd: elecself + elecget - elecr,
       visible: data.link && data.linkphone,
     };
     return data;
@@ -109,6 +109,15 @@ class CompanyUploadStore {
   @action
   companyUploadBasicSubmit = async obj => {
     await this.companyAPI.companyUploadBasicSubmit(obj);
+  };
+
+  /**
+   * 生成企业凭证
+   * @memberof CompanyUploadStore
+   */
+  @action
+  exportEvidence = async (company, land, land_rent) => {
+    return await this.companyAPI.exportEvidence(company, land, land_rent);
   };
 }
 

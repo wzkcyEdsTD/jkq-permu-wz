@@ -1,3 +1,11 @@
+/*
+ * @Author: eds
+ * @Date: 2020-04-27 18:37:41
+ * @LastEditTime: 2020-06-06 16:48:17
+ * @LastEditors: eds
+ * @Description: 
+ * @FilePath: \jkq-permu-wz\tools\alias.js
+ */ 
 const path = require("path");
 
 const root = [path.resolve(__dirname, "..")];

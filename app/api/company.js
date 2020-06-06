@@ -118,4 +118,21 @@ export default class CompanyAPI extends BaseFwAPI {
   getCompanyElecmenter(pch, uuid) {
     return this.get(`mj/company/elecmeter/${pch}/${uuid}`);
   }
+
+  /**
+   * 导出凭证
+   * @param {*} company
+   * @param {*} land
+   * @param {*} land_rent
+   * @returns
+   * @memberof CompanyAPI
+   */
+  exportEvidence(company, land, land_rent) {
+    const { pch, uuid } = company;
+    return this.post(`mj/evidence/export/${pch}/${uuid}`, {
+      company,
+      land,
+      land_rent,
+    });
+  }
 }

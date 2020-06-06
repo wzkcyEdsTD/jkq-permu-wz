@@ -121,11 +121,11 @@ class CompanyProgressStore {
         landself,
         landget,
         landr,
-        landd: [landself + landget - landr > 0, landself + landget - landr],
+        landd: landself + landget - landr,
         elecself,
         elecget,
         elecr,
-        elecd: [elecself + elecget - elecr > 0, elecself + elecget - elecr],
+        elecd: elecself + elecget - elecr,
         disableConfirm: !obj.isconfirm,
       };
     });

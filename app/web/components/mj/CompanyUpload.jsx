@@ -130,6 +130,7 @@ export default class CompanyUpload extends Component {
               <CompanyUploadLe
                 company={company || {}}
                 fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
+                exportEvidence={this.props.store.exportEvidence}
                 updateCompanyDataState={this.updateCompanyDataState}
                 wrappedComponentRef={instance => {
                   this.companyUploadIndicatorForm = instance;

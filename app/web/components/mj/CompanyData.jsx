@@ -389,7 +389,7 @@ export default class CompanyData extends Component {
       {
         title: "自有用地(亩)",
         dataIndex: "landself",
-        width: 80
+        width: 80,
       },
       {
         title: "出租用地(亩)",
@@ -586,6 +586,7 @@ export default class CompanyData extends Component {
           <CompanyDataForm
             company={edit || {}}
             status={statusOption}
+            exportEvidence={this.props.store.exportEvidence}
             fetchCompanyNameByUuid={this.props.store.fetchCompanyNameByUuid}
             wrappedComponentRef={instance => {
               this.companyDataForm = instance;

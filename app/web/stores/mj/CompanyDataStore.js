@@ -120,11 +120,11 @@ class CompanyDataStore {
         landself,
         landget,
         landr,
-        landd: [landself + landget - landr > 0, landself + landget - landr],
+        landd: landself + landget - landr,
         elecself,
         elecget,
         elecr,
-        elecd: [elecself + elecget - elecr > 0, elecself + elecget - elecr],
+        elecd: elecself + elecget - elecr,
         disableConfirm: !obj.isconfirm,
       };
     });
@@ -152,21 +152,17 @@ class CompanyDataStore {
       "税收及收入无法匹配",
     ];
     const list = data.map((v, index) => {
-      let landself = 0,
-        elecself = 0,
-        landget = 0,
-        elecget = 0,
+      let landd = 0,
+        elecd = 0,
         landr = 0,
         elecr = 0;
-      v.company_mj_lands.map(d => {
-        landself += d.type == 1 ? d.area : 0;
-        elecself += d.type == 1 ? d.elec : 0;
-        landget += d.type != 1 ? d.area : 0;
-        elecget += d.type != 1 ? d.elec : 0;
+      v.company_mj_lands.map(v => {
+        landd += v.area;
+        elecd += v.elec;
       });
-      v.company_mj_land_rent.map(d => {
-        landr += d.area;
-        elecr += e.elec;
+      v.company_mj_land_rent.map(v => {
+        landr += v.area;
+        elecr += v.elec;
       });
       const obj = { ...v.company_mj_datum };
       Object.keys(v).map(n =>
@@ -231,6 +227,15 @@ class CompanyDataStore {
     const uuids2names = { ...village };
     res.map(({ uuid, name }) => (uuids2names[uuid] = name));
     return uuids2names;
+  };
+
+  /**
+   * 生成企业凭证
+   * @memberof CompanyUploadStore
+   */
+  @action
+  exportEvidence = async (company, land, land_rent) => {
+    return await this.companyAPI.exportEvidence(company, land, land_rent);
   };
 }
 

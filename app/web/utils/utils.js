@@ -1,20 +1,11 @@
 /*
  * @Author: eds
  * @Date: 2020-04-23 11:27:48
- * @LastEditTime: 2020-06-05 14:45:40
+ * @LastEditTime: 2020-06-06 13:43:32
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\web\utils\utils.js
  */
-
-/**
- * base64 encode
- * @param {*} s
- */
-const base64 = s => {
-  return window.btoa(unescape(encodeURIComponent(s)));
-};
-
 //  表头
 const headerHash = {
   id: "序号",
@@ -40,8 +31,6 @@ const headerHash = {
   sewage: "排污量(吨)",
 };
 
-//  表头排序
-const headerFixed = [];
 /**
  * 导出excel
  * @param {*} jsonData
@@ -65,21 +54,6 @@ export function tableToExcel(
             .join(`,`)}`
       )
       .join(`\n`)}`;
-  // const uri = "data:application/vnd.ms-excel;base64,";
-  // const template = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
-  // xmlns:x="urn:schemas-microsoft-com:office:excel"
-  // xmlns="http://www.w3.org/TR/REC-html40">
-  // <head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
-  //   <x:Name>${worksheet}</x:Name>
-  //   <x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>
-  //   </x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
-  //   </head><body><table>${excelContent}</table></body></html>`;
-  // const link = document.createElement("a");
-  // link.href = uri + encodeURIComponent(base64(template));
-  // link.download = `${worksheet}.xls`;
-  // document.body.appendChild(link);
-  // link.click();
-  // document.body.removeChild(link);
   var link = document.createElement("a");
   var csvContent = "data:text/csv;charset=utf-8,\uFEFF" + str;
   var encodedUri = csvContent;

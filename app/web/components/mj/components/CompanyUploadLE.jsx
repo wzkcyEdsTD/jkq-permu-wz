@@ -530,10 +530,17 @@ class CompanyUploadLE extends Component {
    * 下载凭证模板
    * @memberof CompanyUploadLE
    */
-  downLoadEvidence() {
-    window.open(
-      `http://${window.location.host}/public/excel/企业用地用电租赁关系凭证.xlsx`
+  @autobind
+  async downLoadEvidence() {
+    const { company, exportEvidence } = this.props;
+    const { company_mj_lands, company_mj_land_rent } = this.state;
+    const { fileURL } = await exportEvidence(
+      company,
+      company_mj_lands,
+      company_mj_land_rent
     );
+    message.success("凭证生成成功");
+    window.open(`http://${window.location.host}${fileURL}`);
   }
 
   /**
@@ -700,7 +707,7 @@ class CompanyUploadLE extends Component {
                 style={{ marginRight: 10 }}
                 onClick={this.downLoadEvidence}
               >
-                凭证模板下载
+                生成凭证
               </Button>
               <Upload
                 accept="image/gif,image/jpeg,image/jpg,image/png"
