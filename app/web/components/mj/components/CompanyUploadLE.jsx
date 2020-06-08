@@ -37,6 +37,7 @@ const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/;
 class CompanyUploadLE extends Component {
   state = {
     savingLoad: false,
+    exportLoad: false,
     company_mj_lands: [],
     company_mj_land_rent: [],
     basicIndex: [
@@ -131,7 +132,23 @@ class CompanyUploadLE extends Component {
       ),
     },
     {
-      title: "用地面积(亩)",
+      title: (
+        <Tooltip
+          title={
+            "对自有用地面积存在问题可联系街道，提供土地产权证明材料进行修改"
+          }
+        >
+          用地面积(亩)
+          <Icon
+            type="question-circle"
+            style={{
+              fontSize: 18,
+              marginLeft: 10,
+              verticalAlign: "middle",
+            }}
+          />
+        </Tooltip>
+      ),
       dataIndex: "area",
       width: 180,
       render: (t, r) =>
@@ -538,13 +555,19 @@ class CompanyUploadLE extends Component {
   async downLoadEvidence() {
     const { company, exportEvidence } = this.props;
     const { company_mj_lands, company_mj_land_rent } = this.state;
-    const { fileURL } = await exportEvidence(
-      company,
-      company_mj_lands,
-      company_mj_land_rent
-    );
-    message.success("凭证生成成功");
-    window.open(`http://${window.location.host}${fileURL}`);
+    this.setState({ exportLoad: true });
+    try {
+      const { fileURL } = await exportEvidence(
+        company,
+        company_mj_lands,
+        company_mj_land_rent
+      );
+      message.success("凭证生成成功");
+      window.open(`http://${window.location.host}${fileURL}`);
+    } catch (e) {
+    } finally {
+      this.setState({ exportLoad: false });
+    }
   }
 
   /**
@@ -628,6 +651,7 @@ class CompanyUploadLE extends Component {
     const { company } = this.props;
     const {
       savingLoad,
+      exportLoad,
       company_mj_lands,
       company_mj_land_rent,
       scale,
@@ -709,6 +733,7 @@ class CompanyUploadLE extends Component {
               <Button
                 type="primary"
                 style={{ marginRight: 10 }}
+                loading={exportLoad}
                 onClick={this.downLoadEvidence}
               >
                 生成凭证

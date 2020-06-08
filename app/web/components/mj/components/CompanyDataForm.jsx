@@ -44,6 +44,7 @@ const reg = /^[^_IOZSVa-z\W]{2}\d{6}[^_IOZSVa-z\W]{10}$/;
 @observer
 class CompanyDataForm extends Component {
   state = {
+    exportLoad: false,
     company_mj_lands: [],
     company_mj_land_rent: [],
     fileList: [],
@@ -452,13 +453,19 @@ class CompanyDataForm extends Component {
   async downLoadEvidence() {
     const { company, exportEvidence } = this.props;
     const { company_mj_lands, company_mj_land_rent } = this.state;
-    const { fileURL } = await exportEvidence(
-      company,
-      company_mj_lands,
-      company_mj_land_rent
-    );
-    message.success("凭证生成成功");
-    window.open(`http://${window.location.host}${fileURL}`);
+    this.setState({ exportLoad: true });
+    try {
+      const { fileURL } = await exportEvidence(
+        company,
+        company_mj_lands,
+        company_mj_land_rent
+      );
+      message.success("凭证生成成功");
+      window.open(`http://${window.location.host}${fileURL}`);
+    } catch (e) {
+    } finally {
+      this.setState({ exportLoad: false });
+    }
   }
 
   /**
@@ -520,7 +527,12 @@ class CompanyDataForm extends Component {
 
   render() {
     const { form, company, status } = this.props;
-    const { company_mj_lands, company_mj_land_rent, fileList } = this.state;
+    const {
+      exportLoad,
+      company_mj_lands,
+      company_mj_land_rent,
+      fileList,
+    } = this.state;
     const { getFieldDecorator } = form;
     // getFieldDecorator("id", { initialValue: company.id });
     return (
@@ -580,6 +592,7 @@ class CompanyDataForm extends Component {
         <Button
           type="primary"
           style={{ marginRight: 10 }}
+          loading={exportLoad}
           onClick={this.downLoadEvidence}
         >
           生成凭证
