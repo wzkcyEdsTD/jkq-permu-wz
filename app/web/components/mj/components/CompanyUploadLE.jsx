@@ -135,7 +135,7 @@ class CompanyUploadLE extends Component {
       dataIndex: "area",
       width: 180,
       render: (t, r) =>
-        r.edit ? (
+        r.edit && !r.type ? (
           <Input
             className={`area_${r.id}`}
             defaultValue={t}
@@ -223,7 +223,7 @@ class CompanyUploadLE extends Component {
       dataIndex: "action",
       render: (t, r) => (
         <span>
-          {r.type ? undefined : r.edit ? (
+          {r.edit ? (
             <span>
               <Button
                 type="primary"
@@ -419,7 +419,9 @@ class CompanyUploadLE extends Component {
                       area: isCancel
                         ? r.area
                         : document.getElementsByClassName(`area_${r.id}`)[0]
-                            .value,
+                        ? document.getElementsByClassName(`area_${r.id}`)[0]
+                            .value
+                        : r.area,
                       elecmeter: isCancel
                         ? r.elecmeter
                         : document.getElementsByClassName(
@@ -456,7 +458,9 @@ class CompanyUploadLE extends Component {
     switch (HASH) {
       case COMPANY_LAND_HASH: {
         const uuid = _.trim(_uuid_);
-        const area = document.getElementsByClassName(`area_${r.id}`)[0].value;
+        const area = document.getElementsByClassName(`area_${r.id}`)[0]
+          ? document.getElementsByClassName(`area_${r.id}`)[0].value
+          : r.area;
         const elec = document.getElementsByClassName(`elec_${r.id}`)[0].value;
         if (!reg.test(uuid) && !vreg.test(uuid)) {
           message.error(`请输入正确的统一信用代码/行政区划代码`);

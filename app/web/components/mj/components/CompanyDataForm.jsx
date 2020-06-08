@@ -452,7 +452,13 @@ class CompanyDataForm extends Component {
   async downLoadEvidence() {
     const { company, exportEvidence } = this.props;
     const { company_mj_lands, company_mj_land_rent } = this.state;
-    await exportEvidence(company, company_mj_lands, company_mj_land_rent);
+    const { fileURL } = await exportEvidence(
+      company,
+      company_mj_lands,
+      company_mj_land_rent
+    );
+    message.success("凭证生成成功");
+    window.open(`http://${window.location.host}${fileURL}`);
   }
 
   /**

@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 16:09:50
- * @LastEditTime: 2020-06-06 18:34:57
+ * @LastEditTime: 2020-06-08 14:49:37
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\controller\mj\CompanyEvidenceController.js
@@ -10,7 +10,7 @@
 const Controller = require("egg").Controller;
 const fs = require("fs");
 const path = require("path");
-const pdftk = require("node-pdftk");
+const fill_pdf = require("fill-pdf-utf8");
 
 /**
  * 格式化企业凭证信息
@@ -20,20 +20,60 @@ const pdftk = require("node-pdftk");
  */
 const fixCompanyEvidence = (company, land, land_rent) => {
   const formData = {};
-  // Object.keys(company).map(
-  //   v =>
-  //     typeof company[v] != "object" &&
-  //     (formData[`company_${v}`] = `${company[v]}`)
-  // );
-  land.map((v, index) => {
-    Object.keys(v).map(d => (formData[`land_${index + 1}_${d}`] = `${v[d]}`));
-  });
+  Object.keys(company).map(
+    v =>
+      typeof company[v] != "object" &&
+      (formData[`company_${v}`] = `${company[v] || `/`}`)
+  );
+  land
+    .filter(v => v.type)
+    .map(v => {
+      formData["company_elecmeter"] = v.elecmeter || "/";
+    });
+  const company_get_elecmeter = [];
+  land
+    .filter(v => !v.type)
+    .map((v, index) => {
+      Object.keys(v).map(
+        d => (formData[`land_${index + 1}_${d}`] = `${v[d] || `/`}`)
+      );
+      company_get_elecmeter.push(v["elecmeter"]);
+    });
+  formData["company_get_elecmeter"] = company_get_elecmeter.join("\n");
   land_rent.map((v, index) => {
     Object.keys(v).map(
-      d => (formData[`land_rent_${index + 1}_${d}`] = `${v[d]}`)
+      d => (formData[`land_rent_${index + 1}_${d}`] = `${v[d] || `/`}`)
     );
   });
   return formData;
+};
+
+/**
+ * 中文编码填充pdf
+ * @param {*} formData
+ * @param {*} company
+ */
+const fillPDFWithUTF8 = (formData, company, config) => {
+  return new Promise(async resolve => {
+    const timestamp = +new Date();
+    const { name, pch } = company;
+    fill_pdf.generatePdf(
+      { fields: formData },
+      path.join(config.baseDir, "files/pdf", "evidence.pdf"),
+      "need_appearances",
+      path.join(
+        config.baseDir,
+        "files/evidence",
+        `${name}_${pch}_${timestamp}.pdf`
+      ),
+      () => {
+        resolve({
+          fileName: `${name}_${pch}_${timestamp}.pdf`,
+          fileURL: `/public/evidence/${name}_${pch}_${timestamp}.pdf`,
+        });
+      }
+    );
+  });
 };
 
 /**
@@ -89,25 +129,16 @@ class CompanyEvidenceController extends Controller {
   async formFillCompanyEvidence() {
     const { ctx } = this;
     const { company, land, land_rent } = ctx.request.body;
-    const { uuid, name, pch } = company;
     const formData = fixCompanyEvidence(company, land, land_rent);
     const { username } = this.ctx.session.currentUser;
-    const timestamp = +new Date();
-    await pdftk
-      .input(path.join(this.config.baseDir, "files/pdf", "test.pdf"))
-      .fillForm(formData)
-      .flatten()
-      .output(
-        path.join(
-          this.config.baseDir,
-          "files/evidence",
-          `${name}_${pch}_${timestamp}.pdf`
-        )
-      );
-    const fileURL = `/public/evidence/${name}_${pch}_${timestamp}.pdf`;
-    const response = await this.CompanyEvidenceService.exportCompanyEvidence(
+    const { fileName, fileURL } = await fillPDFWithUTF8(
+      formData,
+      company,
+      this.config
+    );
+    await this.CompanyEvidenceService.exportCompanyEvidence(
       this.ctx.params,
-      `${name}_${pch}_${+new Date()}.pdf`,
+      fileName,
       fileURL,
       username
     );
