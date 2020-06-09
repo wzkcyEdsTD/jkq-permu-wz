@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 16:09:50
- * @LastEditTime: 2020-06-09 09:54:48
+ * @LastEditTime: 2020-06-09 11:02:29
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\controller\mj\CompanyEvidenceController.js
@@ -138,7 +138,7 @@ class CompanyEvidenceController extends Controller {
       //  取租地、出租地长度最大值/3 页数
       Math.ceil(
         Math.max(land.length ? land.length - 1 : 0, land_rent.length) / 3
-      ) || 3,
+      ) || 1,
       formData,
       company,
       this.config
