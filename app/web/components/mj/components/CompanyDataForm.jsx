@@ -229,7 +229,12 @@ class CompanyDataForm extends Component {
   ];
 
   landRentColumns = [
-    { title: "序号", dataIndex: "id", render: (t, r, index) => ++index },
+    {
+      title: "序号",
+      dataIndex: "id",
+      key: "id",
+      render: (t, r, index) => ++index,
+    },
     { title: "承租企业信用代码", dataIndex: "to_object", key: "to_object" },
     { title: "承租企业名称", dataIndex: "cname", key: "cname" },
     { title: "出租用地面积(亩)", dataIndex: "area", key: "area" },
@@ -359,7 +364,6 @@ class CompanyDataForm extends Component {
         ? this.getVillageCode(r.id)
         : this.getElecMeter(r.id)
       : undefined;
-    console.log(_uuid_);
     if (!this.verifyEdit(HASH, edit, isCancel, r, _uuid_)) return;
     const uuids2names =
       HASH == COMPANY_LAND_HASH && !edit && !isCancel
@@ -623,13 +627,13 @@ class CompanyDataForm extends Component {
             rowClassName={r =>
               `sub-table-row-${r.type} ${r.type ? "_self" : "_other"}`
             }
-            rowKey={r => r.key}
+            rowKey={r => `land_${r.id}`}
             defaultExpandedRowKeys={["t0"]}
             expandedRowRender={r => {
               return r.type ? (
                 <Table
                   title={() => "企业用地出租信息"}
-                  rowKey={r => r.key}
+                  rowKey={r => `landr_${r.id}`}
                   size="small"
                   bordered
                   columns={this.landRentColumns}

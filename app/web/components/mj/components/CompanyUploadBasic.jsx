@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { Form, Input, Button } from "antd";
+import { Form, Tooltip, Icon, Input, Button } from "antd";
 const { Item: FormItem } = Form;
 import { checkMobile } from "utils/validation";
 import autobind from "autobind-decorator";
 export const COMPANY_UPLOAD_BASIC_FORM_HASH = Symbol("handled");
 const formItemLayout = {
-  labelCol: { span: 3 },
+  labelCol: { span: 4 },
   wrapperCol: { span: 10 },
 };
 
@@ -48,6 +48,26 @@ class CompanyUploadBasic extends Component {
         <FormItem {...formItemLayout} label="企业信用代码">
           {getFieldDecorator("uuid", {
             initialValue: company.uuid,
+          })(<Input disabled />)}
+        </FormItem>
+        <FormItem
+          {...formItemLayout}
+          label={
+            <Tooltip title={"若地址有误请联系所在街道进行修改"}>
+              <Icon
+                type="question-circle"
+                style={{
+                  fontSize: 18,
+                  marginRight: 4,
+                  verticalAlign: "middle",
+                }}
+              />
+              企业地址
+            </Tooltip>
+          }
+        >
+          {getFieldDecorator("address", {
+            initialValue: company.address,
           })(<Input disabled />)}
         </FormItem>
         <FormItem {...formItemLayout} label="联系人">

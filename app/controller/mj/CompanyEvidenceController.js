@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 16:09:50
- * @LastEditTime: 2020-06-08 14:49:37
+ * @LastEditTime: 2020-06-09 09:54:48
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\controller\mj\CompanyEvidenceController.js
@@ -50,16 +50,19 @@ const fixCompanyEvidence = (company, land, land_rent) => {
 
 /**
  * 中文编码填充pdf
+ * @param {*} pdfLen
  * @param {*} formData
- * @param {*} company
+ * @param {*} param2
+ * @param {*} config
  */
-const fillPDFWithUTF8 = (formData, company, config) => {
+const fillPDFWithUTF8 = (pdfLen, formData, { name, pch }, config) => {
+  const indexArr = ["", "", "2", "3"];
+  console.log(pdfLen, indexArr[pdfLen]);
   return new Promise(async resolve => {
     const timestamp = +new Date();
-    const { name, pch } = company;
     fill_pdf.generatePdf(
       { fields: formData },
-      path.join(config.baseDir, "files/pdf", "evidence.pdf"),
+      path.join(config.baseDir, "files/pdf", `evidence${indexArr[pdfLen]}.pdf`),
       "need_appearances",
       path.join(
         config.baseDir,
@@ -132,6 +135,10 @@ class CompanyEvidenceController extends Controller {
     const formData = fixCompanyEvidence(company, land, land_rent);
     const { username } = this.ctx.session.currentUser;
     const { fileName, fileURL } = await fillPDFWithUTF8(
+      //  取租地、出租地长度最大值/3 页数
+      Math.ceil(
+        Math.max(land.length ? land.length - 1 : 0, land_rent.length) / 3
+      ) || 3,
       formData,
       company,
       this.config

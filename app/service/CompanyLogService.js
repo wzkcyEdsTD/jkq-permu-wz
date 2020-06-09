@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-06-03 11:26:37
- * @LastEditTime: 2020-06-03 15:16:42
+ * @LastEditTime: 2020-06-09 10:00:01
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\service\CompanyLogService.js
@@ -61,6 +61,7 @@ class CompanyLogService extends Service {
             },
           ],
           distinct: true,
+          require: false,
         },
       ],
       order: [["id", "DESC"]],

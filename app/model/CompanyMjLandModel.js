@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-04-27 18:37:41
- * @LastEditTime: 2020-06-04 18:25:49
+ * @LastEditTime: 2020-06-09 10:24:49
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\model\CompanyMjLandModel.js
@@ -44,7 +44,8 @@ module.exports = app => {
       linktype: {
         type: INTEGER,
         allowNull: false,
-      } /** 出租关联([1]企业[0]村.街道) */,
+        defaultValue: 1,
+      } /** 出租关联([1]企业[2]民用房[3]村二厂[4]小微园) */,
       to_object: {
         type: STRING,
         allowNull: false,

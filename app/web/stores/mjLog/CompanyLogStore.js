@@ -1,7 +1,7 @@
 /*
  * @Author: eds
  * @Date: 2020-05-28 15:41:04
- * @LastEditTime: 2020-06-03 15:25:36
+ * @LastEditTime: 2020-06-09 10:02:17
  * @LastEditors: eds
  * @Description:
  * @FilePath: \jkq-permu-wz\app\web\stores\mjLog\CompanyLogStore.js
@@ -71,8 +71,8 @@ class CompanyLogStore {
     this._loginLogList = list.map(v => {
       return {
         ...v,
-        alias: v.publish_user.alias,
-        groups: v.publish_user.groups,
+        alias: v.publish_user ? v.publish_user.alias : '',
+        groups: v.publish_user ? v.publish_user.groups : [],
       };
     });
     this._pageQuery = { ...this._pageQuery, ...page };

@@ -55,6 +55,7 @@ class CompanyUploadStore {
           to_object: uuid,
           elecmeter: "",
           elec: 0,
+          linktype: 1,
           id: shortid.generate(),
         },
       ].concat(data.company_mj_lands));
